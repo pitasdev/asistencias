@@ -1,0 +1,60 @@
+<article 
+  class="flex flex-col p-2 border rounded-sm border-grey border-l-4 border-l-primary transition-all" 
+  [ngClass]="{ 'gap-2 border-l-red-600': !attendance().hasAttended }"
+>
+  <div class="min-h-8 flex gap-8 justify-between items-center">
+    <span class="font-semibold">{{player().name}} {{player().lastName}}</span>
+
+    @if (attendance().isAdicional) {
+      <svg class="cursor-pointer" (click)="deleteAdicionalPlayer.emit(attendance());" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="min-w-fit cursor-pointer">
+        <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"></path>
+      </svg>
+    } @else {
+      <app-switch 
+        [value]="attendance().hasAttended"
+        (valueChange)="hasAttendedChange($event)"
+      />
+    }
+  </div>
+  
+  @if (showReasons()) {
+    <hr class="text-grey" [class.opacity-0]="attendance().hasAttended" />
+  
+    <div 
+      class="h-0 flex gap-8 justify-between items-center opacity-0 overflow-hidden transition-all duration-300 ease-out"
+      [ngClass]="{ 'h-10 opacity-100 overflow-visible': !attendance().hasAttended }"
+    >
+      <label id="reason" class="whitespace-nowrap">Motivo</label>
+      <select 
+        name="reason" 
+        class="min-w-40 w-fit h-10 p-2 border rounded-sm border-grey" 
+        [ngModel]="attendance().reasonId" 
+        (ngModelChange)="reasonChange($event)"
+      >
+        <option value="0"></option>
+        @for (reason of reasons(); track reason.id) {
+          <option value="{{reason.id}}">{{reason.name}}</option>
+        }
+      </select>
+    </div>
+  
+    @if (showReasonDescription()) {
+      <div 
+        class="h-0 flex gap-8 justify-between items-center -mb-2 opacity-0 overflow-hidden transition-all duration-300 ease-out"
+        [ngClass]="{ 
+          'h-10 mb-0 opacity-100 overflow-visible': reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription, 
+          'duration-150': reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription && attendance().hasAttended 
+        }"
+      >
+        <label id="reason-description" class="whitespace-nowrap">Indicar motivo</label>
+        <input 
+          name="reason-description" 
+          type="text" 
+          class="w-full h-10 p-2 border rounded-sm border-grey" 
+          [ngModel]="attendance().reasonDescription" 
+          (ngModelChange)="reasonDescriptionChange($event)"
+        >
+      </div>
+    }
+  }
+</article>

@@ -1,0 +1,115 @@
+<div class="flex flex-col gap-4">
+  <h1 class="font-bold text-2xl text-center">Modificar Asistencias</h1>
+
+  <section class="w-full flex flex-col gap-4 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+    <div class="flex gap-2 items-center">
+      <svg svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"/>
+      </svg>
+      <h2 class="font-semibold text-lg">Modificar Asistencias</h2>
+    </div>
+
+    <div class="w-full flex flex-col gap-1">
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M1 17.2q0-.85.438-1.562T2.6 14.55q1.55-.775 3.15-1.162T9 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T17 17.2v.8q0 .825-.587 1.413T15 20H3q-.825 0-1.412-.587T1 18zM21 20h-2.55q.275-.45.413-.962T19 18v-1q0-1.1-.612-2.113T16.65 13.15q1.275.15 2.4.513t2.1.887q.9.5 1.375 1.112T23 17v1q0 .825-.587 1.413T21 20M9 12q-1.65 0-2.825-1.175T5 8t1.175-2.825T9 4t2.825 1.175T13 8t-1.175 2.825T9 12m10-4q0 1.65-1.175 2.825T15 12q-.275 0-.7-.062t-.7-.138q.675-.8 1.038-1.775T15 8t-.362-2.025T13.6 4.2q.35-.125.7-.163T15 4q1.65 0 2.825 1.175T19 8M3 18h12v-.8q0-.275-.137-.5t-.363-.35q-1.35-.675-2.725-1.012T9 15t-2.775.338T3.5 16.35q-.225.125-.363.35T3 17.2zm6-8q.825 0 1.413-.587T11 8t-.587-1.412T9 6t-1.412.588T7 8t.588 1.413T9 10m0-2"/>
+        </svg>
+        <span>Equipo</span>
+      </div>
+
+      <select 
+        class="w-full h-10 p-2 border rounded-sm border-grey" 
+        [ngModel]="selectedModifyTeam()?.id" 
+        (ngModelChange)="selectedModifyTeamChange($event)"
+      >
+        <option value="0"></option>
+        @for (team of teamManager.userTeams(); track team.id) {
+          <option value="{{team.id}}">{{team.name}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="w-full flex flex-col gap-1">
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+          <path fill="currentColor" fill-rule="evenodd" d="M14 4v-.994C14 2.45 13.55 2 12.994 2H11v1h-1V2H6v1H5V2H3.006C2.45 2 2 2.45 2 3.006v9.988C2 13.55 2.45 14 3.006 14h9.988C13.55 14 14 13.55 14 12.994V5H2V4zm-3-3h1.994C14.102 1 15 1.897 15 3.006v9.988A2.005 2.005 0 0 1 12.994 15H3.006A2.005 2.005 0 0 1 1 12.994V3.006C1 1.898 1.897 1 3.006 1H5V0h1v1h4V0h1zM4 7h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zM4 9h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zm-6 2h2v1H4zm3 0h2v1H7zm3 0h2v1h-2z"/>
+        </svg>
+        <span>Fecha actual</span>
+      </div>
+    
+      <input type="date" class="w-full h-10 p-2 border rounded-sm border-grey" [ngModel]="actualDateModify()" (ngModelChange)="actualDateModify.set($event)">
+    </div>
+
+    <div class="w-full flex flex-col gap-1">
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+          <path fill="currentColor" fill-rule="evenodd" d="M14 4v-.994C14 2.45 13.55 2 12.994 2H11v1h-1V2H6v1H5V2H3.006C2.45 2 2 2.45 2 3.006v9.988C2 13.55 2.45 14 3.006 14h9.988C13.55 14 14 13.55 14 12.994V5H2V4zm-3-3h1.994C14.102 1 15 1.897 15 3.006v9.988A2.005 2.005 0 0 1 12.994 15H3.006A2.005 2.005 0 0 1 1 12.994V3.006C1 1.898 1.897 1 3.006 1H5V0h1v1h4V0h1zM4 7h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zM4 9h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zm-6 2h2v1H4zm3 0h2v1H7zm3 0h2v1h-2z"/>
+        </svg>
+        <span>Nueva fecha</span>
+      </div>
+    
+      <input type="date" class="w-full h-10 p-2 border rounded-sm border-grey" [ngModel]="newDateModify()" (ngModelChange)="newDateModify.set($event)">
+    </div>
+
+    <app-button 
+      class="mx-auto mt-2"
+      [text]="'Modificar'"
+      (click)="openConfirmModal('modify')"
+    />
+  </section>
+
+  <section class="w-full flex flex-col gap-4 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+    <div class="flex gap-2 items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/>
+      </svg>
+      <h2 class="font-semibold text-lg">Eliminar Asistencias</h2>
+    </div>
+
+    <div class="w-full flex flex-col gap-1">
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M1 17.2q0-.85.438-1.562T2.6 14.55q1.55-.775 3.15-1.162T9 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T17 17.2v.8q0 .825-.587 1.413T15 20H3q-.825 0-1.412-.587T1 18zM21 20h-2.55q.275-.45.413-.962T19 18v-1q0-1.1-.612-2.113T16.65 13.15q1.275.15 2.4.513t2.1.887q.9.5 1.375 1.112T23 17v1q0 .825-.587 1.413T21 20M9 12q-1.65 0-2.825-1.175T5 8t1.175-2.825T9 4t2.825 1.175T13 8t-1.175 2.825T9 12m10-4q0 1.65-1.175 2.825T15 12q-.275 0-.7-.062t-.7-.138q.675-.8 1.038-1.775T15 8t-.362-2.025T13.6 4.2q.35-.125.7-.163T15 4q1.65 0 2.825 1.175T19 8M3 18h12v-.8q0-.275-.137-.5t-.363-.35q-1.35-.675-2.725-1.012T9 15t-2.775.338T3.5 16.35q-.225.125-.363.35T3 17.2zm6-8q.825 0 1.413-.587T11 8t-.587-1.412T9 6t-1.412.588T7 8t.588 1.413T9 10m0-2"/>
+        </svg>
+        <span>Equipo</span>
+      </div>
+
+      <select 
+        class="w-full h-10 p-2 border rounded-sm border-grey" 
+        [ngModel]="selectedDeleteTeam()?.id" 
+        (ngModelChange)="selectedDeleteTeamChange($event)"
+      >
+        <option value="0"></option>
+        @for (team of teamManager.userTeams(); track team.id) {
+          <option value="{{team.id}}">{{team.name}}</option>
+        }
+      </select>
+    </div>
+
+    <div class="w-full flex flex-col gap-1">
+      <div class="flex gap-2 items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+          <path fill="currentColor" fill-rule="evenodd" d="M14 4v-.994C14 2.45 13.55 2 12.994 2H11v1h-1V2H6v1H5V2H3.006C2.45 2 2 2.45 2 3.006v9.988C2 13.55 2.45 14 3.006 14h9.988C13.55 14 14 13.55 14 12.994V5H2V4zm-3-3h1.994C14.102 1 15 1.897 15 3.006v9.988A2.005 2.005 0 0 1 12.994 15H3.006A2.005 2.005 0 0 1 1 12.994V3.006C1 1.898 1.897 1 3.006 1H5V0h1v1h4V0h1zM4 7h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zM4 9h2v1H4zm3 0h2v1H7zm3 0h2v1h-2zm-6 2h2v1H4zm3 0h2v1H7zm3 0h2v1h-2z"/>
+        </svg>
+        <span>Fecha</span>
+      </div>
+    
+      <input type="date" class="w-full h-10 p-2 border rounded-sm border-grey" [ngModel]="deleteDate()" (ngModelChange)="deleteDate.set($event)">
+    </div>
+
+    <app-button 
+      class="mx-auto mt-2"
+      [text]="'Eliminar'"
+      (click)="openConfirmModal('delete')"
+    />
+  </section>
+</div>
+
+@if (isOpenConfirmModal()) {
+  <app-confirm-modal 
+    [text]="confirmModalText()"
+    [title]="confirmModalTitle()"
+    [buttonColor]="confirmModalButtonColor()"
+    (selectedOption)="closeConfirmModal($event)"
+  />
+}

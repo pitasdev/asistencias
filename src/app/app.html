@@ -1,0 +1,13 @@
+<div class="font-inter w-120 h-dvh p-4 mx-auto">
+  <main class="pb-20 overflow-auto">
+    @if (isLoading()) {
+      <app-loader />
+    } @else {
+      <router-outlet />
+    }
+  </main>
+  
+  @if (userManager.activeUser() !== null) {
+    <app-navbar />
+  }
+</div>

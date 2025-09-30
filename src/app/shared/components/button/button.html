@@ -1,0 +1,13 @@
+<button 
+  class="font-semibold h-12 rounded-lg text-white cursor-pointer"
+  [class.width-full]="width() === 'full'"
+  [class.width-lg]="width() === 'lg'"
+  [class.width-md]="width() === 'md'"
+  [class.width-sm]="width() === 'sm'"
+  [class.width-xs]="width() === 'xs'"
+  [class.primary-color]="color() === 'primary'"
+  [class.red-color]="color() === 'red'"
+  [class.cancel-color]="color() === 'cancel'"
+>
+  {{text()}}
+</button>

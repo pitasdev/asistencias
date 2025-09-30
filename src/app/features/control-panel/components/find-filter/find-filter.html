@@ -1,0 +1,15 @@
+<section class="w-full flex gap-4 items-center p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey] overflow-hidden">
+  <input 
+    type="search" 
+    id="find-player" 
+    class="w-full h-12 p-2 border border-grey rounded-lg placeholder:opacity-50" 
+    [placeholder]="searchPlaceholder()"
+    [(ngModel)]="searchText"
+    (input)="searchTextChange.emit(searchText())"
+  >
+
+  <app-button 
+    [text]="buttonText()"
+    (click)="buttonClick.emit()"
+  />
+</section>

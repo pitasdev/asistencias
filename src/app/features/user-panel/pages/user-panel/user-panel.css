@@ -1,0 +1,27 @@
+.fadeInError {
+  animation: fadeInError 0.15s linear;
+}
+
+.fadeOutError {
+  animation: fadeOutError 0.15s linear;
+}
+
+@keyframes fadeInError {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutError {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

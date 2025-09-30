@@ -1,0 +1,158 @@
+<div class="flex flex-col gap-4">
+  <h1 class="font-bold text-2xl text-center">Panel de Usuario</h1>
+
+  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-primary border-r-4 border-r-primary rounded-lg">
+    <div class="flex gap-4 items-center">
+      <svg svg="" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </g>
+      </svg>
+
+      <div>
+        <h2 class="font-semibold text-lg">Información del Usuario</h2>
+        <p class="text-[.875rem] text-[#777]">Detalles de tu cuenta</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
+        <span class="font-semibold text-[.875rem]">Usuario</span>
+        <div class="w-full flex gap-4 justify-between items-center">
+          @if (editName()) {
+            <input id="name" type="text" class="w-full h-10 p-2 border border-grey rounded-lg" [ngModel]="name()" (ngModelChange)="name.set($event)">
+          } @else {
+            <span>{{userManager.activeUser()?.name}}</span>
+          }
+
+          <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+            ><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
+          </svg>
+        </div>
+
+        @if (editName()) {
+          <app-button 
+            class="mt-2"
+            [text]="'Guardar'"
+            [width]="'full'"
+            (click)="saveNewName()"
+          />
+        }
+      </div>
+  
+      <div class="flex flex-col">
+        <span class="font-semibold text-[.875rem]">Equipos</span>
+        <span>{{getTeamsString()}}</span>
+      </div>
+  
+      <div class="flex flex-col">
+        <span class=" font-semibold text-[.875rem]">Rol</span>
+        <span>{{roleManager.findRoleById(userManager.activeUser()?.roleId!)?.name}}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-primary border-r-4 border-r-primary rounded-lg">
+    <div class="flex gap-4 items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M17 10.25h-.25V8a4.75 4.75 0 0 0-9.5 0v2.25H7A2.75 2.75 0 0 0 4.25 13v5A2.75 2.75 0 0 0 7 20.75h10A2.75 2.75 0 0 0 19.75 18v-5A2.75 2.75 0 0 0 17 10.25M8.75 8a3.25 3.25 0 0 1 6.5 0v2.25h-6.5Zm9.5 10A1.25 1.25 0 0 1 17 19.25H7A1.25 1.25 0 0 1 5.75 18v-5A1.25 1.25 0 0 1 7 11.75h10A1.25 1.25 0 0 1 18.25 13Z"></path>
+      </svg>
+
+      <div>
+        <h2 class="font-semibold text-lg">Cambiar Contraseña</h2>
+        <p class="text-[.875rem] text-[#777]">Actualiza tu contraseña de acceso</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <div class="flex gap-4 justify-between items-center">
+          <label for="actual-password" class="font-semibold text-[.875rem]">Contraseña Actual</label>
+
+          @if (!validActualPassword()) {
+            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Contraseña incorrecta</span>
+          }
+        </div>
+
+        <input 
+          type="password" 
+          id="actual-password" 
+          class="w-full h-10 p-2 border border-grey rounded-lg transition-all" 
+          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validActualPassword() }"
+          [ngModel]="actualPassword()" 
+          (ngModelChange)="actualPassword.set($event)"
+          (blur)="checkActualPassword()"
+        >
+      </div>
+      
+      <div class="flex flex-col gap-1">
+        <div class="flex gap-4 justify-between items-center">
+          <label for="new-password" class="font-semibold text-[.875rem]">Nueva Contraseña</label>
+
+          @if (!validNewPassword()) {
+            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Debe contener mínimo 8 caracteres</span>
+          }
+        </div>
+
+        <input 
+          type="password" 
+          id="new-password" 
+          class="w-full h-10 p-2 border border-grey rounded-lg"
+          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validNewPassword() }"
+          [ngModel]="newPassword()" 
+          (ngModelChange)="newPassword.set($event)"
+          (input)="checkNewPasswordLength()"
+          (blur)="checkNewPassword()"
+        >
+      </div>
+      
+      <div class="flex flex-col gap-1">
+        <div class="flex gap-4 justify-between items-center">
+          <label for="confirm-password" class="font-semibold text-[.875rem]">Confirmar Contraseña</label>
+
+          @if (!validConfirmPassword()) {
+            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Las contraseñas no coinciden</span>
+          }
+        </div>
+
+        <input 
+          type="password" 
+          id="confirm-password" 
+          class="w-full h-10 p-2 border border-grey rounded-lg"
+          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validConfirmPassword() }"
+          [ngModel]="confirmPassword()" 
+          (ngModelChange)="confirmPassword.set($event)"
+          (input)="checkConfirmPassword()"
+        >
+      </div>
+
+      <app-button 
+        [text]="'Cambiar Contraseña'"
+        [width]="'full'"
+        (click)="changePassword()"
+      />
+    </div>
+  </section>
+
+  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-red-600 border-r-4 border-r-red-600 rounded-lg">
+    <div class="flex gap-4 items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <path fill="#000000" fill-rule="evenodd" d="M3 5c0-1.1.9-2 2-2h8v2H5v14h8v2H5c-1.1 0-2-.9-2-2zm14.176 6L14.64 8.464l1.414-1.414l4.95 4.95l-4.95 4.95l-1.414-1.414L17.176 13H10.59v-2z"/>
+      </svg>
+
+      <div>
+        <h2 class="font-semibold text-lg">Cerrar Sesión</h2>
+        <p class="text-[.875rem] text-[#777]">Salir de tu cuenta de forma segura</p>
+      </div>
+    </div>
+
+    <app-button 
+      [text]="'Cerrar Sesión'"
+      [width]="'full'"
+      [color]="'red'"
+      (click)="logout()"
+    />
+  </section>
+</div>
+

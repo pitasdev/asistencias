@@ -1,0 +1,58 @@
+<app-attendances-filter 
+  [teams]="teamManager.userTeams()"
+  [selectedTeam]="selectedTeam()"
+  [date]="selectedDate()"
+  [attendanceTypes]="attendanceTypeManager.attendanceTypes()"
+  [selectedAttendanceType]="selectedAttendanceType()"
+  (teamsChange)="teamsChange($event)"
+  (dateChange)="dateChange($event)"
+  (attendanceTypeChange)="attendanceTypeChange($event)"
+/>
+
+@if (attendanceManager.attendances().length > 0 && selectedTeam() !== null) {
+  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+    @if (attendanceManager.attendances()[0].id !== null) {
+      <p class="text-xs text-center mb-2"><em>Estás editando una asistencia</em></p>
+    }
+
+    @for (attendance of attendanceManager.attendances(); track attendance.playerId) {
+      <app-save-attendance-result
+        [attendance]="attendance"
+        [player]="playerManager.findPlayerById(attendance.playerId)!"
+        [reasons]="reasonManager.reasons()"
+        (attendanceChange)="onAttendanceChange($event)"
+        (deleteAdicionalPlayer)="deleteAdicionalPlayer($event)"
+      />
+    }
+
+    @if (!addAdicionalPlayer()) {
+      <svg class="cursor-pointer" (click)="addAdicionalPlayer.set(true)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M15 4a4 4 0 0 0-4 4a4 4 0 0 0 4 4a4 4 0 0 0 4-4a4 4 0 0 0-4-4m0 1.9a2.1 2.1 0 1 1 0 4.2A2.1 2.1 0 0 1 12.9 8A2.1 2.1 0 0 1 15 5.9M4 7v3H1v2h3v3h2v-3h3v-2H6V7zm11 6c-2.67 0-8 1.33-8 4v3h16v-3c0-2.67-5.33-4-8-4m0 1.9c2.97 0 6.1 1.46 6.1 2.1v1.1H8.9V17c0-.64 3.1-2.1 6.1-2.1"/>
+      </svg>
+    } @else {
+      <div class="w-full flex flex-col gap-2">
+        <select class="w-full h-10 border border-grey rounded-sm" [ngModel]="adicionalTeam()?.id ?? 0" (ngModelChange)="adicionalTeamChange($event)">
+          <option value="0">{{adicionalTeam() ? '' : 'Seleccionar equipo'}}</option>
+          @for (team of teamManager.allTeams(); track team.id) {
+            <option value="{{team.id}}">{{team.name}}</option>
+          }
+        </select>
+
+        @if (adicionalTeam()) {
+          <select class="w-full h-10 border border-grey rounded-sm" (change)="adicionalPlayerSelected($event)">
+            <option value="0">Seleccionar jugador</option>
+            @for (player of playerManager.adicionalPlayers(); track player.id) {
+              <option value="{{player.id}}">{{player.name}} {{player.lastName}}</option>
+            }
+          </select>
+        }
+      </div>
+    }
+
+    <app-button 
+      class="mx-auto mt-8"
+      [text]="'Guardar'"
+      (click)="saveAttendances()"
+    />
+  </section>
+}

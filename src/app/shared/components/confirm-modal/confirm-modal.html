@@ -1,0 +1,28 @@
+<app-modal 
+  [closeModal]="closeModal()"
+  (modalClosed)="closedModal.emit()"
+>
+  <div class="flex flex-col gap-8 text-center">
+    @if (title()) {
+      <h3 class="font-semibold text-2xl text-center">{{title()}}</h3>
+    }
+
+    <p [innerHTML]="safeText()" class="text-lg"></p>
+  
+    <div class="flex gap-4 justify-center">
+      <app-button 
+        [text]="'Cancelar'"
+        [width]="'sm'"
+        [color]="'cancel'"
+        (click)="selectOption(false)"
+      />
+      
+      <app-button 
+        [text]="'Confirmar'"
+        [width]="'sm'"
+        [color]="buttonColor()"
+        (click)="selectOption(true)"
+      />
+    </div>
+  </div>
+</app-modal>

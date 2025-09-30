@@ -1,0 +1,51 @@
+<nav class="fixed bottom-0 left-0 right-0 w-120 px-4 mx-auto border-t border-grey bg-white">
+  <ul class="flex justify-center items-center gap-2">
+    <li class="h-16 flex-1 content-center overflow-hidden">
+      <a 
+        routerLink="/panel-de-usuario" 
+        class="text-xs text-center w-fit max-w-full flex flex-col gap-1 justify-center items-center p-2 mx-auto rounded-lg cursor-pointer"
+        [class.bg-selected]="url() === '/panel-de-usuario'"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="#000000" d="M12 4a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7M6.5 7.5a5.5 5.5 0 1 1 11 0a5.5 5.5 0 0 1-11 0M3 19a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v3H3zm5-3a3 3 0 0 0-3 3v1h14v-1a3 3 0 0 0-3-3z"/>
+        </svg>
+        <span class="font-semibold w-full block truncate">{{userManager.activeUser()?.name}}</span>
+      </a>
+    </li>
+
+    <li class="h-16 flex-1 content-center overflow-hidden">
+      <a 
+        routerLink="/" 
+        class="text-xs text-center w-fit max-w-full flex flex-col gap-1 justify-center items-center p-2 mx-auto rounded-lg cursor-pointer"
+        [class.bg-selected]="url() === '/'"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+            <path d="M12 6v6l4 2"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+          </g>
+        </svg>
+        <span class="font-semibold w-full block truncate">Asistencias</span>
+      </a>
+    </li>
+
+    @if (
+      userManager.activeUser()?.roleId === roleManager.findRoleByName('admin')?.id || 
+      userManager.activeUser()?.roleId === roleManager.findRoleByName('super')?.id
+    ) {
+      <li class="h-16 flex-1 content-center overflow-hidden">
+        <a 
+          routerLink="/panel-de-control" 
+          class="text-xs text-center w-fit max-w-full flex flex-col gap-1 justify-center items-center p-2 mx-auto rounded-lg cursor-pointer"
+          [class.bg-selected]="url().startsWith('/panel-de-control')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+            <path fill="#000000" d="M24 21h2v5h-2zm-4-5h2v10h-2zm-9 10a5.006 5.006 0 0 1-5-5h2a3 3 0 1 0 3-3v-2a5 5 0 0 1 0 10" class="panel-de-control__icono-fill"></path>
+            <path fill="#000000" d="M28 2H4a2.002 2.002 0 0 0-2 2v24a2.002 2.002 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V4a2.002 2.002 0 0 0-2-2m0 9H14V4h14ZM12 4v7H4V4ZM4 28V13h24l.002 15Z" class="panel-de-control__icono-fill"></path>
+          </svg>
+          <span class="font-semibold w-full block truncate">Panel de control</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

@@ -1,0 +1,33 @@
+@reference '../../../../styles.css';
+
+.width-full {
+  @apply w-full;
+}
+
+.width-lg {
+  @apply w-56;
+}
+
+.width-md {
+  @apply w-48;
+}
+
+.width-sm {
+  @apply w-40;
+}
+
+.width-xs {
+  @apply w-32;
+}
+
+.primary-color {
+  @apply bg-primary;
+}
+
+.red-color {
+  @apply bg-red-600;
+}
+
+.cancel-color {
+  @apply text-black bg-grey rounded-lg;
+}
