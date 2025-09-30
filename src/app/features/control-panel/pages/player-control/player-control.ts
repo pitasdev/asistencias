@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { PlayerControlFilter } from "@/app/features/control-panel/components/player-control-filter/player-control-filter";
 import { Team } from '@/app/shared/models/team.model';
 import { Player } from '@/app/shared/models/player.model';
@@ -15,23 +15,32 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
   styleUrl: './player-control.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class PlayerControl {
+export default class PlayerControl implements OnInit {
   protected selectedTeam = signal<Team | null>(null);
   protected selectedPlayer = signal<Player | null>(null);
 
-  protected filters = computed<AttendanceQueryFilters>(() => {
-    const filters: AttendanceQueryFilters = {
-      startDate: undefined,
-      endDate: undefined
-    };
-    return filters;
-  });
+  private filters: AttendanceQueryFilters = {};
 
   protected readonly teamManager = inject(TeamManager);
   protected readonly playerManager = inject(PlayerManager);
   protected readonly attendanceManager = inject(AttendanceManager);
 
-  protected onTeamsChange(team: Team | null) {
+  ngOnInit(): void {
+    const date = new Date().toISOString().split('T')[0];
+    const year = date.split('-')[0];
+    
+    const month = date.split('-')[1];
+
+    if (Number(month) > 7) {
+      this.filters.startDate = `${year}-08-01`;
+      this.filters.endDate = `${Number(year) + 1}-07-31`;
+    } else {
+      this.filters.startDate = `${Number(year) - 1}-08-01`;
+      this.filters.endDate = `${year}-07-31`;
+    }
+  }
+
+  protected onTeamsChange(team: Team | null): void {
     this.selectedTeam.set(team);
     this.selectedPlayer.set(null);
 
@@ -40,11 +49,11 @@ export default class PlayerControl {
     }
   }
 
-  protected async onPlayerChange(player: Player | null) {
+  protected async onPlayerChange(player: Player | null): Promise<void> {
     this.selectedPlayer.set(player);
 
     if (player) {
-      await this.attendanceManager.getAttendancesByPlayerId(player.id!, this.filters());
+      await this.attendanceManager.getAttendancesByPlayerId(player.id!, this.filters);
     }
   }
 }

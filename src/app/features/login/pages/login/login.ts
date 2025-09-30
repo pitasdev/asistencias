@@ -53,6 +53,7 @@ export default class Login implements OnInit {
       if (this.rememberMeCheckbox()?.nativeElement === document.activeElement) {
         const checkboxElement = this.rememberMeCheckbox()?.nativeElement as HTMLInputElement;
         checkboxElement.checked = !checkboxElement.checked;
+        this.rememberMe.set(!this.rememberMe());
       } else {
         this.login();
       }
