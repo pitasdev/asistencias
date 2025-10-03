@@ -16,3 +16,8 @@
   --breakpoint-xl: 64rem;
   --breakpoint-2xl: 80rem;
 }
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}

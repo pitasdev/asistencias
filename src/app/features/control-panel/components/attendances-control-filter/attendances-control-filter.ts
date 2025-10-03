@@ -1,5 +1,4 @@
 import { Team } from '@/app/shared/models/team.model';
-import { formatDateTimeToDate } from '@/app/shared/utils/formatDateTimeToDate';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SearchFilters } from "@/app/shared/components/search-filters/search-filters";
@@ -31,6 +30,8 @@ export class AttendancesControlFilter {
       this.teamsChange.emit(team);
     } else {
       this.teamsChange.emit(null);
+      this.dateChange.emit(new Date().toISOString().split('T')[0]);
+      this.showEndDate.set(false);
     }
   }
 
@@ -40,15 +41,25 @@ export class AttendancesControlFilter {
 
   onStartDateChange(event: string) {
     this.startDateChange.emit(event);
+
+    if (new Date(event).getTime() > new Date(this.endDate()).getTime()) {
+      this.endDateChange.emit(event);
+    }
   }
 
   onEndDateChange(event: string) {
     this.endDateChange.emit(event);
+
+    if (new Date(event).getTime() < new Date(this.startDate()).getTime()) {
+      this.startDateChange.emit(event);
+    }
   }
 
   onShowEndDateChange() {
-    this.showEndDate.set(!this.showEndDate());
+    if (this.selectedTeam() === null) return;
 
+    this.showEndDate.set(!this.showEndDate());
+    
     if (this.showEndDate()) {
       this.startDateChange.emit(this.date());
       this.endDateChange.emit(this.date());

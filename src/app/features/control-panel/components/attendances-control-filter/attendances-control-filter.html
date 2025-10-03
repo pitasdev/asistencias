@@ -53,6 +53,7 @@
       class="relative size-10 flex justify-center items-center mt-auto border border-grey rounded-sm cursor-pointer 
             after:content-['+'] after:absolute after:bottom-0.5 after:right-0.5 after:font-bold after:text-xs after:size-4 after:text-center  after:rounded-full after:bg-white"
       [class.bg-selected]="showEndDate()"
+      [class.disabled]="selectedTeam() === null"
       (click)="onShowEndDateChange()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">

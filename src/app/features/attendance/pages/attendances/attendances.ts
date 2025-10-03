@@ -55,6 +55,8 @@ export default class Attendances implements OnInit {
       } else {
         this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[0]);
       }
+
+      this.attendanceTypeChange(this.selectedAttendanceType());
     }
   }
 
