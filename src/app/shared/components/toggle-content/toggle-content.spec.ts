@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SearchFilters } from './search-filters';
+import { ToggleContent } from './toggle-content';
 
-describe('SearchFilters', () => {
-  let component: SearchFilters;
-  let fixture: ComponentFixture<SearchFilters>;
+describe('ToggleContent', () => {
+  let component: ToggleContent;
+  let fixture: ComponentFixture<ToggleContent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchFilters]
+      imports: [ToggleContent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SearchFilters);
+    fixture = TestBed.createComponent(ToggleContent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

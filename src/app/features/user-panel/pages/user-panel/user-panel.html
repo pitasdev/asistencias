@@ -1,8 +1,11 @@
 <div class="flex flex-col gap-4">
   <h1 class="font-bold text-2xl text-center">Panel de Usuario</h1>
 
-  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-primary border-r-4 border-r-primary rounded-lg">
-    <div class="flex gap-4 items-center">
+  <app-toggle-content
+    [showContent]="false"
+    [style]="'sideColors'"
+  >
+    <div title class="flex gap-4 items-center">
       <svg svg="" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
         <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
           <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
@@ -25,12 +28,12 @@
           } @else {
             <span>{{userManager.activeUser()?.name}}</span>
           }
-
+  
           <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
             ><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
           </svg>
         </div>
-
+  
         @if (editName()) {
           <app-button 
             class="mt-2"
@@ -51,10 +54,13 @@
         <span>{{roleManager.findRoleById(userManager.activeUser()?.roleId!)?.name}}</span>
       </div>
     </div>
-  </section>
+  </app-toggle-content>
 
-  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-primary border-r-4 border-r-primary rounded-lg">
-    <div class="flex gap-4 items-center">
+  <app-toggle-content
+    [showContent]="false"
+    [style]="'sideColors'"
+  >
+    <div title class="flex gap-4 items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
         <path fill="currentColor" d="M17 10.25h-.25V8a4.75 4.75 0 0 0-9.5 0v2.25H7A2.75 2.75 0 0 0 4.25 13v5A2.75 2.75 0 0 0 7 20.75h10A2.75 2.75 0 0 0 19.75 18v-5A2.75 2.75 0 0 0 17 10.25M8.75 8a3.25 3.25 0 0 1 6.5 0v2.25h-6.5Zm9.5 10A1.25 1.25 0 0 1 17 19.25H7A1.25 1.25 0 0 1 5.75 18v-5A1.25 1.25 0 0 1 7 11.75h10A1.25 1.25 0 0 1 18.25 13Z"></path>
       </svg>
@@ -133,26 +139,30 @@
         (click)="changePassword()"
       />
     </div>
-  </section>
+  </app-toggle-content>
 
-  <section class="w-full flex flex-col gap-8 p-6 border border-grey border-l-4 border-l-red-600 border-r-4 border-r-red-600 rounded-lg">
-    <div class="flex gap-4 items-center">
+  <app-toggle-content
+    [showContent]="false"
+    [style]="'sideColors'"
+    [color]="'red'"
+  >
+    <div title class="flex gap-4 items-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
         <path fill="#000000" fill-rule="evenodd" d="M3 5c0-1.1.9-2 2-2h8v2H5v14h8v2H5c-1.1 0-2-.9-2-2zm14.176 6L14.64 8.464l1.414-1.414l4.95 4.95l-4.95 4.95l-1.414-1.414L17.176 13H10.59v-2z"/>
       </svg>
-
+      
       <div>
         <h2 class="font-semibold text-lg">Cerrar Sesión</h2>
         <p class="text-[.875rem] text-[#777]">Salir de tu cuenta de forma segura</p>
       </div>
     </div>
-
+    
     <app-button 
-      [text]="'Cerrar Sesión'"
-      [width]="'full'"
-      [color]="'red'"
-      (click)="logout()"
+    [text]="'Cerrar Sesión'"
+    [width]="'full'"
+    [color]="'red'"
+    (click)="logout()"
     />
-  </section>
+  </app-toggle-content>
 </div>
 

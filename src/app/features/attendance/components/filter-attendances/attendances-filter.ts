@@ -3,11 +3,12 @@ import { Team } from '@/app/shared/models/team.model';
 import { formatDateTimeToDate } from '@/app/shared/utils/formatDateTimeToDate';
 import { ChangeDetectionStrategy, Component, input, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchFilters } from "@/app/shared/components/search-filters/search-filters";
+import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
+import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
 
 @Component({
   selector: 'app-attendances-filter',
-  imports: [FormsModule, SearchFilters],
+  imports: [FormsModule, ToggleContent, SearchFiltersTitle],
   templateUrl: './attendances-filter.html',
   styleUrl: './attendances-filter.css',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -7,10 +7,11 @@ import { UserManager } from '@/app/domain/user/services/user-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
+import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 
 @Component({
   selector: 'app-user-panel',
-  imports: [FormsModule, Button, CommonModule],
+  imports: [FormsModule, Button, CommonModule, ToggleContent],
   templateUrl: './user-panel.html',
   styleUrl: './user-panel.css',
   changeDetection: ChangeDetectionStrategy.OnPush

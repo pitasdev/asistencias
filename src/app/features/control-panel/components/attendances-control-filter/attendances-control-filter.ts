@@ -1,11 +1,12 @@
 import { Team } from '@/app/shared/models/team.model';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchFilters } from "@/app/shared/components/search-filters/search-filters";
+import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
+import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 
 @Component({
   selector: 'app-attendances-control-filter',
-  imports: [FormsModule, SearchFilters],
+  imports: [FormsModule, SearchFiltersTitle, ToggleContent],
   templateUrl: './attendances-control-filter.html',
   styleUrl: './attendances-control-filter.css',
   changeDetection: ChangeDetectionStrategy.OnPush
