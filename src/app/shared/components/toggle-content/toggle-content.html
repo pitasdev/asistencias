@@ -8,17 +8,27 @@
     'border-l-red-600 border-r-red-600': this.color() === 'red' && this.style() === 'sideColors'
   }"
 >
-  <div #title class="flex justify-between items-center">
+  <div #title class="flex justify-between items-center mb-1">
     <ng-content select="[title]"></ng-content>
 
     <div class="size-7 content-center border rounded-sm border-grey cursor-pointer" (click)="this.show.set(!this.show())">
-      <svg 
-        class="mx-auto rotate-180 custom-transition" 
-        [class.rotate-none]="!this.show()" 
-        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-      >
-        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m7 10l5 5m0 0l5-5"/>
-      </svg>
+      @if (this.showContent()) {
+        <svg 
+          class="mx-auto rotate-180 custom-transition" 
+          [class.rotate-none]="!this.show()" 
+          xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+        >
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m7 10l5 5m0 0l5-5"/>
+        </svg>
+      } @else {
+        <svg 
+          class="mx-auto custom-transition" 
+          [class.rotate-180]="this.show()" 
+          xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+        >
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m7 10l5 5m0 0l5-5"/>
+        </svg>
+      }
     </div>
   </div>
 
