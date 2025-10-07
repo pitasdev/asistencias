@@ -62,7 +62,7 @@ export default class AttendancesControl implements OnInit {
       if (this.selectedTeam()) {
         await this.attendanceManager.getAttendancesByTeamIds([this.selectedTeam()?.id!], this.filters());
       } else {
-        await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.id!, this.filters());
+        await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.clubId!, this.filters());
       }
     }
   }
