@@ -169,7 +169,7 @@ export default class Attendances implements OnInit {
     this.attendanceManager.addAdicionalPlayerToAttendances(
       player, 
       this.selectedDate(), 
-      this.attendanceTypeManager.attendanceTypes()[0].id!, 
+      this.selectedAttendanceType().id!,
       this.selectedTeam()?.id!
     );
     

@@ -7,6 +7,7 @@ import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-mo
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
+import { TeamManager } from '@/app/domain/team/services/team-manager';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,7 @@ export class AttendanceManager {
   private readonly attendanceApiClient = inject(AttendanceApiClient);
   private readonly playerManager = inject(PlayerManager);
   private readonly userManager = inject(UserManager);
+  private readonly teamManager = inject(TeamManager);
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getAttendancesByTeamIds(teamIds: number[], filters: AttendanceQueryFilters): Promise<void> {
@@ -92,6 +94,29 @@ export class AttendanceManager {
       }
     });
     await this.playerManager.getPlayersByTeamIds(playersTeamIds);
+
+    const adicionalPlayers = attendances.filter(a => a.isAdicional);
+    for (const adicionalPlayer of adicionalPlayers) {
+      if (!this.playerManager.players().some(p => p.id === adicionalPlayer.playerId)) {
+        const player = await this.playerManager.getPlayerById(adicionalPlayer.playerId);
+        if (player !== null) this.playerManager.addAdicionalPlayerToPlayers(player);
+      }
+    }
+
+    attendances.sort((a, b) => {
+      const teamA = this.teamManager.findTeamById(a.teamId);
+      const teamB = this.teamManager.findTeamById(b.teamId);
+
+      if (teamA && teamB) {
+        if (teamA.order > teamB.order) return 1;
+        if (teamA.order < teamB.order) return -1;
+      }
+
+      if (a.hasAttended && !b.hasAttended) return -1;
+      if (!a.hasAttended && b.hasAttended) return 1;
+
+      return 0;
+    });
     
     this._attendances.set(attendances);
   }
@@ -103,6 +128,8 @@ export class AttendanceManager {
           catchError(() => of([]))
         )
     );
+
+    attendances.sort((a, b) => b.date.localeCompare(a.date));
 
     this._attendances.set(attendances);
   }
