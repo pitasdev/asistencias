@@ -29,6 +29,7 @@ export default class Attendances implements OnInit {
   protected selectedDate = signal<string>('');
   protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, clubId: 0 });
 
+  protected disabledButton = signal<boolean>(false);
   protected addAdicionalPlayer = signal<boolean>(false);
   protected adicionalTeam = signal<Team | null>(null);
   
@@ -138,11 +139,17 @@ export default class Attendances implements OnInit {
   }
 
   protected async saveAttendances(): Promise<void> {
-    if (!this.checkValidAttendances()) return;
+    this.disabledButton.set(true);
+
+    if (!this.checkValidAttendances()) {
+      this.disabledButton.set(false);
+      return;
+    };
 
     await this.attendanceManager.saveAttendances();
     this.addAdicionalPlayer.set(false);
     this.adicionalTeam.set(null);
+    this.disabledButton.set(false);
   }
 
   protected adicionalTeamChange(event: string): void {

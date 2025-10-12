@@ -146,20 +146,15 @@ export class AttendanceManager {
   async saveAttendances(): Promise<void> {
     if (this._attendances().some(a => a.id !== null)) {
       let attendancesForUpdate = this._attendances();
-      for (const attendance of this._addAdicionalAttendances) {
-        attendancesForUpdate = attendancesForUpdate.filter(a => a.playerId !== attendance.playerId);
-      }
-      const response = await firstValueFrom(this.attendanceApiClient.updateAttendances(attendancesForUpdate));
-      if (response.message) {
-        this.infoModalManager.success('Las asistencias se actualizaron correctamente');
-      } else {
-        this.infoModalManager.error('Error al actualizar las asistencias');
+      for (const adicionalAttendance of this._addAdicionalAttendances) {
+        attendancesForUpdate = attendancesForUpdate.filter(a => a.playerId !== adicionalAttendance.playerId);
       }
 
       if (this._addAdicionalAttendances.length > 0) {
         const response = await firstValueFrom(this.attendanceApiClient.createAttendances(this._addAdicionalAttendances));
         if (response.error) {
           this.infoModalManager.error('Error al guardar las asistencias de los jugadores adicionales');
+          return;
         } else {
           this._addAdicionalAttendances = [];
         }
@@ -169,14 +164,22 @@ export class AttendanceManager {
         const attendancesIds = this._deleteAdicionalAttendances.map(a => a.id!);
         const response = await firstValueFrom(this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds));
         if (response.error) {
-          this.infoModalManager.error('Error al eliminar las asistencias de los jugadores adicionales');
+          this.infoModalManager.error('Error al eliminar las asistencias de los jugadores adicionales eliminados');
+          return;
         } else {
           this._deleteAdicionalAttendances = [];
         }
       }
+      
+      const updateResponse = await firstValueFrom(this.attendanceApiClient.updateAttendances(attendancesForUpdate));
+      if (updateResponse.message) {
+        this.infoModalManager.success('Las asistencias se actualizaron correctamente');
+      } else {
+        this.infoModalManager.error('Error al actualizar las asistencias');
+      }
     } else {
-      const response = await firstValueFrom(this.attendanceApiClient.createAttendances(this._attendances()));
-      if (response.message) {
+      const createResponse = await firstValueFrom(this.attendanceApiClient.createAttendances(this._attendances()));
+      if (createResponse.message) {
         this.infoModalManager.success('Las asistencias se guardaron correctamente');
       } else {
         this.infoModalManager.error('Error al guardar las asistencias');

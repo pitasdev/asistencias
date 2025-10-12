@@ -51,6 +51,7 @@
 
     <app-button 
       class="mx-auto mt-8"
+      [class.disabled]="disabledButton()"
       [text]="'Guardar'"
       (click)="saveAttendances()"
     />
