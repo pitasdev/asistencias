@@ -1,0 +1,38 @@
+<app-toggle-content
+  [(forceUpdateState)]="forceUpdateState"
+>
+  <div title class="flex gap-2 items-center">
+    <svg svg="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        <path d="M8 2v4m8-4v4"></path>
+        <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+        <path d="M3 10h18"></path>
+      </g>
+    </svg>
+    <h2 class="font-semibold text-lg">Resumen del día</h2>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    @for (attendanceSummary of attendancesSummary(); track attendanceSummary.team) {
+      <div class="flex justify-between items-center" (click)="clickTeam.emit(attendanceSummary.team)">
+        <span class="font-medium">{{attendanceSummary.team.name}}</span>
+  
+        <div class="flex gap-4 text-[14px]">
+          <div class=" flex gap-1 bg-[#d4ffe0] rounded-full p-1 px-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#17de38" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/>
+            </svg>
+            <span class="font-medium size-5 text-center">{{attendanceSummary.attendanceTrue}}</span>
+          </div>
+
+          <div class="flex gap-1 bg-[#ffdddd] rounded-full p-1 px-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#f32020" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/>
+            </svg>
+            <span class="font-medium size-5 text-center">{{attendanceSummary.attendanceFalse}}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</app-toggle-content>

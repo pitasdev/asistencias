@@ -8,6 +8,7 @@
 @theme {
   --font-inter: 'Inter', sans-serif;
   --color-primary: #155dfc;
+  --color-primary-red: #e7000b;
   --color-selected: #badaff;
   --color-grey: #ddd;
   --breakpoint-xs: 24rem;

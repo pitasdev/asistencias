@@ -31,8 +31,11 @@ export class AttendancesControlFilter {
       this.teamsChange.emit(team);
     } else {
       this.teamsChange.emit(null);
-      this.dateChange.emit(new Date().toISOString().split('T')[0]);
-      this.showEndDate.set(false);
+
+      if (this.showEndDate()) {
+        this.dateChange.emit(new Date().toISOString().split('T')[0]);
+        this.showEndDate.set(false);
+      }
     }
   }
 

@@ -3,6 +3,7 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 import { UserManager } from '../../user/services/user-manager';
 import { Router } from '@angular/router';
 import { AuthApiClient } from '@/app/core/api-clients/auth/auth-api-client';
+import { RoleManager } from '../../role/services/role-manager';
 
 interface TokenPayload {
   userId: number;
@@ -20,6 +21,7 @@ export class AuthManager {
 
   private readonly authApiClient = inject(AuthApiClient);
   private readonly userManager = inject(UserManager);
+  private readonly roleManager = inject(RoleManager);
   private readonly router = inject(Router);
 
   async checkToken(): Promise<boolean> {
@@ -47,6 +49,7 @@ export class AuthManager {
 
     this.token.set(token.token);
     await this.userManager.setActiveUser(userId);
+    await this.roleManager.getRoles();
     
     if (rememberMe) {
       localStorage.setItem('token', token.token);

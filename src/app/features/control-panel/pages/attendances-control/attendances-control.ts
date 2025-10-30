@@ -10,10 +10,11 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
+import { SummaryOfDay } from "../../components/summary-of-day/summary-of-day";
 
 @Component({
   selector: 'app-attendances-control',
-  imports: [AttendancesControlFilter, AttendanceControlResult],
+  imports: [AttendancesControlFilter, AttendanceControlResult, SummaryOfDay],
   templateUrl: './attendances-control.html',
   styleUrl: './attendances-control.css',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -47,13 +47,14 @@ export class ToggleContent {
           this.calcContentHeight();
         }
 
+        this.show.set(this.showContent());
         this.forceUpdateState.set(false);
       }
     });
   }
 
   private calcContentHeight(): void {
-    const contentHeight = this.content().nativeElement.scrollHeight;
+    const contentHeight = this.content().nativeElement.scrollHeight + 2;
     this.customMaxHeight.set(`${contentHeight}px`);
   }
 

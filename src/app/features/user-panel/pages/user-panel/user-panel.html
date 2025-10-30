@@ -77,7 +77,7 @@
           <label for="actual-password" class="font-semibold text-[.875rem]">Contraseña Actual</label>
 
           @if (!validActualPassword()) {
-            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Contraseña incorrecta</span>
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Contraseña incorrecta</span>
           }
         </div>
 
@@ -85,7 +85,7 @@
           type="password" 
           id="actual-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg transition-all" 
-          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validActualPassword() }"
+          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validActualPassword() }"
           [ngModel]="actualPassword()" 
           (ngModelChange)="actualPassword.set($event)"
           (blur)="checkActualPassword()"
@@ -97,7 +97,7 @@
           <label for="new-password" class="font-semibold text-[.875rem]">Nueva Contraseña</label>
 
           @if (!validNewPassword()) {
-            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Debe contener mínimo 8 caracteres</span>
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Debe contener mínimo 8 caracteres</span>
           }
         </div>
 
@@ -105,7 +105,7 @@
           type="password" 
           id="new-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validNewPassword() }"
+          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validNewPassword() }"
           [ngModel]="newPassword()" 
           (ngModelChange)="newPassword.set($event)"
           (input)="checkNewPasswordLength()"
@@ -118,7 +118,7 @@
           <label for="confirm-password" class="font-semibold text-[.875rem]">Confirmar Contraseña</label>
 
           @if (!validConfirmPassword()) {
-            <span class="text-xs text-red-600" animate.enter="fadeInError" animate.leave="fadeOutError">Las contraseñas no coinciden</span>
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Las contraseñas no coinciden</span>
           }
         </div>
 
@@ -126,7 +126,7 @@
           type="password" 
           id="confirm-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 'border-red-600 outline-1 outline-red-600': !validConfirmPassword() }"
+          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validConfirmPassword() }"
           [ngModel]="confirmPassword()" 
           (ngModelChange)="confirmPassword.set($event)"
           (input)="checkConfirmPassword()"

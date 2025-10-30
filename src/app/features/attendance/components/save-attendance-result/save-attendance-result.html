@@ -1,6 +1,6 @@
 <article 
   class="flex flex-col p-2 border rounded-sm border-grey border-l-4 border-l-primary transition-all" 
-  [ngClass]="{ 'gap-2 border-l-red-600': !attendance().hasAttended }"
+  [ngClass]="{ 'gap-2 border-l-primary-red': !attendance().hasAttended }"
 >
   <div class="min-h-8 flex gap-8 justify-between items-center">
     <span class="font-semibold">{{player().name}} {{player().lastName}}</span>

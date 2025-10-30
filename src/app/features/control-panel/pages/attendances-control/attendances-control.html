@@ -13,6 +13,12 @@
     (endDateChange)="endDateChange($event)"
   />
 
+  @if (attendanceManager.attendances().length > 0 && selectedTeam() == null) {
+    <app-summary-of-day 
+      (clickTeam)="teamsChange($event)"
+    />
+  }
+
   @if (attendanceManager.attendances().length > 0) {
     <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
       @for (attendance of attendanceManager.attendances(); track attendance.id) {
