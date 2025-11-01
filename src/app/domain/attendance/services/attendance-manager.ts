@@ -62,17 +62,23 @@ export class AttendanceManager {
         this.playerManager.addAdicionalPlayerToPlayers(player);
       }
     }
+
+    attendances.sort((a, b) => {
+      if (a.hasAttended && !b.hasAttended) return -1;
+      if (!a.hasAttended && b.hasAttended) return 1;
+      return 0;
+    });
     
     this._attendances.set(attendances);
   }
 
   async checkExistingAttendancesByTeamId(teamId: number, filters: AttendanceQueryFilters): Promise<Attendance[]> {
     return await firstValueFrom(
-        this.attendanceApiClient.getAttendancesByTeamId(teamId, filters)
-          .pipe(
-            catchError(() => of([]))
-          )
-      );
+      this.attendanceApiClient.getAttendancesByTeamId(teamId, filters)
+        .pipe(
+          catchError(() => of([]))
+        )
+    );
   }
 
   async getAttendancesByClubId(clubId: number, filters: AttendanceQueryFilters): Promise<void> {
