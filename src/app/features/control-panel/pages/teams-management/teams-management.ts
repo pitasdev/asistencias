@@ -26,7 +26,6 @@ export default class TeamsManagement implements OnInit {
   protected teamName = signal<string>('');
   protected modalType = signal<ModalType>('add');
   protected modalTitle = signal<string>('');
-  protected modalLabel = signal<string>('');
   protected selectedTeam = signal<Team | null>(null);
 
   protected openDeleteModal = signal<boolean>(false);
@@ -55,7 +54,6 @@ export default class TeamsManagement implements OnInit {
     this.selectedTeam.set(team);
     this.modalType.set('edit');
     this.modalTitle.set('Modificar Equipo');
-    this.modalLabel.set('Equipo');
     this.teamName.set(team?.name!);
     this.openModal.set(true);
   }
@@ -76,7 +74,7 @@ export default class TeamsManagement implements OnInit {
 
   protected showConfirmDeleteModal(team: Team): void {
     this.selectedTeam.set(team);
-    this.deleteModalText.set(`¿Está seguro de que desea eliminar el equipo ${team.name}?`);
+    this.deleteModalText.set(`¿Está seguro de que desea eliminar el equipo <strong>${team.name}</strong>?`);
     this.openDeleteModal.set(true);
   }
 
@@ -95,7 +93,6 @@ export default class TeamsManagement implements OnInit {
   protected showAddTeamModal(): void {
     this.modalType.set('add');
     this.modalTitle.set('Añadir Equipo');
-    this.modalLabel.set('Nuevo equipo');
     this.openModal.set(true);
   }
 
@@ -120,7 +117,6 @@ export default class TeamsManagement implements OnInit {
   protected modalClosed(): void {
     this.openModal.set(false);
     this.modalTitle.set('');
-    this.modalLabel.set('');
     this.teamName.set('');
     this.selectedTeam.set(null);
     this.closeModal.set(false);

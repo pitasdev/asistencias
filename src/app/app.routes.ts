@@ -60,6 +60,11 @@ export const routes: Routes = [
             path: 'gestion-de-usuarios',
             title: 'Gestión de usuarios',
             loadComponent: () => import('./features/control-panel/pages/users-management/users-management')
+          },
+          {
+            path: 'gestion-de-motivos',
+            title: 'Gestión de motivos',
+            loadComponent: () => import('./features/control-panel/pages/reasons-management/reasons-management')
           }
         ]
       }

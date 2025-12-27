@@ -1,34 +1,36 @@
 <div class="flex flex-col gap-4">
-  <h1 class="font-bold text-2xl text-center">Gestión de Equipos</h1>
+  <h1 class="font-bold text-2xl text-center">Gestión de Motivos</h1>
 
-  <app-find-filter 
-    [searchPlaceholder]="'Buscar equipo'"
-    [buttonText]="'Añadir Equipo'"
-    (searchTextChange)="filterTeams($event)"
-    (buttonClick)="showAddTeamModal()"
+  <app-find-filter
+    [searchPlaceholder]="'Buscar motivos'"
+    [buttonText]="'Añadir Motivo'"
+    (searchTextChange)="filterReasons($event)"
+    (buttonClick)="showAddReasonModal()"
   />
 
   <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
-    @for (team of teams(); track team.id) {
+    @for (reason of reasons(); track reason.id) {
       <div class="flex gap-4 items-center">
         <div class="w-[calc(100%-(24px*2)-(16px*2))] flex gap-4 justify-between items-center p-2 border rounded-sm border-grey border-l-4 border-l-primary border-r-4 border-r-primary">
-          <label for="{{team.name}}" class="font-semibold truncate">{{team.name}}</label>
-          <select id="{{team.name}}" class="p-1 px-2 border border-grey rounded-sm" [ngModel]="team.order" (ngModelChange)="orderChange(team.id!, $event)">
-            @for (team of teams(); track team.id) {
-              <option value="{{team.order}}">{{team.order}}</option>
+          <label for="{{reason.name}}" class="font-semibold truncate">{{reason.name}}{{reason.requiresDescription ? '*' : ''}}</label>
+          <select id="{{reason.name}}" class="p-1 px-2 border border-grey rounded-sm" [ngModel]="reason.order" (ngModelChange)="orderChange(reason.id!, $event)">
+            @for (reason of reasons(); track reason.id) {
+              <option value="{{reason.order}}">{{reason.order}}</option>
             }
           </select>
         </div>
-  
-        <svg class="min-w-fit cursor-pointer" (click)="showEditTeamModal(team)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+
+        <svg class="min-w-fit cursor-pointer" (click)="showEditReasonModal(reason)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
         </svg>
 
-        <svg class="min-w-fit cursor-pointer" (click)="showConfirmDeleteModal(team)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <svg class="min-w-fit cursor-pointer" (click)="showConfirmDeleteModal(reason)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/>
         </svg>
       </div>
     }
+
+    <p class="text-xs pt-2">* Requiere una descripción adicional</p>
   </section>
 </div>
 
@@ -39,12 +41,19 @@
   >
     <div class="flex flex-col gap-8 justify-center items-center">
       <h3 class="font-semibold text-xl">{{modalTitle()}}</h3>
-    
-      <div class="flex gap-4 items-center">
-        <label for="add-team" class="w-24 text-start">Equipo</label>
-        <input id="add-team" type="text" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="teamName()" (ngModelChange)="teamName.set($event)">
+
+      <div class="flex flex-col gap-4">
+        <div class="flex gap-4 items-center">
+          <label for="add-reason" class="w-24 text-start">Motivo</label>
+          <input id="add-reason" type="text" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="reasonName()" (ngModelChange)="reasonName.set($event)">
+        </div>
+
+        <div class="w-full flex gap-4 justify-between items-center">
+          <span class="text-start">Requiere una descripción adicional</span>
+          <app-switch [value]="reasonRequiresDescription()" (valueChange)="reasonRequiresDescription.set($event)" />
+        </div>
       </div>
-    
+
       <div class="flex gap-4">
         <app-button
           [text]="'Cancelar'"
@@ -57,13 +66,13 @@
           <app-button
             [text]="'Crear'"
             [width]="'sm'"
-            (click)="addTeam()"
+            (click)="addReason()"
           />
         } @else if (modalType() === 'edit') {
           <app-button
             [text]="'Modificar'"
             [width]="'sm'"
-            (click)="editTeam()"
+            (click)="editReason()"
           />
         }
       </div>
@@ -72,9 +81,9 @@
 }
 
 @if (openDeleteModal()) {
-  <app-confirm-modal 
+  <app-confirm-modal
     [text]="deleteModalText()"
-    [title]="'Eliminar Equipo'"
+    [title]="'Eliminar Motivo'"
     [buttonColor]="'red'"
     (selectedOption)="confirmOptionSelected($event)"
     (closedModal)="openDeleteModal.set(false)"
