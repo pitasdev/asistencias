@@ -43,11 +43,11 @@ export class UserTeamsManager {
     const response = await firstValueFrom(
       this.userTeamsApiClient.updateUserTeams(userTeams)
         .pipe(
-          catchError(() =>  of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }
@@ -61,7 +61,7 @@ export class UserTeamsManager {
     this._userTeams.set(updateUserTeams);
   }
 
-  deletePlayer(userId: number): void {
+  deleteUserTeams(userId: number): void {
     const updateUser = this._userTeams().filter(ut => ut.user.id !== userId);
     this._userTeams.set(updateUser);
     this.infoModalManager.success('Usuario eliminado correctamente');

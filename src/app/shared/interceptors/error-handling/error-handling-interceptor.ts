@@ -10,7 +10,7 @@ export const errorHandlingInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((httpError: HttpErrorResponse) => {
       const customHttpError: CustomHttpResponse = httpError.error;
-      infoModalManager.error(customHttpError.error ?? 'Error de comunicación con el servidor');
+      infoModalManager.error(customHttpError.error ?? 'Error interno del servidor');
       return throwError(() => httpError);
     })
   );

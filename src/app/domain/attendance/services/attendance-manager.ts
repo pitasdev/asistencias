@@ -157,9 +157,13 @@ export class AttendanceManager {
       }
 
       if (this._addAdicionalAttendances.length > 0) {
-        const response = await firstValueFrom(this.attendanceApiClient.createAttendances(this._addAdicionalAttendances));
-        if (response.error) {
-          this.infoModalManager.error('Error al guardar las asistencias de los jugadores adicionales');
+        const response = await firstValueFrom(
+          this.attendanceApiClient.createAttendances(this._addAdicionalAttendances)
+            .pipe(
+              catchError(() => of(null))
+            )
+        );
+        if (response && response.error) {
           return;
         } else {
           this._addAdicionalAttendances = [];
@@ -168,30 +172,44 @@ export class AttendanceManager {
 
       if (this._deleteAdicionalAttendances.length > 0) {
         const attendancesIds = this._deleteAdicionalAttendances.map(a => a.id!);
-        const response = await firstValueFrom(this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds));
-        if (response.error) {
-          this.infoModalManager.error('Error al eliminar las asistencias de los jugadores adicionales eliminados');
+        const response = await firstValueFrom(
+          this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds)
+            .pipe(
+              catchError(() => of(null))
+            )
+        );
+        if (response && response.error) {
           return;
         } else {
           this._deleteAdicionalAttendances = [];
         }
       }
       
-      const updateResponse = await firstValueFrom(this.attendanceApiClient.updateAttendances(attendancesForUpdate));
-      if (updateResponse.message) {
-        this.infoModalManager.success('Las asistencias se actualizaron correctamente');
+      const updateResponse = await firstValueFrom(
+        this.attendanceApiClient.updateAttendances(attendancesForUpdate)
+          .pipe(
+            catchError(() => of(null))
+          )
+      );
+      if (updateResponse && updateResponse.message) {
+        this.infoModalManager.success(updateResponse.message);
       } else {
-        this.infoModalManager.error('Error al actualizar las asistencias');
+        return;
       }
     } else {
-      const createResponse = await firstValueFrom(this.attendanceApiClient.createAttendances(this._attendances()));
-      if (createResponse.message) {
-        this.infoModalManager.success('Las asistencias se guardaron correctamente');
+      const createResponse = await firstValueFrom(
+        this.attendanceApiClient.createAttendances(this._attendances())
+          .pipe(
+            catchError(() => of(null))
+          )
+      );
+      if (createResponse && createResponse.message) {
+        this.infoModalManager.success(createResponse.message);
       } else {
-        this.infoModalManager.error('Error al guardar las asistencias');
+        return;
       }
     }
-
+    
     const teamId = this._attendances()[0]?.teamId!;
     const filters: AttendanceQueryFilters = {
       selectedDate: this._attendances()[0]?.date
@@ -205,11 +223,14 @@ export class AttendanceManager {
       attendancesIds.push(a.id!);
     });
 
-    const response = await firstValueFrom(this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds));
-    if (response.message) {
-      this.infoModalManager.success('Las asistencias se eliminaron correctamente');
-    } else {
-      this.infoModalManager.error('Error al eliminar las asistencias');
+    const response = await firstValueFrom(
+      this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds)
+        .pipe(
+          catchError(() => of(null))
+        )
+    );
+    if (response && response.message) {
+      this.infoModalManager.success(response.message);
     }
   }
 

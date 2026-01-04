@@ -30,11 +30,11 @@ export class PlayerTeamsManager {
     const response = await firstValueFrom(
       this.playerTeamsApiClient.updatePlayerTeams(playerTeams)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }

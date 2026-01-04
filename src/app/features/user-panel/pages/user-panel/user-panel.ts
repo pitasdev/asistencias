@@ -43,7 +43,7 @@ export default class UserPanel implements OnInit {
 
   protected async saveNewName(): Promise<void> {
     const response = await this.userManager.updateName(this.userManager.activeUser()!.id!, this.name());
-    if (response.message) {
+    if (response) {
       this.editName.set(false);
     }
   }
@@ -123,7 +123,7 @@ export default class UserPanel implements OnInit {
       this.newPassword()
     );
 
-    if (response.isSuccess) {
+    if (response) {
       this.actualPassword.set('');
       this.newPassword.set('');
       this.confirmPassword.set('');

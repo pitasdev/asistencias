@@ -61,11 +61,11 @@ export class UserManager {
     const createUser = await firstValueFrom(
       this.userApiClient.createUser(user)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (createUser.isSuccess) {
+    if (createUser && createUser.isSuccess) {
       this.infoModalManager.notifySuccess(createUser.message!);
     }
   }
@@ -74,11 +74,11 @@ export class UserManager {
     const updateUser = await firstValueFrom(
       this.userApiClient.updateUser(user)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (updateUser.isSuccess) {
+    if (updateUser && updateUser.isSuccess) {
       this.infoModalManager.notifySuccess(updateUser.message!);
     }
   }
@@ -98,59 +98,61 @@ export class UserManager {
     const changePasswordUser = await firstValueFrom(
       this.userApiClient.resetPassword(resetPassword)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (changePasswordUser.isSuccess) {
+    if (changePasswordUser && changePasswordUser.isSuccess) {
       this.infoModalManager.notifySuccess(changePasswordUser.message!);
     }
   }
 
-  async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<CustomHttpResponse> {
+  async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<boolean> {
     const updatePassword = await firstValueFrom(
       this.userApiClient.updatePassword(id, oldPassword, newPassword, false)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (updatePassword.isSuccess) {
+    if (updatePassword && updatePassword.isSuccess) {
       this._activeUser.set({ 
         ...this._activeUser()!, 
         hasDefaultPassword: false 
       });
       this.infoModalManager.notifySuccess(updatePassword.message!);
-    }
+      return true;
+    } 
 
-    return updatePassword;
+    return false;
   }
 
-  async updateName(id: number, name: string): Promise<CustomHttpResponse> {
+  async updateName(id: number, name: string): Promise<boolean> {
     const updateName = await firstValueFrom(
       this.userApiClient.updateName(id, name)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (updateName.isSuccess) {
+    if (updateName && updateName.isSuccess) {
       this._activeUser.set({ ...this._activeUser()!, name: name });
       this.infoModalManager.notifySuccess(updateName.message!);
+      return true;
     }
 
-    return updateName;
+    return false;
   }
 
   async deleteUser(userId: number): Promise<void> {
     const deleteUser = await firstValueFrom(
       this.userApiClient.deleteUser(userId)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (deleteUser.isSuccess) {
+    if (deleteUser && deleteUser.isSuccess) {
       this.infoModalManager.success(deleteUser.message!);
     }
   }

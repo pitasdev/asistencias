@@ -45,11 +45,11 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.createTeam(team)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }
@@ -58,11 +58,11 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.updateTeams(teams)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }
@@ -85,11 +85,11 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.deleteTeam(teamId)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (!response.isSuccess) return;
+    if (!response || !response.isSuccess) return;
 
     const updateTeams = this._allTeams().filter(t => t.id !== teamId);
     for (let i = 0; i < updateTeams.length; i++) {

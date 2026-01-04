@@ -73,11 +73,11 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.createPlayer(player)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }
@@ -86,11 +86,11 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.updatePlayer(player)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (response.isSuccess) {
+    if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
     }
   }
@@ -99,11 +99,11 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.deletePlayer(playerId)
         .pipe(
-          catchError(() => of({ isSuccess: false, message: '' }))
+          catchError(() => of(null))
         )
     );
 
-    if (!response.isSuccess) return;
+    if (!response || !response.isSuccess) return;
 
     const updatePlayers = this._players().filter(p => p.id !== playerId);
     this._allPlayers.set(updatePlayers);

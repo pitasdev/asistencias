@@ -171,7 +171,7 @@ export default class UsersManagement implements OnInit {
 
   protected async deleteUser(userId: number): Promise<void> {
     await this.userManager.deleteUser(userId);
-    this.userTeamsManager.deletePlayer(userId);
+    this.userTeamsManager.deleteUserTeams(userId);
     this.userTeams.set(this.userTeamsManager.userTeams());
   }
 
