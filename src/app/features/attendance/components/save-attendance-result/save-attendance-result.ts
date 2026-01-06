@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, output, sign
 import { Switch } from '@/app/shared/components/switch/switch';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { Player } from '@/app/shared/models/player.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-save-attendance-result',
-  imports: [Switch, FormsModule, CommonModule],
+  imports: [Switch, FormsModule, NgClass],
   templateUrl: './save-attendance-result.html',
   styleUrl: './save-attendance-result.css',
   changeDetection: ChangeDetectionStrategy.OnPush

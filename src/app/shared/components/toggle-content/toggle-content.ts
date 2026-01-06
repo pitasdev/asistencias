@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, ElementRef, input, model, signal, viewChild } from '@angular/core';
 
 type Style = 'default' | 'sideColors';
@@ -6,7 +6,7 @@ type Color = 'primary' | 'red';
 
 @Component({
   selector: 'app-toggle-content',
-  imports: [CommonModule],
+  imports: [NgClass],
   templateUrl: './toggle-content.html',
   styleUrl: './toggle-content.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

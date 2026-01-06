@@ -2,16 +2,16 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { Button } from "@/app/shared/components/button/button";
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { CommonModule } from '@angular/common';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-user-panel',
-  imports: [FormsModule, Button, CommonModule, ToggleContent],
+  imports: [FormsModule, Button, ToggleContent, NgClass],
   templateUrl: './user-panel.html',
   styleUrl: './user-panel.css',
   changeDetection: ChangeDetectionStrategy.OnPush

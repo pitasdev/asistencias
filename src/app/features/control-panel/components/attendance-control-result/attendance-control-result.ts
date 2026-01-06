@@ -3,12 +3,12 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { Attendance } from '@/app/shared/models/attendance.model';
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-attendance-control-result',
-  imports: [CommonModule],
+  imports: [NgClass],
   templateUrl: './attendance-control-result.html',
   styleUrl: './attendance-control-result.css',
   changeDetection: ChangeDetectionStrategy.OnPush
