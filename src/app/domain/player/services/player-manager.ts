@@ -73,7 +73,7 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.createPlayer(player)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -86,7 +86,7 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.updatePlayer(player)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -99,7 +99,7 @@ export class PlayerManager {
     const response = await firstValueFrom(
       this.playerApiClient.deletePlayer(playerId)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 

@@ -45,7 +45,7 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.createTeam(team)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -58,7 +58,7 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.updateTeams(teams)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -85,7 +85,7 @@ export class TeamManager {
     const response = await firstValueFrom(
       this.teamApiClient.deleteTeam(teamId)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 

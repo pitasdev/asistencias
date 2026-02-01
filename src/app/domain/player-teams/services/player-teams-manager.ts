@@ -30,7 +30,7 @@ export class PlayerTeamsManager {
     const response = await firstValueFrom(
       this.playerTeamsApiClient.updatePlayerTeams(playerTeams)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 

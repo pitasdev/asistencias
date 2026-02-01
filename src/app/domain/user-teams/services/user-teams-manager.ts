@@ -43,7 +43,7 @@ export class UserTeamsManager {
     const response = await firstValueFrom(
       this.userTeamsApiClient.updateUserTeams(userTeams)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 

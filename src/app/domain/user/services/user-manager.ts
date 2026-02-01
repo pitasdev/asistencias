@@ -1,6 +1,5 @@
 import { UserApiClient } from '@/app/core/api-clients/user/user-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
 import { ResetPassword } from '@/app/shared/models/reset-password.model';
 import { User } from '@/app/shared/models/user.model';
 import { inject, Injectable, signal } from '@angular/core';
@@ -61,7 +60,7 @@ export class UserManager {
     const createUser = await firstValueFrom(
       this.userApiClient.createUser(user)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -74,7 +73,7 @@ export class UserManager {
     const updateUser = await firstValueFrom(
       this.userApiClient.updateUser(user)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -98,7 +97,7 @@ export class UserManager {
     const changePasswordUser = await firstValueFrom(
       this.userApiClient.resetPassword(resetPassword)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -111,7 +110,7 @@ export class UserManager {
     const updatePassword = await firstValueFrom(
       this.userApiClient.updatePassword(id, oldPassword, newPassword, false)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -131,7 +130,7 @@ export class UserManager {
     const updateName = await firstValueFrom(
       this.userApiClient.updateName(id, name)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -148,7 +147,7 @@ export class UserManager {
     const deleteUser = await firstValueFrom(
       this.userApiClient.deleteUser(userId)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 

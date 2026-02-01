@@ -31,7 +31,7 @@ export class ReasonManager {
     const response = await firstValueFrom(
       this.reasonApiClient.createReason(reason)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -44,7 +44,7 @@ export class ReasonManager {
     const response = await firstValueFrom(
       this.reasonApiClient.updateReasons(reasons)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
@@ -57,7 +57,7 @@ export class ReasonManager {
     const response = await firstValueFrom(
       this.reasonApiClient.deleteReason(reasonId)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
 
