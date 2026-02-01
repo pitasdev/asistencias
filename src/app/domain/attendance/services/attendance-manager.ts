@@ -8,6 +8,7 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
+import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -158,9 +159,9 @@ export class AttendanceManager {
 
       if (this._addAdicionalAttendances.length > 0) {
         const response = await firstValueFrom(
-          this.attendanceApiClient.createAttendances(this._addAdicionalAttendances)
+          this.attendanceApiClient.createAdicionalAttendances(this._addAdicionalAttendances)
             .pipe(
-              catchError(() => of(null))
+              catchError((error) => of(error))
             )
         );
         if (response && response.error) {
@@ -175,7 +176,7 @@ export class AttendanceManager {
         const response = await firstValueFrom(
           this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds)
             .pipe(
-              catchError(() => of(null))
+              catchError((error) => of(error))
             )
         );
         if (response && response.error) {
@@ -188,7 +189,7 @@ export class AttendanceManager {
       const updateResponse = await firstValueFrom(
         this.attendanceApiClient.updateAttendances(attendancesForUpdate)
           .pipe(
-            catchError(() => of(null))
+            catchError((error) => of(error))
           )
       );
       if (updateResponse && updateResponse.message) {
@@ -200,7 +201,7 @@ export class AttendanceManager {
       const createResponse = await firstValueFrom(
         this.attendanceApiClient.createAttendances(this._attendances())
           .pipe(
-            catchError(() => of(null))
+            catchError((error) => of(error))
           )
       );
       if (createResponse && createResponse.message) {
@@ -226,7 +227,7 @@ export class AttendanceManager {
     const response = await firstValueFrom(
       this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds)
         .pipe(
-          catchError(() => of(null))
+          catchError((error) => of(error))
         )
     );
     if (response && response.message) {

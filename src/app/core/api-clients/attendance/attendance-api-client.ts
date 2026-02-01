@@ -49,6 +49,10 @@ export class AttendanceApiClient {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, attendances);
   }
 
+  createAdicionalAttendances(attendances: Attendance[]): Observable<CustomHttpResponse> {
+    return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance/adicional`, attendances);
+  }
+
   updateAttendances(attendances: Attendance []): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, attendances);
   }
