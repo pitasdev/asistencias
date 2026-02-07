@@ -3,7 +3,7 @@
   [ngClass]="{ 'border-l-primary-red border-r-primary-red': !attendance().hasAttended }"
 >
   <div class="min-h-8 flex gap-8 justify-between items-center">
-    <span class="font-semibold">{{attendance().date}}</span>
+    <span class="font-semibold">{{attendance().date | date: 'dd/MM/yyyy'}}</span>
     <span>{{attendanceTypeManager.findAttendanceTypeById(attendance().attendanceTypeId)?.name}}</span>
     <span>{{teamManager.findTeamById(attendance().teamId)?.name}}</span>
   </div>

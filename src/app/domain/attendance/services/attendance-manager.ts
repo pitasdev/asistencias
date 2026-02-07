@@ -8,7 +8,6 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -65,8 +64,13 @@ export class AttendanceManager {
     }
 
     attendances.sort((a, b) => {
-      if (a.hasAttended && !b.hasAttended) return -1;
-      if (!a.hasAttended && b.hasAttended) return 1;
+      const [dayA, monthA, yearA] = a.date.split('-');
+      const [dayB, monthB, yearB] = b.date.split('-');
+      const dateA = new Date(+yearA, +monthA - 1, +dayA).getTime();
+      const dateB = new Date(+yearB, +monthB - 1, +dayB).getTime();
+
+      if (dateA !== dateB) return dateB - dateA;
+      if (a.hasAttended !== b.hasAttended) return a.hasAttended ? -1 : 1;
       return 0;
     });
     
@@ -118,10 +122,7 @@ export class AttendanceManager {
         if (teamA.order > teamB.order) return 1;
         if (teamA.order < teamB.order) return -1;
       }
-
-      if (a.hasAttended && !b.hasAttended) return -1;
-      if (!a.hasAttended && b.hasAttended) return 1;
-
+      if (a.hasAttended !== b.hasAttended) return a.hasAttended ? -1 : 1;
       return 0;
     });
     
