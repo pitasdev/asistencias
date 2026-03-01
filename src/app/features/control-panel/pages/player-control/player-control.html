@@ -11,7 +11,7 @@
   />
 
   @if (attendanceManager.attendances().length > 0 && selectedTeam() !== null && selectedPlayer() !== null) {
-    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
       @for (attendance of attendanceManager.attendances(); track attendance.id) {
         <app-attendance-player-control-result
           [attendance]="attendance"

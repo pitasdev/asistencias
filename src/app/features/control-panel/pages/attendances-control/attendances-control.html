@@ -20,7 +20,7 @@
   }
 
   @if (attendanceManager.attendances().length > 0) {
-    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
       @for (attendance of attendanceManager.attendances(); track attendance.id) {
         <app-attendance-control-result 
           [attendance]="attendance"

@@ -8,7 +8,7 @@
     (buttonClick)="showAddTeamModal()"
   />
 
-  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
     @for (team of teams(); track team.id) {
       <div class="flex gap-4 items-center">
         <div class="w-[calc(100%-(24px*2)-(16px*2))] flex gap-4 justify-between items-center p-2 border rounded-sm border-grey border-l-4 border-l-primary border-r-4 border-r-primary">

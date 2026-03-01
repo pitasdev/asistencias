@@ -10,7 +10,7 @@
 />
 
 @if (attendanceManager.attendances().length > 0 && selectedTeam() !== null) {
-  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-[0px_2px_4px_grey]">
+  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
     @if (attendanceManager.attendances()[0].id !== null) {
       <p class="text-xs text-center mb-2"><em>Estás editando una asistencia</em></p>
     }
