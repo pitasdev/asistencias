@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, model, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { Team } from '@/app/shared/models/team.model';
 import { FormsModule } from '@angular/forms';
 import { Player } from '@/app/shared/models/player.model';

@@ -23,6 +23,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user-panel/pages/user-panel/user-panel')
       },
       {
+        path: 'estadisticas',
+        title: 'Estadísticas',
+        loadComponent: () => import('./features/statistics/pages/statistics/statistics')
+      },
+      {
         path: 'panel-de-control',
         canActivateChild: [checkIsAdminGuard, checkDefaultPasswordChildGuard],
         children: [

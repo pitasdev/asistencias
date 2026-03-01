@@ -120,6 +120,7 @@ export class PlayerManager {
   }
 
   addAdicionalPlayerToPlayers(player: Player): void {
+    if (this._players().some(p => p.id === player.id)) return;
     this._players.update(players => [...players, player]);
   }
 }

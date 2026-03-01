@@ -50,16 +50,18 @@ export class AttendanceManager {
         playersTeamIds.push(teamId);
       }
 
-      if (a.isAdicional) {
+      if (a.isAdicional && !adicionalPlayersId.includes(a.playerId)) {
         adicionalPlayersId.push(a.playerId);
       }
     });
     
     await this.playerManager.getPlayersByTeamIds(playersTeamIds);
     for (const playerId of adicionalPlayersId) {
-      const player = await this.playerManager.getPlayerById(playerId);
-      if (player) {
-        this.playerManager.addAdicionalPlayerToPlayers(player);
+      if (!this.playerManager.players().some(p => p.id === playerId)) {
+        const player = await this.playerManager.getPlayerById(playerId);
+        if (player) {
+          this.playerManager.addAdicionalPlayerToPlayers(player);
+        }
       }
     }
 
