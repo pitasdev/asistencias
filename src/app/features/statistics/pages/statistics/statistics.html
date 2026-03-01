@@ -1,73 +1,74 @@
 <div class="flex flex-col gap-4 pb-20">
   <h1 class="font-bold text-2xl text-center">Estadísticas</h1>
 
-  <app-statistics-filter [teams]="teamManager.userTeams()" [selectedTeam]="selectedTeam()"
-    [players]="playerManager.players()" [selectedPlayer]="selectedPlayer()" (teamChange)="onTeamChange($event)"
-    (playerChange)="onPlayerChange($event)" />
+  <app-statistics-filter 
+    [teams]="teamManager.userTeams()" 
+    [selectedTeam]="selectedTeam()"
+    [players]="playerManager.players()" 
+    [selectedPlayer]="selectedPlayer()" 
+    (teamChange)="onTeamChange($event)"
+    (playerChange)="onPlayerChange($event)" 
+  />
 
   @if (selectedTeam()) {
-  <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
-    <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
-      {{selectedTeam()?.name}}
-    </h2>
+    <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
+      <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
+        {{selectedTeam()?.name}}
+      </h2>
 
-    <div class="flex gap-8 justify-center items-center">
-      @for (statistic of statisticsManager.teamAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track
-      statistic.key.id) {
-      <div class="min-w-32 flex flex-col items-center gap-3">
-        <div class="progress-circle" [style.--percentage]="statistic.value"
-          [style.--progress-color]="getProgressColor(statistic.value)">
-          <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
-        </div>
-        <span
-          class="text-xs font-semibold text-dark-grey text-center uppercase tracking-wider">{{statistic.key.name}}</span>
-      </div>
-      }
-    </div>
-  </div>
-
-  @if (selectedPlayer()) {
-  <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
-    <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
-      {{selectedPlayer()?.name}} {{selectedPlayer()?.lastName}}
-    </h2>
-
-    <div class="flex flex-col gap-6">
-      @for (statistic of statisticsManager.playerAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track
-      statistic.key.id) {
       <div class="flex gap-8 justify-center items-center">
-        <div class="min-w-32 flex flex-col items-center gap-3">
-          <div class="progress-circle" [style.--percentage]="statistic.value"
-            [style.--progress-color]="getProgressColor(statistic.value)">
-            <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
+        @for (statistic of statisticsManager.teamAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
+          <div class="min-w-32 flex flex-col items-center gap-3">
+            <div class="progress-circle" [style.--percentage]="statistic.value" [style.--progress-color]="getProgressColor(statistic.value)">
+              <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
+            </div>
+            <span class="text-[14px] font-semibold text-dark-grey text-center uppercase">
+              {{statistic.key.name}}
+            </span>
           </div>
-          <span
-            class="text-xs font-semibold text-dark-grey text-center uppercase tracking-wider">{{statistic.key.name}}</span>
-        </div>
+        }
+      </div>
+    </div>
 
-        <div class="flex flex-col items-center justify-center p-3 bg-light-grey rounded-lg">
-          <span class="min-h-8 flex justify-center items-center text-xl font-bold text-primary">
-            {{calculateHasAttended(statisticsManager.playerAttendaceStats().get(statistic.key) || [])}}
-          </span>
-          <span
-            class="min-h-8 flex justify-center items-center text-[10px] uppercase text-dark-grey text-center font-bold tracking-wide">
-            Asistencias
-          </span>
-        </div>
+    @if (selectedPlayer()) {
+      <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
+        <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
+          {{selectedPlayer()?.name}} {{selectedPlayer()?.lastName}}
+        </h2>
 
-        <div class="flex flex-col items-center justify-center p-3 bg-light-grey rounded-lg">
-          <span class="min-h-8 flex justify-center items-center text-xl font-bold text-amber-600">
-            {{statisticsManager.playerAttendaceStats().get(statistic.key)?.length ?? 0}}
-          </span>
-          <span
-            class="min-h-8 flex justify-center items-center text-[10px] uppercase text-dark-grey text-center font-bold tracking-wide">
-            Total {{statistic.key.name}}s
-          </span>
+        <div class="flex flex-col gap-6">
+          @for (statistic of statisticsManager.playerAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
+          <div class="flex gap-8 justify-center items-center">
+            <div class="min-w-32 flex flex-col items-center gap-3">
+              <div class="progress-circle" [style.--percentage]="statistic.value" [style.--progress-color]="getProgressColor(statistic.value)">
+                <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
+              </div>
+              <span class="text-[14px] font-semibold text-dark-grey text-center uppercase">
+                {{statistic.key.name}}
+              </span>
+            </div>
+
+            <div class="flex flex-col items-center justify-center bg-light-grey rounded-lg">
+              <span class="min-h-8 flex justify-center items-center text-xl font-bold text-primary">
+                {{calculateHasAttended(statisticsManager.playerAttendanceStats().get(statistic.key) || [])}}
+              </span>
+              <span class="min-h-8 flex justify-center items-center text-xs uppercase text-dark-grey text-center font-semibold">
+                Asistencias
+              </span>
+            </div>
+
+            <div class="flex flex-col items-center justify-center bg-light-grey rounded-lg">
+              <span class="min-h-8 flex justify-center items-center text-xl font-bold text-amber-600">
+                {{statisticsManager.playerAttendanceStats().get(statistic.key)?.length ?? 0}}
+              </span>
+              <span class="min-h-8 flex justify-center items-center text-xs uppercase text-dark-grey text-center font-semibold">
+                Total {{statistic.key.name}}s
+              </span>
+            </div>
+          </div>
+          }
         </div>
       </div>
-      }
-    </div>
-  </div>
-  }
+    }
   }
 </div>

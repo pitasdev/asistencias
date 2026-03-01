@@ -11,7 +11,7 @@ import { AttendanceTypeManager } from '../../attendance-type/services/attendance
 export class StatisticsManager {
   teamAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
-  playerAttendaceStats = signal<Map<AttendanceType, Attendance[]>>(new Map());
+  playerAttendanceStats = signal<Map<AttendanceType, Attendance[]>>(new Map());
 
   private attendanceQueryFilter: AttendanceQueryFilters = {
     startDate: '',
@@ -51,7 +51,7 @@ export class StatisticsManager {
     const { averagesByType, attendancesByType } = this.calculateStats(attendances);
     
     this.playerAttendanceAverage.set(averagesByType);
-    this.playerAttendaceStats.set(attendancesByType);
+    this.playerAttendanceStats.set(attendancesByType);
   }
 
   private calculateStats(attendances: Attendance[]): { 
