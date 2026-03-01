@@ -25,7 +25,8 @@ export const routes: Routes = [
       {
         path: 'estadisticas',
         title: 'Estadísticas',
-        loadComponent: () => import('./features/statistics/pages/statistics/statistics')
+        loadComponent: () => import('./features/statistics/pages/statistics/statistics'),
+        canActivate: [checkDefaultPasswordGuard]
       },
       {
         path: 'panel-de-control',

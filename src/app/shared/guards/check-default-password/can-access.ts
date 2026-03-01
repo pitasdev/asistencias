@@ -10,7 +10,9 @@ export async function canAccess(): Promise<boolean | UrlTree> {
   
   if (userManager.activeUser()?.hasDefaultPassword) {
     infoModalManager.info('Debe de cambiar la contraseña para poder continuar');
-    return router.createUrlTree(['/panel-de-usuario']);
+    return router.createUrlTree(['/panel-de-usuario'], {
+      queryParams: { requiredPasswordChange: true }
+    });
   }
   
   return true;

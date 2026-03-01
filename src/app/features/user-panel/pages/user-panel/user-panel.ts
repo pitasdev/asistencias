@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Button } from "@/app/shared/components/button/button";
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
@@ -25,15 +26,21 @@ export default class UserPanel implements OnInit {
   protected validActualPassword = signal<boolean>(true);
   protected validNewPassword = signal<boolean>(true);
   protected validConfirmPassword = signal<boolean>(true);
+  protected requiredPasswordChange = signal<boolean>(false);
 
   protected readonly userManager = inject(UserManager);
   protected readonly userTeamsManager = inject(UserTeamsManager);
   protected readonly roleManager = inject(RoleManager);
   private readonly authManager = inject(AuthManager);
   private readonly infoModalManager = inject(InfoModalManager);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     this.name.set(this.userManager.activeUser()?.name!);
+    
+    if (this.activatedRoute.snapshot.queryParamMap.get('requiredPasswordChange') === 'true') {
+      this.requiredPasswordChange.set(true);
+    }
   }
 
   protected getTeamsString(): string {
