@@ -13,10 +13,11 @@ import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
+import { Modal } from '@/app/shared/components/modal/modal';
 
 @Component({
   selector: 'app-attendances',
-  imports: [AttendancesFilter, SaveAttendanceResult, Button, FormsModule],
+  imports: [AttendancesFilter, SaveAttendanceResult, Button, FormsModule, Modal],
   templateUrl: './attendances.html',
   styleUrl: './attendances.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +33,10 @@ export default class Attendances implements OnInit {
   protected disabledButton = signal<boolean>(false);
   protected addAdicionalPlayer = signal<boolean>(false);
   protected adicionalTeam = signal<Team | null>(null);
+
+  protected showAdicionalPlayersModal = signal<boolean>(false);
+  protected closeModalAdicionalPlayers = signal<boolean>(false);
+  protected selectedAdicionalPlayerIds = signal<number[]>([]);
   
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly teamManager = inject(TeamManager);
@@ -157,29 +162,64 @@ export default class Attendances implements OnInit {
     this.adicionalTeam.set(team);
     if (team === null) {
       this.addAdicionalPlayer.set(false);
+      this.showAdicionalPlayersModal.set(false);
       return;
     };
 
     this.playerManager.getAdicionalPlayersByTeamId(team.id!);
+    this.selectedAdicionalPlayerIds.set([]);
+    this.showAdicionalPlayersModal.set(true);
+    this.closeModalAdicionalPlayers.set(false);
   }
 
-  protected adicionalPlayerSelected(event: Event): void {
-    const playerId = Number((event.target as HTMLSelectElement).value);
-    if (!playerId) return;
+  protected hasPlayerAttendance(playerId: number): boolean {
+    return this.attendanceManager.attendances().some(a => a.playerId === playerId);
+  }
 
-    if (this.attendanceManager.attendances().some(a => a.playerId === playerId)) {
-      this.infoModalManager.warning('Ya existe una asistencia para este jugador');
+  protected toggleAdicionalPlayer(playerId: number): void {
+    const currentIds = this.selectedAdicionalPlayerIds();
+    if (currentIds.includes(playerId)) {
+      this.selectedAdicionalPlayerIds.set(currentIds.filter(id => id !== playerId));
+    } else {
+      this.selectedAdicionalPlayerIds.set([...currentIds, playerId]);
+    }
+  }
+
+  protected confirmAdicionalPlayers(): void {
+    if (this.selectedAdicionalPlayerIds().length === 0) {
+      this.closeModalAdicionalPlayers.set(true);
+      this.addAdicionalPlayer.set(false);
+      this.adicionalTeam.set(null);
       return;
     }
+
+    for (const playerId of this.selectedAdicionalPlayerIds()) {
+      if (this.hasPlayerAttendance(playerId)) {
+        continue;
+      }
+      
+      const player = this.playerManager.findAdicionalPlayerById(playerId)!;
+      this.attendanceManager.addAdicionalPlayerToAttendances(
+        player, 
+        this.selectedDate(), 
+        this.selectedAttendanceType().id!,
+        this.selectedTeam()?.id!
+      );
+    }
     
-    const player = this.playerManager.findAdicionalPlayerById(playerId)!;
-    this.attendanceManager.addAdicionalPlayerToAttendances(
-      player, 
-      this.selectedDate(), 
-      this.selectedAttendanceType().id!,
-      this.selectedTeam()?.id!
-    );
-    
+    this.closeModalAdicionalPlayers.set(true);
+    this.addAdicionalPlayer.set(false);
+    this.adicionalTeam.set(null);
+  }
+
+  protected cancelAdicionalPlayers(): void {
+    this.closeModalAdicionalPlayers.set(true);
+    this.addAdicionalPlayer.set(false);
+    this.adicionalTeam.set(null);
+  }
+
+  protected onAdicionalPlayersModalClosed(): void {
+    this.showAdicionalPlayersModal.set(false);
     this.addAdicionalPlayer.set(false);
     this.adicionalTeam.set(null);
   }
