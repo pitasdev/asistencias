@@ -1,5 +1,6 @@
 <button 
-  class="font-semibold h-12 rounded-lg text-white cursor-pointer"
+  class="font-semibold h-12 rounded-lg text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+  [disabled]="disabled()"
   [class.width-full]="width() === 'full'"
   [class.width-lg]="width() === 'lg'"
   [class.width-md]="width() === 'md'"

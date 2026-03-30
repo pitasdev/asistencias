@@ -14,4 +14,5 @@ export class Button {
   text = input.required<string>();
   width = input<ButtonWidth>('md');
   color = input<ButtonColor>('primary');
+  disabled = input<boolean>(false);
 }
