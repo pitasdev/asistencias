@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { AttendancesFilter } from '@/app/features/attendance/components/filter-attendances/attendances-filter';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
@@ -27,7 +27,7 @@ import { Modal } from '@/app/shared/components/modal/modal';
 })
 export default class Attendances implements OnInit {
   protected selectedTeam = signal<Team | null>(null);
-  protected selectedDate = signal<string>('');
+  protected selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
   protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, clubId: 0 });
 
   protected disabledButton = signal<boolean>(false);
@@ -37,6 +37,8 @@ export default class Attendances implements OnInit {
   protected showAdicionalPlayersModal = signal<boolean>(false);
   protected closeModalAdicionalPlayers = signal<boolean>(false);
   protected selectedAdicionalPlayerIds = signal<number[]>([]);
+
+  protected attendancePlayerIdsSet = computed(() => new Set(this.attendanceManager.attendances().map(a => a.playerId)));
   
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly teamManager = inject(TeamManager);
@@ -56,7 +58,9 @@ export default class Attendances implements OnInit {
       if (attendanceType === null) return;
       this.selectedAttendanceType.set(attendanceType);
     } else {
-      if (new Date(this.selectedDate()).getDay() === 6 || new Date(this.selectedDate()).getDay() === 0) {
+      const dateParts = this.selectedDate().split('-');
+      const date = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
+      if (date.getDay() === 6 || date.getDay() === 0) {
         this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[1]);
       } else {
         this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[0]);
@@ -161,7 +165,7 @@ export default class Attendances implements OnInit {
     const team = this.teamManager.findTeamById(Number(event));
     this.adicionalTeam.set(team);
     if (team === null) {
-      this.addAdicionalPlayer.set(false);
+      this.closeAdicionalModal();
       this.showAdicionalPlayersModal.set(false);
       return;
     };
@@ -170,10 +174,6 @@ export default class Attendances implements OnInit {
     this.selectedAdicionalPlayerIds.set([]);
     this.showAdicionalPlayersModal.set(true);
     this.closeModalAdicionalPlayers.set(false);
-  }
-
-  protected hasPlayerAttendance(playerId: number): boolean {
-    return this.attendanceManager.attendances().some(a => a.playerId === playerId);
   }
 
   protected toggleAdicionalPlayer(playerId: number): void {
@@ -187,14 +187,12 @@ export default class Attendances implements OnInit {
 
   protected confirmAdicionalPlayers(): void {
     if (this.selectedAdicionalPlayerIds().length === 0) {
-      this.closeModalAdicionalPlayers.set(true);
-      this.addAdicionalPlayer.set(false);
-      this.adicionalTeam.set(null);
+      this.closeAdicionalModal();
       return;
     }
 
     for (const playerId of this.selectedAdicionalPlayerIds()) {
-      if (this.hasPlayerAttendance(playerId)) {
+      if (this.attendancePlayerIdsSet().has(playerId)) {
         continue;
       }
       
@@ -207,24 +205,28 @@ export default class Attendances implements OnInit {
       );
     }
     
-    this.closeModalAdicionalPlayers.set(true);
-    this.addAdicionalPlayer.set(false);
-    this.adicionalTeam.set(null);
+    this.closeAdicionalModal();
   }
 
   protected cancelAdicionalPlayers(): void {
-    this.closeModalAdicionalPlayers.set(true);
-    this.addAdicionalPlayer.set(false);
-    this.adicionalTeam.set(null);
+    this.closeAdicionalModal();
   }
 
   protected onAdicionalPlayersModalClosed(): void {
     this.showAdicionalPlayersModal.set(false);
     this.addAdicionalPlayer.set(false);
     this.adicionalTeam.set(null);
+    this.selectedAdicionalPlayerIds.set([]);
   }
 
   protected deleteAdicionalPlayer(attendance: Attendance): void {
     this.attendanceManager.deleteAdicionalPlayer(attendance);
+  }
+
+  private closeAdicionalModal(): void {
+    this.closeModalAdicionalPlayers.set(true);
+    this.addAdicionalPlayer.set(false);
+    this.adicionalTeam.set(null);
+    this.selectedAdicionalPlayerIds.set([]);
   }
 }

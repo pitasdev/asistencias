@@ -54,16 +54,16 @@
           <div class="flex flex-col gap-2 max-h-[50vh] overflow-y-auto py-1 w-full">
             @for (player of playerManager.adicionalPlayers(); track player.id) {
               <label class="flex items-center gap-3 p-2 border border-grey rounded cursor-pointer transition-colors"
-                [class.opacity-60]="hasPlayerAttendance(player.id!)">
+                [class.opacity-60]="attendancePlayerIdsSet().has(player.id!)">
                 <input type="checkbox" 
                        class="w-5 h-5 rounded border-grey text-blue-600 focus:ring-blue-500 disabled:opacity-50"
-                       [disabled]="hasPlayerAttendance(player.id!)"
-                       [checked]="hasPlayerAttendance(player.id!) || selectedAdicionalPlayerIds().includes(player.id!)"
+                       [disabled]="attendancePlayerIdsSet().has(player.id!)"
+                       [checked]="attendancePlayerIdsSet().has(player.id!) || selectedAdicionalPlayerIds().includes(player.id!)"
                        (change)="toggleAdicionalPlayer(player.id!)"
                 >
                 <span class="flex-1">
                   {{player.name}} {{player.lastName}}
-                  @if (hasPlayerAttendance(player.id!)) {
+                  @if (attendancePlayerIdsSet().has(player.id!)) {
                     <span class="text-xs ml-1">(Ya está añadido)</span>
                   }
                 </span>
