@@ -1,5 +1,6 @@
 import { ReasonApiClient } from '@/app/core/api-clients/reason/reason-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -53,9 +54,9 @@ export class ReasonManager {
     }
   }
 
-  async deleteReason(reasonId: number): Promise<void> {
+  async deleteReason(isActiveId: IsActiveId): Promise<void> {
     const response = await firstValueFrom(
-      this.reasonApiClient.deleteReason(reasonId)
+      this.reasonApiClient.deleteReason(isActiveId)
         .pipe(
           catchError((error) => of(error))
         )
@@ -63,7 +64,7 @@ export class ReasonManager {
 
     if (!response || !response.isSuccess) return;
 
-    const updateReasons = this._reasons().filter(t => t.id !== reasonId);
+    const updateReasons = this._reasons().filter(t => t.id !== isActiveId.id);
     for (let i = 0; i < updateReasons.length; i++) {
       if (updateReasons[i].order !== i + 1) updateReasons[i].order = i + 1;
     }

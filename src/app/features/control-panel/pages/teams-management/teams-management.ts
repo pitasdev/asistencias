@@ -7,6 +7,7 @@ import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-moda
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -81,11 +82,15 @@ export default class TeamsManagement implements OnInit {
   protected confirmOptionSelected(event: boolean): void {
     if (!event) return;
 
-    this.deleteTeam(this.selectedTeam()?.id!);
+    const isActiveId: IsActiveId = {
+      id: this.selectedTeam()?.id!,
+      isActive: false
+    };
+    this.deleteTeam(isActiveId);
   }
 
-  protected async deleteTeam(teamId: number): Promise<void> {
-    await this.teamManager.deleteTeam(teamId);
+  protected async deleteTeam(isActiveId: IsActiveId): Promise<void> {
+    await this.teamManager.deleteTeam(isActiveId);
     this.deleteModalText.set('');
     this.teams.set(this.teamManager.allTeams());
   }

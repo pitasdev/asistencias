@@ -1,5 +1,6 @@
 import { TeamApiClient } from '@/app/core/api-clients/team/team-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Team } from '@/app/shared/models/team.model';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -81,9 +82,9 @@ export class TeamManager {
     }
   }
 
-  async deleteTeam(teamId: number): Promise<void> {
+  async deleteTeam(isActiveId: IsActiveId): Promise<void> {
     const response = await firstValueFrom(
-      this.teamApiClient.deleteTeam(teamId)
+      this.teamApiClient.deleteTeam(isActiveId)
         .pipe(
           catchError((error) => of(error))
         )
@@ -91,7 +92,7 @@ export class TeamManager {
 
     if (!response || !response.isSuccess) return;
 
-    const updateTeams = this._allTeams().filter(t => t.id !== teamId);
+    const updateTeams = this._allTeams().filter(t => t.id !== isActiveId.id);
     for (let i = 0; i < updateTeams.length; i++) {
       if (updateTeams[i].order !== i + 1) updateTeams[i].order = i + 1;
     }

@@ -8,6 +8,7 @@ import { Modal } from "@/app/shared/components/modal/modal";
 import { Button } from "@/app/shared/components/button/button";
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
 import { Switch } from "@/app/shared/components/switch/switch";
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -86,11 +87,15 @@ export default class ReasonsManagement implements OnInit {
   protected confirmOptionSelected(event: boolean): void {
     if (!event) return;
 
-    this.deleteReason(this.selectedReason()?.id!);
+    const isActiveId: IsActiveId = {
+      id: this.selectedReason()?.id!,
+      isActive: false
+    };
+    this.deleteReason(isActiveId);
   }
 
-  protected async deleteReason(reasonId: number): Promise<void> {
-    await this.reasonManager.deleteReason(reasonId);
+  protected async deleteReason(isActiveId: IsActiveId): Promise<void> {
+    await this.reasonManager.deleteReason(isActiveId);
     this.deleteModalText.set('');
     this.reasons.set(this.reasonManager.reasons());
   }

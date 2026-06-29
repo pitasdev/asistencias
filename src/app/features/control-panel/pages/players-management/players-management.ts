@@ -11,6 +11,7 @@ import { UserManager } from '@/app/domain/user/services/user-manager';
 import { PlayerTeamsManager } from '@/app/domain/player-teams/services/player-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -151,12 +152,16 @@ export default class PlayersManagement implements OnInit {
   protected confirmOptionSelected(event: boolean): void {
     if (!event) return;
 
-    this.deletePlayer(this.selectedPlayer()?.id!);
+    const isActiveId: IsActiveId = {
+      id: this.selectedPlayer()?.id!,
+      isActive: false
+    };
+    this.deletePlayer(isActiveId);
   }
 
-  protected async deletePlayer(playerId: number): Promise<void> {
-    await this.playerManager.deletePlayer(playerId);
-    this.playerTeamsManager.deletePlayer(playerId);
+  private async deletePlayer(isActiveId: IsActiveId): Promise<void> {
+    await this.playerManager.deletePlayer(isActiveId);
+    this.playerTeamsManager.deletePlayer(isActiveId.id);
     this.selectedPlayer.set(null);
     this.playerTeams.set(this.playerTeamsManager.playerTeams());
   }

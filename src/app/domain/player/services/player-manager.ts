@@ -1,5 +1,6 @@
 import { PlayerApiClient } from '@/app/core/api-clients/player/player-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Player } from '@/app/shared/models/player.model';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -95,9 +96,9 @@ export class PlayerManager {
     }
   }
 
-  async deletePlayer(playerId: number): Promise<void> {
+  async deletePlayer(isActiveId: IsActiveId): Promise<void> {
     const response = await firstValueFrom(
-      this.playerApiClient.deletePlayer(playerId)
+      this.playerApiClient.deletePlayer(isActiveId)
         .pipe(
           catchError((error) => of(error))
         )
@@ -105,7 +106,7 @@ export class PlayerManager {
 
     if (!response || !response.isSuccess) return;
 
-    const updatePlayers = this._players().filter(p => p.id !== playerId);
+    const updatePlayers = this._players().filter(p => p.id !== isActiveId.id);
     this._allPlayers.set(updatePlayers);
 
     this.infoModalManager.success(response.message!);

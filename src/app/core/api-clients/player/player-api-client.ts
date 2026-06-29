@@ -1,4 +1,5 @@
 import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Player } from '@/app/shared/models/player.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -31,7 +32,7 @@ export class PlayerApiClient {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/player`, player);
   }
 
-  deletePlayer(playerId: number): Observable<CustomHttpResponse> {
-    return this.http.delete<CustomHttpResponse>(`${environment.baseUrlApi}/player/${playerId}`);
+  deletePlayer(isActiveId: IsActiveId): Observable<CustomHttpResponse> {
+    return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/player/is-active`, isActiveId);
   }
 }

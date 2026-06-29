@@ -1,4 +1,5 @@
 import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Team } from '@/app/shared/models/team.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -27,7 +28,7 @@ export class TeamApiClient {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/team`, teams);
   }
 
-  deleteTeam(teamId: number): Observable<CustomHttpResponse> {
-    return this.http.delete<CustomHttpResponse>(`${environment.baseUrlApi}/team/${teamId}`);
+  deleteTeam(isActiveId: IsActiveId): Observable<CustomHttpResponse> {
+    return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/team/is-active`, isActiveId);
   }
 }

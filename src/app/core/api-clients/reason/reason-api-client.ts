@@ -1,4 +1,5 @@
 import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +24,7 @@ export class ReasonApiClient {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/reason`, reasons);
   }
 
-  deleteReason(reasonId: number): Observable<CustomHttpResponse> {
-    return this.http.delete<CustomHttpResponse>(`${environment.baseUrlApi}/reason/${reasonId}`);
+  deleteReason(isActiveId: IsActiveId): Observable<CustomHttpResponse> {
+    return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/reason/is-active`, isActiveId);
   }
 }
