@@ -2,7 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { addTokenInterceptor } from './shared/interceptors/add-token/add-token-interceptor';
 import { errorHandlingInterceptor } from './shared/interceptors/error-handling/error-handling-interceptor';
 
@@ -11,6 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([addTokenInterceptor, errorHandlingInterceptor]))
+    provideHttpClient(withInterceptors([addTokenInterceptor, errorHandlingInterceptor]))
   ]
 };

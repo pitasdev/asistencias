@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { Modal } from "../modal/modal";
 import { Button, ButtonColor } from "../button/button";
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -7,8 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   selector: 'app-confirm-modal',
   imports: [Modal, Button],
   templateUrl: './confirm-modal.html',
-  styleUrl: './confirm-modal.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './confirm-modal.css'
 })
 export class ConfirmModal implements OnInit {
   text = input.required<string>();

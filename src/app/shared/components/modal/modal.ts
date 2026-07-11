@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, input, output, signal, viewChild, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, effect, ElementRef, input, output, signal, viewChild, OnInit, OnDestroy, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
@@ -6,7 +6,6 @@ import { DOCUMENT } from '@angular/common';
   imports: [],
   templateUrl: './modal.html',
   styleUrl: './modal.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:click)': 'checkClick($event)'
   }

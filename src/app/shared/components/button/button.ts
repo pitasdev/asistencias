@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 type ButtonWidth = 'full' | 'lg' | 'md' | 'sm' | 'xs';
 export type ButtonColor = 'primary' | 'red' | 'cancel';
@@ -7,8 +7,7 @@ export type ButtonColor = 'primary' | 'red' | 'cancel';
   selector: 'app-button',
   imports: [],
   templateUrl: './button.html',
-  styleUrl: './button.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './button.css'
 })
 export class Button {
   text = input.required<string>();

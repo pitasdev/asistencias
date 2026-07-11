@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { AttendancesControlFilter } from "@/app/features/control-panel/components/attendances-control-filter/attendances-control-filter";
 import { Team } from '@/app/shared/models/team.model';
 import { formatDateTimeToDate } from '@/app/shared/utils/formatDateTimeToDate';
@@ -16,8 +16,7 @@ import { SummaryOfDay } from "../../components/summary-of-day/summary-of-day";
   selector: 'app-attendances-control',
   imports: [AttendancesControlFilter, AttendanceControlResult, SummaryOfDay],
   templateUrl: './attendances-control.html',
-  styleUrl: './attendances-control.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './attendances-control.css'
 })
 export default class AttendancesControl implements OnInit {
   protected selectedTeam = signal<Team | null>(null);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { PlayerControlFilter } from "@/app/features/control-panel/components/player-control-filter/player-control-filter";
 import { Team } from '@/app/shared/models/team.model';
 import { Player } from '@/app/shared/models/player.model';
@@ -12,8 +12,7 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
   selector: 'app-player-control',
   imports: [PlayerControlFilter, AttendancePlayerControlResult],
   templateUrl: './player-control.html',
-  styleUrl: './player-control.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './player-control.css'
 })
 export default class PlayerControl implements OnInit {
   protected selectedTeam = signal<Team | null>(null);

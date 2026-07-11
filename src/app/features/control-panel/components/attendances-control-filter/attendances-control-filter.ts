@@ -1,5 +1,5 @@
 import { Team } from '@/app/shared/models/team.model';
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
@@ -8,8 +8,7 @@ import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-con
   selector: 'app-attendances-control-filter',
   imports: [FormsModule, SearchFiltersTitle, ToggleContent],
   templateUrl: './attendances-control-filter.html',
-  styleUrl: './attendances-control-filter.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './attendances-control-filter.css'
 })
 export class AttendancesControlFilter {
   teams = input.required<Team[]>();

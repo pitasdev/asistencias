@@ -1,7 +1,7 @@
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Team } from '@/app/shared/models/team.model';
 import { Player } from '@/app/shared/models/player.model';
@@ -15,8 +15,7 @@ import { AttendanceType } from '@/app/shared/models/attendance-type.model';
   selector: 'app-statistics',
   imports: [FormsModule, StatisticsFilter, KeyValuePipe],
   templateUrl: './statistics.html',
-  styleUrl: './statistics.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './statistics.css'
 })
 export default class Statistics implements OnInit {
   protected readonly teamManager = inject(TeamManager);

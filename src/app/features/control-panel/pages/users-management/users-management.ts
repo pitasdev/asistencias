@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
@@ -20,8 +20,7 @@ type ModalType = 'add' | 'edit' | 'resetPassword';
   selector: 'app-users-management',
   imports: [Button, Modal, FormsModule, ConfirmModal, FindFilter],
   templateUrl: './users-management.html',
-  styleUrl: './users-management.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './users-management.css'
 })
 export default class UsersManagement implements OnInit {
   protected userTeams = signal<UserTeams[]>([]);

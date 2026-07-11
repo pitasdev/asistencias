@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { Switch } from '@/app/shared/components/switch/switch';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { FormsModule } from '@angular/forms';
@@ -11,8 +11,7 @@ import { NgClass } from '@angular/common';
   selector: 'app-save-attendance-result',
   imports: [Switch, FormsModule, NgClass],
   templateUrl: './save-attendance-result.html',
-  styleUrl: './save-attendance-result.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './save-attendance-result.css'
 })
 export class SaveAttendanceResult {
   readonly attendance = input.required<Attendance>();

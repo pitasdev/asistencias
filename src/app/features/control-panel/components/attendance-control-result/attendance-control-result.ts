@@ -4,14 +4,13 @@ import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { DatePipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-attendance-control-result',
   imports: [NgClass, DatePipe],
   templateUrl: './attendance-control-result.html',
-  styleUrl: './attendance-control-result.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './attendance-control-result.css'
 })
 export class AttendanceControlResult {
   readonly attendance = input.required<Attendance>();

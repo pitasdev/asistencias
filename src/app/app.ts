@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject, OnInit, signal } from '@angular/core';
+import { Component, DOCUMENT, inject, OnInit, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/components/navbar/navbar';
 import { UserManager } from './domain/user/services/user-manager';
@@ -9,8 +9,7 @@ import { Meta } from '@angular/platform-browser';
   selector: 'app-root',
   imports: [RouterOutlet, Navbar, Loader],
   templateUrl: './app.html',
-  styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './app.css'
 })
 export class App implements OnInit {
   protected isLoading = signal(false);

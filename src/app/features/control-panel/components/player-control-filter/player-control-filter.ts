@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { Team } from '@/app/shared/models/team.model';
 import { FormsModule } from '@angular/forms';
 import { Player } from '@/app/shared/models/player.model';
@@ -9,8 +9,7 @@ import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title
   selector: 'app-player-control-filter',
   imports: [FormsModule, ToggleContent, SearchFiltersTitle],
   templateUrl: './player-control-filter.html',
-  styleUrl: './player-control-filter.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './player-control-filter.css'
 })
 export class PlayerControlFilter {
   teams = input.required<Team[]>();

@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'Inter';
-  src: url('public/fonts/Inter-VariableFont.woff2');
+  src: url('./fonts/Inter-VariableFont.woff2') format('woff2');
 }
 
 @theme {

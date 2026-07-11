@@ -1,4 +1,4 @@
-  import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FindFilter } from "../../components/find-filter/find-filter";
 import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
@@ -16,8 +16,7 @@ type ModalType = 'add' | 'edit';
   selector: 'app-reasons-management',
   imports: [FindFilter, FormsModule, Modal, Button, ConfirmModal, Switch],
   templateUrl: './reasons-management.html',
-  styleUrl: './reasons-management.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './reasons-management.css'
 })
 export default class ReasonsManagement implements OnInit {
   protected reasons = signal<Reason[]>([]);

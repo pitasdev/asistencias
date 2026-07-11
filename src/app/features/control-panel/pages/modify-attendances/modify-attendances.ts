@@ -1,5 +1,5 @@
 import { Team } from '@/app/shared/models/team.model';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button, ButtonColor } from "@/app/shared/components/button/button";
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
@@ -14,8 +14,7 @@ type ModalType = 'modify' | 'delete';
   selector: 'app-modify-attendances',
   imports: [FormsModule, Button, ConfirmModal],
   templateUrl: './modify-attendances.html',
-  styleUrl: './modify-attendances.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './modify-attendances.css'
 })
 export default class ModifyAttendances {
   protected selectedModifyTeam = signal<Team | null>(null);

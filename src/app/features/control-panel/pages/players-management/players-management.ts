@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
@@ -19,8 +19,7 @@ type ModalType = 'add' | 'edit';
   selector: 'app-players-management',
   imports: [Button, Modal, FormsModule, ConfirmModal, FindFilter],
   templateUrl: './players-management.html',
-  styleUrl: './players-management.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './players-management.css'
 })
 export default class PlayersManagement implements OnInit {
   protected playerTeams = signal<PlayerTeams[]>([]);

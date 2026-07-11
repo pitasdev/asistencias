@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Button } from "@/app/shared/components/button/button";
@@ -14,8 +14,7 @@ import { NgClass } from '@angular/common';
   selector: 'app-user-panel',
   imports: [FormsModule, Button, ToggleContent, NgClass],
   templateUrl: './user-panel.html',
-  styleUrl: './user-panel.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './user-panel.css'
 })
 export default class UserPanel implements OnInit {
   protected editName = signal<boolean>(false);

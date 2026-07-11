@@ -3,14 +3,13 @@ import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { DatePipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-attendance-player-control-result',
   imports: [NgClass, DatePipe],
   templateUrl: './attendance-player-control-result.html',
-  styleUrl: './attendance-player-control-result.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './attendance-player-control-result.css'
 })
 export class AttendancePlayerControlResult {
   attendance = input.required<Attendance>();

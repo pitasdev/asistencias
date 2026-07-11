@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button } from "@/app/shared/components/button/button";
 
@@ -6,8 +6,7 @@ import { Button } from "@/app/shared/components/button/button";
   selector: 'app-find-filter',
   imports: [FormsModule, Button],
   templateUrl: './find-filter.html',
-  styleUrl: './find-filter.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './find-filter.css'
 })
 export class FindFilter {
   searchPlaceholder = input.required<string>();

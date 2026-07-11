@@ -1,6 +1,6 @@
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
@@ -9,8 +9,7 @@ import { filter } from 'rxjs';
   selector: 'app-navbar',
   imports: [RouterLink],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './navbar.css'
 })
 export class Navbar implements OnInit {
   protected url = signal<string>('');

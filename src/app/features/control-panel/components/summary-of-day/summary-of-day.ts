@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, output, Signal, signal } from '@angular/core';
+import { Component, computed, effect, inject, output, Signal, signal } from '@angular/core';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
@@ -15,8 +15,7 @@ interface AttendanceSummary {
   selector: 'app-summary-of-day',
   imports: [ToggleContent],
   templateUrl: './summary-of-day.html',
-  styleUrl: './summary-of-day.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './summary-of-day.css'
 })
 export class SummaryOfDay {
   clickTeam = output<Team>();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { AttendancesFilter } from '@/app/features/attendance/components/filter-attendances/attendances-filter';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
@@ -20,7 +20,6 @@ import { Modal } from '@/app/shared/components/modal/modal';
   imports: [AttendancesFilter, SaveAttendanceResult, Button, FormsModule, Modal],
   templateUrl: './attendances.html',
   styleUrl: './attendances.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'flex flex-col gap-4'
   }

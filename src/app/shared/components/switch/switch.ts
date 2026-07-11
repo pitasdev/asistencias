@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-switch',
   imports: [],
   templateUrl: './switch.html',
-  styleUrl: './switch.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './switch.css'
 })
 export class Switch {
   readonly value = input.required<boolean>();

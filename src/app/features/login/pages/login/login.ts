@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button } from "@/app/shared/components/button/button";
 import { Router } from '@angular/router';
@@ -12,7 +12,6 @@ import { LowerCasePipe } from '@angular/common';
   imports: [FormsModule, Button, LowerCasePipe],
   templateUrl: './login.html',
   styleUrl: './login.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(keydown)': 'checkKey($event)'
   }
