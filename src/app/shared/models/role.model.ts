@@ -1,4 +1,4 @@
-interface Role {
+export interface Role {
   readonly id: number | null,
   name: string
 }

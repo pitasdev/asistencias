@@ -8,6 +8,7 @@ import { RoleManager } from '../../role/services/role-manager';
 interface TokenPayload {
   userId: number;
   roleId: number;
+  clubId: number;
   iat?: number;
   exp?: number;
 }

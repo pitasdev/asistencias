@@ -2,6 +2,7 @@ import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { inject } from '@angular/core';
 import { CanActivateChildFn, Router } from '@angular/router';
+import { Role } from '@/app/shared/models/role.model';
 
 let adminRole: Role | null = null;
 let superRole: Role | null = null;

@@ -1,4 +1,5 @@
 import { RoleApiClient } from '@/app/core/api-clients/role/role-api-client';
+import { Role } from '@/app/shared/models/role.model';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
