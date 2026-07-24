@@ -11,6 +11,12 @@ import { AuthManager } from '@/app/domain/auth/services/auth-manager';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { NgClass } from '@angular/common';
 
+interface PasswordForm {
+  actualPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 @Component({
   selector: 'app-user-panel',
   imports: [FormsModule, Button, ToggleContent, FormField, NgClass],
@@ -23,10 +29,10 @@ export default class UserPanel implements OnInit {
   protected requiredPasswordChange = signal<boolean>(false);
   protected validActualPassword = signal<boolean>(true);
 
-  protected passwordModel = signal({
+  protected passwordModel = signal<PasswordForm>({
     actualPassword: '',
     newPassword: '',
-    confirmPassword: '',
+    confirmPassword: ''
   });
 
   protected passwordForm = form(this.passwordModel, (schemaPath) => {
