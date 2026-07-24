@@ -24,13 +24,20 @@
         <span class="font-semibold text-[.875rem]">Usuario</span>
         <div class="w-full flex gap-4 justify-between items-center">
           @if (editName()) {
-            <input id="name" type="text" class="w-full h-10 p-2 border border-grey rounded-lg" [ngModel]="name()" (ngModelChange)="name.set($event)">
+            <input 
+              id="name" 
+              type="text" 
+              class="w-full h-10 p-2 border border-grey rounded-lg" 
+              [ngModel]="name()" 
+              (ngModelChange)="name.set($event)" 
+              (keydown.enter)="saveNewName()"
+            >
           } @else {
             <span>{{userManager.activeUser()?.name}}</span>
           }
   
-          <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-            ><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
+          <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
           </svg>
         </div>
   
@@ -71,13 +78,19 @@
       </div>
     </div>
 
-    <div class="flex flex-col gap-4">
+    <form (submit)="changePassword(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
       <div class="flex flex-col gap-1">
         <div class="flex gap-4 justify-between items-center">
           <label for="actual-password" class="font-semibold text-[.875rem]">Contraseña Actual</label>
 
           @if (!validActualPassword()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Contraseña incorrecta</span>
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
+              Contraseña incorrecta
+            </span>
+          } @else if (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid()) {
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
+              {{ passwordForm.actualPassword().errors()[0].message }}
+            </span>
           }
         </div>
 
@@ -85,9 +98,11 @@
           type="password" 
           id="actual-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg transition-all" 
-          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validActualPassword() }"
-          [ngModel]="actualPassword()" 
-          (ngModelChange)="actualPassword.set($event)"
+          [ngClass]="{ 
+            'border-primary-red outline-1 outline-primary-red': 
+            !validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid()) 
+          }"
+          [formField]="passwordForm.actualPassword"
           (blur)="checkActualPassword()"
         >
       </div>
@@ -96,8 +111,10 @@
         <div class="flex gap-4 justify-between items-center">
           <label for="new-password" class="font-semibold text-[.875rem]">Nueva Contraseña</label>
 
-          @if (!validNewPassword()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Debe contener mínimo 8 caracteres</span>
+          @if (passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()) {
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
+              {{ passwordForm.newPassword().errors()[0].message }}
+            </span>
           }
         </div>
 
@@ -105,11 +122,11 @@
           type="password" 
           id="new-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validNewPassword() }"
-          [ngModel]="newPassword()" 
-          (ngModelChange)="newPassword.set($event)"
-          (input)="checkNewPasswordLength()"
-          (blur)="checkNewPassword()"
+          [ngClass]="{ 
+            'border-primary-red outline-1 outline-primary-red': 
+            passwordForm.newPassword().touched() && passwordForm.newPassword().invalid() 
+          }"
+          [formField]="passwordForm.newPassword"
         >
       </div>
       
@@ -117,8 +134,10 @@
         <div class="flex gap-4 justify-between items-center">
           <label for="confirm-password" class="font-semibold text-[.875rem]">Confirmar Contraseña</label>
 
-          @if (!validConfirmPassword()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">Las contraseñas no coinciden</span>
+          @if (passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()) {
+            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
+              {{ passwordForm.confirmPassword().errors()[0].message }}
+            </span>
           }
         </div>
 
@@ -126,19 +145,20 @@
           type="password" 
           id="confirm-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 'border-primary-red outline-1 outline-primary-red': !validConfirmPassword() }"
-          [ngModel]="confirmPassword()" 
-          (ngModelChange)="confirmPassword.set($event)"
-          (input)="checkConfirmPassword()"
+          [ngClass]="{ 
+            'border-primary-red outline-1 outline-primary-red': 
+            passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()
+          }"
+          [formField]="passwordForm.confirmPassword"
         >
       </div>
 
       <app-button 
         [text]="'Cambiar Contraseña'"
         [width]="'full'"
-        (click)="changePassword()"
+        [type]="'submit'"
       />
-    </div>
+    </form>
   </app-toggle-content>
 
   <app-toggle-content
@@ -165,4 +185,3 @@
     />
   </app-toggle-content>
 </div>
-

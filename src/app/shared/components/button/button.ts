@@ -11,6 +11,7 @@ export type ButtonColor = 'primary' | 'red' | 'cancel';
 })
 export class Button {
   text = input.required<string>();
+  type = input<string>('button');
   width = input<ButtonWidth>('md');
   color = input<ButtonColor>('primary');
   disabled = input<boolean>(false);
