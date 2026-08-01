@@ -99,10 +99,9 @@
           type="password" 
           id="actual-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg transition-all" 
-          [ngClass]="{ 
-            'border-primary-red outline-1 outline-primary-red': 
-            !validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid()) 
-          }"
+          [class.border-primary-red]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
+          [class.outline-1]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
+          [class.outline-primary-red]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
           [formField]="passwordForm.actualPassword"
           (blur)="checkActualPassword()"
         >
@@ -123,10 +122,9 @@
           type="password" 
           id="new-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 
-            'border-primary-red outline-1 outline-primary-red': 
-            passwordForm.newPassword().touched() && passwordForm.newPassword().invalid() 
-          }"
+          [class.border-primary-red]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
+          [class.outline-1]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
+          [class.outline-primary-red]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
           [formField]="passwordForm.newPassword"
         >
       </div>
@@ -146,10 +144,9 @@
           type="password" 
           id="confirm-password" 
           class="w-full h-10 p-2 border border-grey rounded-lg"
-          [ngClass]="{ 
-            'border-primary-red outline-1 outline-primary-red': 
-            passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()
-          }"
+          [class.border-primary-red]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
+          [class.outline-1]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
+          [class.outline-primary-red]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
           [formField]="passwordForm.confirmPassword"
         >
       </div>

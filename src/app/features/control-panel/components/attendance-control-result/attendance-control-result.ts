@@ -3,12 +3,12 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { Attendance } from '@/app/shared/models/attendance.model';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-attendance-control-result',
-  imports: [NgClass, DatePipe],
+  imports: [DatePipe],
   templateUrl: './attendance-control-result.html',
   styleUrl: './attendance-control-result.css'
 })

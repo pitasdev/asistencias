@@ -1,6 +1,7 @@
 <article 
   class="flex flex-col p-2 border rounded-sm border-grey border-l-4 border-l-primary transition-all" 
-  [ngClass]="{ 'gap-2 border-l-primary-red': !attendance().hasAttended }"
+  [class.gap-2]="!attendance().hasAttended"
+  [class.border-l-primary-red]="!attendance().hasAttended"
 >
   <div class="min-h-8 flex gap-8 justify-between items-center">
     <span class="font-semibold">{{player().name}} {{player().lastName}}</span>
@@ -22,7 +23,9 @@
   
     <div 
       class="h-0 flex gap-8 justify-between items-center opacity-0 overflow-hidden transition-all duration-300 ease-out"
-      [ngClass]="{ 'h-10 opacity-100 overflow-visible': !attendance().hasAttended }"
+      [class.h-10]="!attendance().hasAttended"
+      [class.opacity-100]="!attendance().hasAttended"
+      [class.overflow-visible]="!attendance().hasAttended"
     >
       <label id="reason" class="whitespace-nowrap">Motivo</label>
       <select 
@@ -41,10 +44,11 @@
     @if (showReasonDescription()) {
       <div 
         class="h-0 flex gap-8 justify-between items-center -mb-2 opacity-0 overflow-hidden transition-all duration-300 ease-out"
-        [ngClass]="{ 
-          'h-10 mb-0 opacity-100 overflow-visible': reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription, 
-          'duration-150': reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription && attendance().hasAttended 
-        }"
+        [class.h-10]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
+        [class.mb-0]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
+        [class.opacity-100]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
+        [class.overflow-visible]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
+        [class.duration-150]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription && attendance().hasAttended"
       >
         <label id="reason-description" class="whitespace-nowrap">Indicar motivo</label>
         <input 

@@ -5,11 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { Player } from '@/app/shared/models/player.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-save-attendance-result',
-  imports: [Switch, FormsModule, NgClass],
+  imports: [Switch, FormsModule],
   templateUrl: './save-attendance-result.html',
   styleUrl: './save-attendance-result.css'
 })

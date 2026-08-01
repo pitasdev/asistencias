@@ -8,7 +8,6 @@ import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-ma
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
-import { NgClass } from '@angular/common';
 
 interface PasswordForm {
   actualPassword: string;
@@ -18,7 +17,7 @@ interface PasswordForm {
 
 @Component({
   selector: 'app-user-panel',
-  imports: [FormsModule, Button, ToggleContent, FormField, NgClass],
+  imports: [FormsModule, Button, ToggleContent, FormField],
   templateUrl: './user-panel.html',
   styleUrl: './user-panel.css'
 })

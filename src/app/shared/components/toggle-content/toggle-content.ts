@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component, effect, ElementRef, input, model, signal, viewChild } from '@angular/core';
 
 type Style = 'default' | 'sideColors';
@@ -6,7 +5,7 @@ type Color = 'primary' | 'red';
 
 @Component({
   selector: 'app-toggle-content',
-  imports: [NgClass],
+  imports: [],
   templateUrl: './toggle-content.html',
   styleUrl: './toggle-content.css',
   host: {
