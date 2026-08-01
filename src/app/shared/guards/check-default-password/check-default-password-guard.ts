@@ -1,6 +1,19 @@
-import { CanActivateFn } from '@angular/router';
-import { canAccess } from './can-access';
+import { InfoModalManager } from "@/app/core/services/info-modal-manager/info-modal-manager";
+import { UserManager } from "@/app/domain/user/services/user-manager";
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
 
-export const checkDefaultPasswordGuard: CanActivateFn = async (route, state) => {
-  return await canAccess();
+export const checkDefaultPasswordGuard: CanActivateFn = async () => {
+  const userManager = inject(UserManager);
+  const router = inject(Router);
+  const infoModalManager = inject(InfoModalManager);
+  
+  if (userManager.activeUser()?.hasDefaultPassword) {
+    infoModalManager.info('Debe de cambiar la contraseña para poder continuar');
+    return router.createUrlTree(['/panel-de-usuario'], {
+      queryParams: { requiredPasswordChange: true }
+    });
+  }
+  
+  return true;
 };

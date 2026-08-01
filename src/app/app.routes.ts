@@ -3,7 +3,6 @@ import { appDataResolver } from './shared/resolvers/app-data/app-data-resolver';
 import { checkTokenGuard } from './shared/guards/check-token/check-token-guard';
 import { checkIsAdminGuard } from './shared/guards/check-is-admin/check-is-admin-guard';
 import { checkDefaultPasswordGuard } from './shared/guards/check-default-password/check-default-password-guard';
-import { checkDefaultPasswordChildGuard } from './shared/guards/check-default-password/check-default-password-child-guard';
 
 export const routes: Routes = [
   {
@@ -30,7 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'panel-de-control',
-        canActivateChild: [checkIsAdminGuard, checkDefaultPasswordChildGuard],
+        canActivateChild: [checkIsAdminGuard, checkDefaultPasswordGuard],
         children: [
           {
             path: '',
