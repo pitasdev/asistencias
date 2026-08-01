@@ -46,6 +46,7 @@
             class="mt-2"
             [text]="'Guardar'"
             [width]="'full'"
+            [disabled]="name().trim() === ''"
             (click)="saveNewName()"
           />
         }
@@ -157,6 +158,7 @@
         [text]="'Cambiar Contraseña'"
         [width]="'full'"
         [type]="'submit'"
+        [disabled]="!passwordForm().valid()"
       />
     </form>
   </app-toggle-content>
