@@ -16,13 +16,13 @@
 
           <span>{{userTeams.user.username}} | {{roleManager.findRoleById(userTeams.user.roleId)?.name}}</span>
 
-          @let teams = getTeamsStringByUserId(userTeams.user.id!);
+          @let teams = teamsStringByUserId().get(userTeams.user.id!);
           @if (teams) {
             <span class="text-[.875rem] text-[#777] w-full truncate">{{teams}}</span>
           }
         </div>
         
-        @if (canEditUser(userTeams.user)) {
+        @if (canEditUserById().get(userTeams.user.id!)) {
           <div class="grid grid-cols-2 gap-4">
             <svg class="min-w-fit cursor-pointer" (click)="showEditUserModal(userTeams.user)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>

@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal, DOCUMENT } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal, DOCUMENT } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, minLength, validate } from '@angular/forms/signals';
 import { Button } from "@/app/shared/components/button/button";
@@ -30,6 +30,10 @@ export default class UserPanel implements OnInit {
   protected editName = signal<boolean>(false);
   protected name = signal<string>('');
   protected validActualPassword = signal<boolean>(true);
+  protected teamsString = computed(() => {
+    const joinTeams = this.userTeamsManager.activeUserUserTeams()?.teams.map(t => t.name).join(', ');
+    return joinTeams ?? '';
+  });
 
   protected passwordModel = signal<PasswordForm>({
     actualPassword: '',
@@ -61,11 +65,6 @@ export default class UserPanel implements OnInit {
 
   ngOnInit(): void {
     this.name.set(this.userManager.activeUser()?.name!);
-  }
-
-  protected getTeamsString(): string {
-    const joinTeams = this.userTeamsManager.activeUserUserTeams()?.teams.map(t => t.name).join(', ');
-    return joinTeams ?? '';
   }
 
   protected async saveNewName(): Promise<void> {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,6 @@ import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
-import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 
 type ModalType = 'add' | 'edit' | 'resetPassword';
 
@@ -39,6 +38,38 @@ export default class UsersManagement implements OnInit {
   protected modalTitle = signal<string>('');
   protected modalType = signal<ModalType>('add');
   protected selectedUser = signal<User | null>(null);
+  protected teamsStringByUserId = computed(() => {
+    const map = new Map<number, string>();
+    for (const ut of this.userTeams()) {
+      const teams = ut.teams.map(t => t.name).join(', ');
+      map.set(ut.user.id!, teams);
+    }
+    return map;
+  });
+  protected canEditUserById = computed(() => {
+    const superRoleId = this.roleManager.findRoleByName('super')?.id;
+    const adminRoleId = this.roleManager.findRoleByName('admin')?.id;
+    const activeUser = this.userManager.activeUser();
+
+    const map = new Map<number, boolean>();
+    for (const ut of this.userTeams()) {
+      const user = ut.user;
+      let canEdit = false;
+
+      if (superRoleId && adminRoleId) {
+        if (activeUser?.roleId === superRoleId) {
+          canEdit = true;
+        } else if (activeUser?.roleId === adminRoleId && activeUser?.id === user.id) {
+          canEdit = true;
+        } else if (activeUser?.roleId === adminRoleId) {
+          canEdit = user.roleId !== adminRoleId && user.roleId !== superRoleId;
+        }
+      }
+
+      map.set(user.id!, canEdit);
+    }
+    return map;
+  });
 
   protected userModel = signal<UserForm>({
     name: '',
@@ -95,7 +126,6 @@ export default class UsersManagement implements OnInit {
   protected readonly roleManager = inject(RoleManager);
   protected readonly userTeamsManager = inject(UserTeamsManager);
   protected readonly teamManager = inject(TeamManager);
-  private readonly infoModalManager = inject(InfoModalManager);
 
   async ngOnInit(): Promise<void> {
     await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.clubId!);
@@ -110,12 +140,6 @@ export default class UsersManagement implements OnInit {
           u.user.username?.toLowerCase().includes(searchText?.toLowerCase())
         )
     );
-  }
-
-  protected getTeamsStringByUserId(userId: number): string {
-    const teams = this.userTeamsManager.findUserTeamsByUserId(userId)?.teams;
-    const joinTeams = teams?.map(t => t.name).join(', ');
-    return joinTeams ?? '';
   }
 
   protected showEditUserModal(user: User): void {
@@ -290,22 +314,5 @@ export default class UsersManagement implements OnInit {
     this.openTeamsModal.set(false);
     this.selectedUserTeams.set(null);
     this.closeTeamsModal.set(false);
-  }
-
-  protected canEditUser(user: User): boolean {
-    const superRoleId = this.roleManager.findRoleByName('super')?.id;
-    const adminRoleId = this.roleManager.findRoleByName('admin')?.id;
-
-    if (!superRoleId || !adminRoleId) return false;
-
-    if (this.userManager.activeUser()?.roleId === superRoleId) return true;
-    if (this.userManager.activeUser()?.roleId === adminRoleId && this.userManager.activeUser()?.id === user.id) return true;
-
-    if (this.userManager.activeUser()?.roleId === adminRoleId) {
-      if (user.roleId === adminRoleId || user.roleId === superRoleId) return false;
-      else return true;
-    }
-
-    return false;
   }
 }

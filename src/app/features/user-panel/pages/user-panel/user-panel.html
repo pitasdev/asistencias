@@ -33,7 +33,7 @@
               (keydown.enter)="saveNewName()"
             >
           } @else {
-            <span>{{userManager.activeUser()?.name}}</span>
+            <span class="text-[.875rem] text-[#777]">{{userManager.activeUser()?.name}}</span>
           }
   
           <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -54,12 +54,12 @@
   
       <div class="flex flex-col">
         <span class="font-semibold text-[.875rem]">Equipos</span>
-        <span>{{getTeamsString()}}</span>
+        <span class="text-[.875rem] text-[#777]">{{teamsString()}}</span>
       </div>
   
       <div class="flex flex-col">
         <span class=" font-semibold text-[.875rem]">Rol</span>
-        <span>{{roleManager.findRoleById(userManager.activeUser()?.roleId!)?.name}}</span>
+        <span class="text-[.875rem] text-[#777]">{{roleManager.findRoleById(userManager.activeUser()?.roleId!)?.name}}</span>
       </div>
     </div>
   </app-toggle-content>
