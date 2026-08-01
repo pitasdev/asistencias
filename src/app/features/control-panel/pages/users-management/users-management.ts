@@ -87,7 +87,6 @@ export default class UsersManagement implements OnInit {
   protected openTeamsModal = signal<boolean>(false);
   protected closeTeamsModal = signal<boolean>(false);
   protected selectedUserTeams = signal<UserTeams | null>(null);
-  private originalUserTeams: UserTeams | null = null;
 
   protected openDeleteModal = signal<boolean>(false);
   protected deleteModalText = signal<string>('');
@@ -249,8 +248,8 @@ export default class UsersManagement implements OnInit {
   }
 
   protected showTeamsModal(user: User): void {
-    this.selectedUserTeams.set(this.userTeamsManager.findUserTeamsByUserId(user.id!));
-    this.originalUserTeams = JSON.parse(JSON.stringify(this.selectedUserTeams()));
+    const userTeams = this.userTeamsManager.findUserTeamsByUserId(user.id!);
+    this.selectedUserTeams.set(structuredClone(userTeams));
     this.openTeamsModal.set(true);
   }
 
@@ -271,12 +270,12 @@ export default class UsersManagement implements OnInit {
 
   protected async saveTeams(): Promise<void> {
     await this.userTeamsManager.updateUserTeams(this.selectedUserTeams()!);
+    this.userTeamsManager.replaceUserTeams(this.selectedUserTeams()!);
     this.closeTeamsModal.set(true);
   }
 
   protected cancelTeamsModal(): void {
     this.closeTeamsModal.set(true);
-    this.userTeamsManager.replaceUserTeams(this.originalUserTeams!);
   }
 
   protected modalClosed(): void {
@@ -290,7 +289,6 @@ export default class UsersManagement implements OnInit {
   protected teamsModalClosed(): void {
     this.openTeamsModal.set(false);
     this.selectedUserTeams.set(null);
-    this.originalUserTeams = null;
     this.closeTeamsModal.set(false);
   }
 
