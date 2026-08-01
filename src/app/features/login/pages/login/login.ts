@@ -1,15 +1,19 @@
 import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Button } from "@/app/shared/components/button/button";
 import { Router } from '@angular/router';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
-import { LowerCasePipe } from '@angular/common';
+
+interface LoginForm {
+  username: string;
+  password: string;
+}
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, Button, LowerCasePipe],
+  imports: [Button, FormField],
   templateUrl: './login.html',
   styleUrl: './login.css',
   host: {
@@ -17,10 +21,18 @@ import { LowerCasePipe } from '@angular/common';
   }
 })
 export default class Login implements OnInit {
-  protected username = signal<string>('');
-  protected password = signal<string>('');
   protected showPassword = signal<boolean>(false);
   protected rememberMe = signal<boolean>(false);
+
+  protected loginModel = signal<LoginForm>({
+    username: '',
+    password: ''
+  });
+
+  protected loginForm = form(this.loginModel, (schemaPath) => {
+    required(schemaPath.username, { message: 'Usuario requerido' });
+    required(schemaPath.password, { message: 'Contraseña requerida' });
+  });
 
   private rememberMeCheckbox = viewChild<ElementRef<HTMLInputElement>>('rememberMeCheckbox');
 
@@ -37,9 +49,11 @@ export default class Login implements OnInit {
   }
 
   protected async login(): Promise<void> {
-    if (!this.username() || !this.password()) return;
+    this.loginForm().markAsTouched();
+    if (this.loginForm().invalid()) return;
 
-    const login = await this.authManager.login(this.username(), this.password(), this.rememberMe());
+    const { username, password } = this.loginModel();
+    const login = await this.authManager.login(username.toLowerCase(), password, this.rememberMe());
     if (login) {
       this.router.navigate(['/']);
     } else {
@@ -48,14 +62,13 @@ export default class Login implements OnInit {
   }
 
   protected checkKey(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      if (this.rememberMeCheckbox()?.nativeElement === document.activeElement) {
-        const checkboxElement = this.rememberMeCheckbox()?.nativeElement as HTMLInputElement;
-        checkboxElement.checked = !checkboxElement.checked;
-        this.rememberMe.set(!this.rememberMe());
-      } else {
-        this.login();
-      }
+    if (event.key !== 'Enter') return;
+
+    if (this.rememberMeCheckbox()?.nativeElement === document.activeElement) {
+      event.preventDefault();
+      const checkboxElement = this.rememberMeCheckbox()?.nativeElement as HTMLInputElement;
+      checkboxElement.checked = !checkboxElement.checked;
+      this.rememberMe.set(!this.rememberMe());
     }
   }
 }

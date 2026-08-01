@@ -4,7 +4,7 @@
     <p class="text-[.875rem]">Ingresa tus credenciales para acceder a tu cuenta</p>
   </div>
 
-  <div class="w-full flex flex-col gap-4 items-center">
+  <form (submit)="login(); $event.preventDefault()" novalidate class="w-full flex flex-col gap-4 items-center">
     <div class="w-full flex flex-col gap-1">
       <label for="username" class="font-medium">Usuario</label>
 
@@ -14,8 +14,14 @@
             <path fill="#000000" d="M12 4a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7M6.5 7.5a5.5 5.5 0 1 1 11 0a5.5 5.5 0 0 1-11 0M3 19a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v3H3zm5-3a3 3 0 0 0-3 3v1h14v-1a3 3 0 0 0-3-3z"></path>
           </svg>
         </div>
-        <input id="username" type="text" class="w-full h-10 p-2 focus:outline-0" [ngModel]="username() | lowercase" (ngModelChange)="username.set($event)">
+        <input id="username" type="text" class="w-full h-10 p-2 focus:outline-0" [formField]="loginForm.username">
       </div>
+
+      @if (loginForm.username().touched() && loginForm.username().invalid()) {
+        <span class="text-xs text-primary-red">
+          {{ loginForm.username().errors()[0].message }}
+        </span>
+      }
     </div>
   
     <div class="w-full flex flex-col gap-1">
@@ -32,8 +38,7 @@
           id="password" 
           [type]="showPassword() ? 'text' : 'password'" 
           class="w-full h-10 p-2 focus:outline-0" 
-          [ngModel]="password()" 
-          (ngModelChange)="password.set($event)"
+          [formField]="loginForm.password"
         >
 
         <div class="min-w-8 h-10 flex items-center justify-center pr-2">
@@ -67,7 +72,8 @@
       class="w-full"
       [text]="'Iniciar Sesión'"
       [width]="'full'"
-      (click)="login()"
+      [type]="'submit'"
+      [disabled]="!loginForm().valid()"
     />
-  </div>
+  </form>
 </section>
