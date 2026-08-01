@@ -3,14 +3,12 @@ import { Attendance } from '@/app/shared/models/attendance.model';
 import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class AttendanceApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getAttendancesByTeamId(teamId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
     let queryParams = '';

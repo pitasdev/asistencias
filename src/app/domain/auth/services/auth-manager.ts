@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { UserManager } from '../../user/services/user-manager';
 import { Router } from '@angular/router';
@@ -13,9 +13,7 @@ interface TokenPayload {
   exp?: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class AuthManager {
   token = signal<string | null>(null);
   error = signal<string | null>(null);

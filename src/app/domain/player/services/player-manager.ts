@@ -2,12 +2,10 @@ import { PlayerApiClient } from '@/app/core/api-clients/player/player-api-client
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Player } from '@/app/shared/models/player.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class PlayerManager {
   private _allPlayers = signal<Player[]>([]);
   private _players = signal<Player[]>([]);

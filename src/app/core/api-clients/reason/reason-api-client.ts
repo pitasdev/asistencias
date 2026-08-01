@@ -3,14 +3,12 @@ import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class ReasonApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getReasonsByClubId(clubId: number): Observable<Reason[]> {
     return this.http.get<Reason[]>(`${environment.baseUrlApi}/reason/club/${clubId}`);

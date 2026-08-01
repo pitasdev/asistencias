@@ -1,13 +1,11 @@
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class AuthApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   checkToken(): Observable<{ isValidToken: boolean, error?: string }> {
     return this.http.get<{ isValidToken: boolean, error?: string }>(`${environment.baseUrlApi}/auth/check-token`);

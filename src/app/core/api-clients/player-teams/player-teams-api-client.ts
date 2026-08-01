@@ -2,14 +2,12 @@ import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.mod
 import { PlayerTeams } from '@/app/shared/models/player-teams.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class PlayerTeamsApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getPlayerTeamsByClubId(clubId: number): Observable<PlayerTeams[]> {
     return this.http.get<PlayerTeams[]>(`${environment.baseUrlApi}/player-teams/club/${clubId}`);

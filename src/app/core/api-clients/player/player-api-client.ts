@@ -3,14 +3,12 @@ import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Player } from '@/app/shared/models/player.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class PlayerApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getPlayerById(playerId: number): Observable<Player> {
     return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}`);

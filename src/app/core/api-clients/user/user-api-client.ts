@@ -3,14 +3,12 @@ import { ResetPassword } from '@/app/shared/models/reset-password.model';
 import { User } from '@/app/shared/models/user.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class UserApiClient {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getActiveUser(userId: number): Observable<User> {
     return this.http.get<User>(`${environment.baseUrlApi}/user/${userId}`);

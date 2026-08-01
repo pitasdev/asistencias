@@ -1,13 +1,11 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type.model';
 import { AttendanceTypeManager } from '../../attendance-type/services/attendance-type-manager';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class StatisticsManager {
   teamAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());

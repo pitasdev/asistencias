@@ -1,6 +1,6 @@
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { Player } from '@/app/shared/models/player.model';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
@@ -9,9 +9,7 @@ import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class AttendanceManager {
   private _attendances = signal<Attendance[]>([]);
   private _addAdicionalAttendances: Attendance[] = [];

@@ -2,12 +2,10 @@ import { UserApiClient } from '@/app/core/api-clients/user/user-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { ResetPassword } from '@/app/shared/models/reset-password.model';
 import { User } from '@/app/shared/models/user.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class UserManager {
   private _allUsers = signal<User[]>([]);
   private _activeUser = signal<User | null>(null);

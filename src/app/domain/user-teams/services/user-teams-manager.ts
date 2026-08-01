@@ -1,12 +1,10 @@
 import { UserTeamsApiClient } from '@/app/core/api-clients/user-teams/user-teams-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { UserTeams } from '@/app/shared/models/user-teams.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class UserTeamsManager {
   private _userTeams = signal<UserTeams[]>([]);
   private _activeUserUserTeams = signal<UserTeams | null>(null);

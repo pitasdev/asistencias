@@ -2,12 +2,10 @@ import { ReasonApiClient } from '@/app/core/api-clients/reason/reason-api-client
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Reason } from '@/app/shared/models/reason.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class ReasonManager {
   private _reasons = signal<Reason[]>([]);
 

@@ -2,12 +2,10 @@ import { TeamApiClient } from '@/app/core/api-clients/team/team-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 import { Team } from '@/app/shared/models/team.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class TeamManager {
   private _userTeams = signal<Team[]>([]);
   private _allTeams = signal<Team[]>([]);

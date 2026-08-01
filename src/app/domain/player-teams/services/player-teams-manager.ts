@@ -1,12 +1,10 @@
 import { PlayerTeamsApiClient } from '@/app/core/api-clients/player-teams/player-teams-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { PlayerTeams } from '@/app/shared/models/player-teams.model';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class PlayerTeamsManager {
   private _playerTeams = signal<PlayerTeams[]>([]);
 
