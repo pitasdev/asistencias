@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
+import { form, FormField, required, minLength, validate, disabled } from '@angular/forms/signals';
 import { User } from '@/app/shared/models/user.model';
 import { ResetPassword } from '@/app/shared/models/reset-password.model';
 import { UserTeams } from '@/app/shared/models/user-teams.model';
@@ -16,9 +17,17 @@ import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-mo
 
 type ModalType = 'add' | 'edit' | 'resetPassword';
 
+interface UserForm {
+  name: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  roleId: string;
+}
+
 @Component({
   selector: 'app-users-management',
-  imports: [Button, Modal, FormsModule, ConfirmModal, FindFilter],
+  imports: [Button, Modal, FormsModule, FormField, ConfirmModal, FindFilter],
   templateUrl: './users-management.html',
   styleUrl: './users-management.css'
 })
@@ -28,13 +37,52 @@ export default class UsersManagement implements OnInit {
   protected openAddModal = signal<boolean>(false);
   protected closeModal = signal<boolean>(false);
   protected modalTitle = signal<string>('');
-  protected modalName = signal<string>('');
-  protected modalUserName = signal<string>('');
-  protected modalPassword = signal<string>('');
-  protected modalPasswordConfirm = signal<string>('');
-  protected modalRole = signal<number>(0);
   protected modalType = signal<ModalType>('add');
   protected selectedUser = signal<User | null>(null);
+
+  protected userModel = signal<UserForm>({
+    name: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    roleId: '0',
+  });
+
+  protected userForm = form(this.userModel, (schemaPath) => {
+    disabled(schemaPath.name, { when: () => this.modalType() === 'resetPassword' });
+    required(schemaPath.name, {
+      message: 'Nombre requerido',
+    });
+
+    disabled(schemaPath.username, { when: () => this.modalType() !== 'add' });
+    required(schemaPath.username, {
+      message: 'Username requerido',
+    });
+
+    disabled(schemaPath.password, { when: () => this.modalType() === 'edit' });
+    required(schemaPath.password, {
+      message: 'Contraseña requerida',
+    });
+    minLength(schemaPath.password, 8, {
+      message: 'La contraseña debe tener al menos 8 caracteres',
+    });
+
+    disabled(schemaPath.confirmPassword, { when: () => this.modalType() === 'edit' });
+    required(schemaPath.confirmPassword, {
+      message: 'Confirmación requerida',
+    });
+    validate(schemaPath.confirmPassword, ({ value, valueOf }) => {
+      if (value() !== valueOf(schemaPath.password)) {
+        return { kind: 'passwordMismatch', message: 'Las contraseñas no coinciden' };
+      }
+      return null;
+    });
+
+    disabled(schemaPath.roleId, { when: () => this.modalType() === 'resetPassword' });
+    required(schemaPath.roleId, {
+      message: 'Rol requerido',
+    });
+  });
 
   protected openTeamsModal = signal<boolean>(false);
   protected closeTeamsModal = signal<boolean>(false);
@@ -75,59 +123,54 @@ export default class UsersManagement implements OnInit {
     this.selectedUser.set(user);
     this.modalType.set('edit');
     this.modalTitle.set('Editar Usuario');
-    this.modalName.set(user.name);
-    this.modalUserName.set(user.username);
-    this.modalRole.set(user.roleId);
+    this.userModel.set({
+      name: user.name,
+      username: user.username,
+      password: '',
+      confirmPassword: '',
+      roleId: String(user.roleId),
+    });
     this.openAddModal.set(true);
   }
 
   protected showAddUserModal(): void {
     this.modalType.set('add');
     this.modalTitle.set('Añadir Usuario');
-    this.modalRole.set(this.roleManager.findRoleByName('user')?.id!);
+    this.userModel.set({
+      name: '',
+      username: '',
+      password: '',
+      confirmPassword: '',
+      roleId: String(this.roleManager.findRoleByName('user')?.id!),
+    });
     this.openAddModal.set(true);
   }
 
   protected modalRoleChange(event: string): void {
-    const roleId = parseInt(event);
-    if (typeof roleId !== 'number') {
-      console.error('Invalid role id');
-      return;
-    }
-
-    this.modalRole.set(roleId);
+    this.userModel.update(m => ({ ...m, roleId: event }));
   }
 
   protected checkFormatValidUsername(event: string): void {
     const validUsername = event.toLowerCase().replaceAll(' ', '');
-    this.modalUserName.set(validUsername);
+    this.userModel.update(m => ({ ...m, username: validUsername }));
   }
 
   protected async addUser(): Promise<void> {
-    if (!this.modalName() || !this.modalUserName() || !this.modalPassword() || !this.modalPasswordConfirm() || !this.modalRole()) {
-      this.infoModalManager.warning('Faltan datos por rellenar');
-      return;
-    }
+    this.userForm().markAsTouched();
+    if (this.userForm().invalid()) return;
 
-    if (this.modalPassword() !== this.modalPasswordConfirm()) {
-      this.infoModalManager.warning('Las contraseñas no coinciden');
-      return;
-    }
-    if (this.modalPassword().length < 8) {
-      this.infoModalManager.warning('La contraseña debe tener al menos 8 caracteres');
-      return;
-    };
+    const { name, username, password, roleId } = this.userModel();
 
-    const check = await this.userManager.checkAvailableUsername(this.modalUserName());
+    const check = await this.userManager.checkAvailableUsername(username);
     if (!check.isAvailable) return;
 
     const user: User = {
       id: null,
-      name: this.modalName(),
-      username: this.modalUserName(),
-      password: this.modalPassword(),
+      name,
+      username,
+      password,
       hasDefaultPassword: true,
-      roleId: this.modalRole(),
+      roleId: Number(roleId),
       clubId: this.userManager.activeUser()?.clubId!
     };
 
@@ -139,15 +182,15 @@ export default class UsersManagement implements OnInit {
   }
 
   protected async editUser(): Promise<void> {
-    if (!this.modalName() || !this.modalRole()) {
-      this.infoModalManager.warning('Faltan datos por rellenar');
-      return;
-    }
+    this.userForm().markAsTouched();
+    if (this.userForm().invalid()) return;
+
+    const { name, roleId } = this.userModel();
     
     const updatedUser: User = {
       ...this.selectedUser()!,
-      name: this.modalName(),
-      roleId: this.modalRole()
+      name,
+      roleId: Number(roleId)
     };
 
     await this.userManager.updateUser(updatedUser);
@@ -178,25 +221,25 @@ export default class UsersManagement implements OnInit {
     this.modalType.set('resetPassword');
     this.modalTitle.set('Restablecer contraseña');
     this.selectedUser.set(user);
-    this.modalName.set(user.name);
-    this.modalUserName.set(user.username);
-    this.modalRole.set(user.roleId);
+    this.userModel.set({
+      name: user.name,
+      username: user.username,
+      password: '',
+      confirmPassword: '',
+      roleId: String(user.roleId),
+    });
     this.openAddModal.set(true);
   }
 
   protected async restorePassword(): Promise<void> {
-    if (this.modalPassword() !== this.modalPasswordConfirm()) {
-      this.infoModalManager.warning('Las contraseñas no coinciden');
-      return;
-    }
-    if (this.modalPassword().length < 8) {
-      this.infoModalManager.warning('La contraseña debe tener al menos 8 caracteres');
-      return;
-    };
+    this.userForm().markAsTouched();
+    if (this.userForm().invalid()) return;
+
+    const { password } = this.userModel();
 
     const resetPassword: ResetPassword = {
       id: this.selectedUser()?.id!,
-      newPassword: this.modalPassword(),
+      newPassword: password,
       hasDefaultPassword: true
     };
 
@@ -240,10 +283,7 @@ export default class UsersManagement implements OnInit {
     this.openAddModal.set(false);
     this.selectedUser.set(null);
     this.modalTitle.set('');
-    this.modalName.set('');
-    this.modalUserName.set('');
-    this.modalPassword.set('');
-    this.modalPasswordConfirm.set('');
+    this.userForm().reset({ name: '', username: '', password: '', confirmPassword: '', roleId: '0' });
     this.closeModal.set(false);
   }
 

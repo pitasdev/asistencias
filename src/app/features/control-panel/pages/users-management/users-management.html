@@ -58,92 +58,111 @@
     <div class="flex flex-col gap-8 justify-center items-center">
       <h3 class="font-semibold text-xl">{{modalTitle()}}</h3>
 
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-4 items-center">
-          <label for="name" class="text-start w-24">Nombre</label>
-          <input 
-            id="name" 
-            type="text" 
-            class="h-10 p-2 border border-grey rounded-sm" 
-            [class.opacity-60]="modalType() === 'resetPassword'"
-            [disabled]="modalType() === 'resetPassword'"
-            [ngModel]="modalName()" 
-            (ngModelChange)="modalName.set($event)"
-          >
-        </div>
-  
-        <div class="flex gap-4 items-center">
-          <label for="username" class="text-start w-24">Username</label>
-          <input 
-            id="username" 
-            type="text" 
-            class="h-10 p-2 border border-grey rounded-sm" 
-            [class.opacity-60]="modalType() !== 'add'"
-            [disabled]="modalType() !== 'add'"
-            [ngModel]="modalUserName()" 
-            (ngModelChange)="checkFormatValidUsername($event)"
-          >
-        </div>
-  
-        @if (modalType() === 'add' || modalType() === 'resetPassword') {
+      <form (submit)="modalType() === 'add' ? addUser() : modalType() === 'edit' ? editUser() : restorePassword(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
           <div class="flex gap-4 items-center">
-            <label for="password" class="text-start w-24">Contraseña</label>
-            <input id="password" type="password" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="modalPassword()" (ngModelChange)="modalPassword.set($event)">
+            <label for="name" class="text-start w-24">Nombre</label>
+            <input 
+              id="name" 
+              type="text" 
+              class="h-10 p-2 border border-grey rounded-sm" 
+              [formField]="userForm.name"
+            >
+          </div>
+          @if (userForm.name().touched() && userForm.name().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ userForm.name().errors()[0].message }}</span>
+          }
+        </div>
+    
+        <div class="flex flex-col gap-1">
+          <div class="flex gap-4 items-center">
+            <label for="username" class="text-start w-24">Username</label>
+            <input 
+              id="username" 
+              type="text" 
+              class="h-10 p-2 border border-grey rounded-sm" 
+              [formField]="userForm.username"
+            >
+          </div>
+          @if (userForm.username().touched() && userForm.username().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ userForm.username().errors()[0].message }}</span>
+          }
+        </div>
+    
+        @if (modalType() === 'add' || modalType() === 'resetPassword') {
+          <div class="flex flex-col gap-1">
+            <div class="flex gap-4 items-center">
+              <label for="password" class="text-start w-24">Contraseña</label>
+              <input id="password" type="password" class="h-10 p-2 border border-grey rounded-sm" [formField]="userForm.password">
+            </div>
+            @if (userForm.password().touched() && userForm.password().invalid()) {
+              <span class="text-xs text-primary-red ml-28">{{ userForm.password().errors()[0].message }}</span>
+            }
           </div>
     
-          <div class="flex gap-4 items-center">
-            <label for="confirm-password" class="text-start w-24">Confirmar contraseña</label>
-            <input id="confirm-password" type="password" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="modalPasswordConfirm()" (ngModelChange)="modalPasswordConfirm.set($event)">
+          <div class="flex flex-col gap-1">
+            <div class="flex gap-4 items-center">
+              <label for="confirm-password" class="text-start w-24">Confirmar contraseña</label>
+              <input id="confirm-password" type="password" class="h-10 p-2 border border-grey rounded-sm" [formField]="userForm.confirmPassword">
+            </div>
+            @if (userForm.confirmPassword().touched() && userForm.confirmPassword().invalid()) {
+              <span class="text-xs text-primary-red ml-28">{{ userForm.confirmPassword().errors()[0].message }}</span>
+            }
           </div>
         }
 
-        <div class="flex gap-4 items-center">
-          <label for="role" class="text-start min-w-24">Rol</label>
-          <select 
-            id="role" 
-            class="w-full h-10 p-2 border border-grey rounded-sm" 
-            [class.opacity-60]="modalType() === 'resetPassword'"
-            [disabled]="modalType() === 'resetPassword'"
-            [ngModel]="modalRole()" 
-            (ngModelChange)="modalRoleChange($event)"
-          >
-            @for (role of roleManager.roles(); track role.id) {
-              @if (role.id !== 1) {
-                <option value="{{role.id}}">{{role.name}}</option>
+        <div class="flex flex-col gap-1">
+          <div class="flex gap-4 items-center">
+            <label for="role" class="text-start min-w-24">Rol</label>
+            <select 
+              id="role" 
+              class="w-full h-10 p-2 border border-grey rounded-sm" 
+              [formField]="userForm.roleId"
+            >
+              @for (role of roleManager.roles(); track role.id) {
+                @if (role.id !== 1) {
+                  <option [value]="role.id">{{role.name}}</option>
+                }
               }
-            }
-          </select>
+            </select>
+          </div>
+          @if (userForm.roleId().touched() && userForm.roleId().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ userForm.roleId().errors()[0].message }}</span>
+          }
         </div>
-      </div>
 
-      <div class="flex gap-4">
-        <app-button
-          [text]="'Cancelar'"
-          [width]="'sm'"
-          [color]="'cancel'"
-          (click)="closeModal.set(true)"
-        />
+        <div class="flex gap-4 mt-4">
+          <app-button
+            [text]="'Cancelar'"
+            [width]="'sm'"
+            [color]="'cancel'"
+            (click)="closeModal.set(true)"
+          />
 
-        @if (modalType() === 'add') {
-          <app-button
-            [text]="'Crear'"
-            [width]="'sm'"
-            (click)="addUser()"
-          />
-        } @else if (modalType() === 'edit') {
-          <app-button
-            [text]="'Modificar'"
-            [width]="'sm'"
-            (click)="editUser()"
-          />
-        } @else if (modalType() === 'resetPassword') {
-          <app-button
-            [text]="'Cambiar'"
-            [width]="'sm'"
-            (click)="restorePassword()"
-          />
-        }
-      </div>
+          @if (modalType() === 'add') {
+            <app-button
+              [text]="'Crear'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!userForm().valid()"
+            />
+          } @else if (modalType() === 'edit') {
+            <app-button
+              [text]="'Modificar'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!userForm().valid()"
+            />
+          } @else if (modalType() === 'resetPassword') {
+            <app-button
+              [text]="'Cambiar'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!userForm().valid()"
+            />
+          }
+        </div>
+      </form>
     </div>
   </app-modal>
 }
@@ -174,9 +193,9 @@
         />
         
         <app-button
-         [text]="'Guardar'"
-         [width]="'sm'"
-         (click)="saveTeams()"
+          [text]="'Guardar'"
+          [width]="'sm'"
+          (click)="saveTeams()"
         />
       </div>
     </div>

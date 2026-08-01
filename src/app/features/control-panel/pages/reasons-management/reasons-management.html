@@ -42,40 +42,47 @@
     <div class="flex flex-col gap-8 justify-center items-center">
       <h3 class="font-semibold text-xl">{{modalTitle()}}</h3>
 
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-4 items-center">
-          <label for="add-reason" class="w-24 text-start">Motivo</label>
-          <input id="add-reason" type="text" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="reasonName()" (ngModelChange)="reasonName.set($event)">
+      <form (submit)="modalType() === 'add' ? addReason() : editReason(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex gap-4 items-center">
+            <label for="add-reason" class="w-24 text-start">Motivo</label>
+            <input id="add-reason" type="text" class="h-10 p-2 border border-grey rounded-sm" [formField]="reasonForm.name">
+          </div>
+          @if (reasonForm.name().touched() && reasonForm.name().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ reasonForm.name().errors()[0].message }}</span>
+          }
         </div>
 
         <div class="w-full flex gap-4 justify-between items-center">
           <span class="text-start">Requiere una descripción adicional</span>
-          <app-switch [value]="reasonRequiresDescription()" (valueChange)="reasonRequiresDescription.set($event)" />
+          <app-switch [value]="reasonModel().requiresDescription" (valueChange)="reasonModel.update(m => ({ ...m, requiresDescription: $event }))" />
         </div>
-      </div>
 
-      <div class="flex gap-4">
-        <app-button
-          [text]="'Cancelar'"
-          [width]="'sm'"
-          [color]="'cancel'"
-          (click)="closeModal.set(true)"
-        />
+        <div class="flex gap-4 mt-4">
+          <app-button
+            [text]="'Cancelar'"
+            [width]="'sm'"
+            [color]="'cancel'"
+            (click)="closeModal.set(true)"
+          />
 
-        @if (modalType() === 'add') {
-          <app-button
-            [text]="'Crear'"
-            [width]="'sm'"
-            (click)="addReason()"
-          />
-        } @else if (modalType() === 'edit') {
-          <app-button
-            [text]="'Modificar'"
-            [width]="'sm'"
-            (click)="editReason()"
-          />
-        }
-      </div>
+          @if (modalType() === 'add') {
+            <app-button
+              [text]="'Crear'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!reasonForm().valid()"
+            />
+          } @else if (modalType() === 'edit') {
+            <app-button
+              [text]="'Modificar'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!reasonForm().valid()"
+            />
+          }
+        </div>
+      </form>
     </div>
   </app-modal>
 }

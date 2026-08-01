@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { Team } from '@/app/shared/models/team.model';
@@ -13,7 +14,7 @@ type ModalType = 'add' | 'edit';
 
 @Component({
   selector: 'app-teams-management',
-  imports: [FormsModule, Button, Modal, ConfirmModal, FindFilter],
+  imports: [FormsModule, Button, Modal, FormField, ConfirmModal, FindFilter],
   templateUrl: './teams-management.html',
   styleUrl: './teams-management.css'
 })
@@ -23,7 +24,12 @@ export default class TeamsManagement implements OnInit {
   protected openModal = signal<boolean>(false);
   protected closeModal = signal<boolean>(false);
 
-  protected teamName = signal<string>('');
+  protected teamModel = signal({ name: '' });
+
+  protected teamForm = form(this.teamModel, (schemaPath) => {
+    required(schemaPath.name, { message: 'Nombre del equipo requerido' });
+  });
+
   protected modalType = signal<ModalType>('add');
   protected modalTitle = signal<string>('');
   protected selectedTeam = signal<Team | null>(null);
@@ -54,16 +60,17 @@ export default class TeamsManagement implements OnInit {
     this.selectedTeam.set(team);
     this.modalType.set('edit');
     this.modalTitle.set('Modificar Equipo');
-    this.teamName.set(team?.name!);
+    this.teamModel.set({ name: team?.name! });
     this.openModal.set(true);
   }
 
   protected async editTeam(): Promise<void> {
-    if (!this.teamName()) return;
+    this.teamForm().markAsTouched();
+    if (this.teamForm().invalid()) return;
 
     const updatedTeam: Team = {
       ...this.selectedTeam()!,
-      name: this.teamName().trim()
+      name: this.teamModel().name.trim()
     };
 
     await this.teamManager.updateTeams([updatedTeam]);
@@ -101,11 +108,12 @@ export default class TeamsManagement implements OnInit {
   }
 
   protected async addTeam(): Promise<void> {
-    if (!this.teamName()) return;
+    this.teamForm().markAsTouched();
+    if (this.teamForm().invalid()) return;
 
     const newTeam: Team = {
       id: null,
-      name: this.teamName().trim(),
+      name: this.teamModel().name.trim(),
       order: this.teamManager.allTeams().length + 1,
       isActive: true,
       clubId: this.userManager.activeUser()?.clubId!
@@ -121,7 +129,7 @@ export default class TeamsManagement implements OnInit {
   protected modalClosed(): void {
     this.openModal.set(false);
     this.modalTitle.set('');
-    this.teamName.set('');
+    this.teamForm().reset({ name: '' });
     this.selectedTeam.set(null);
     this.closeModal.set(false);
   }

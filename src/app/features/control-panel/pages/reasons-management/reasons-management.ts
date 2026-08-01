@@ -4,6 +4,7 @@ import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Modal } from "@/app/shared/components/modal/modal";
 import { Button } from "@/app/shared/components/button/button";
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
@@ -12,9 +13,14 @@ import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 
 type ModalType = 'add' | 'edit';
 
+interface ReasonForm {
+  name: string;
+  requiresDescription: boolean;
+}
+
 @Component({
   selector: 'app-reasons-management',
-  imports: [FindFilter, FormsModule, Modal, Button, ConfirmModal, Switch],
+  imports: [FindFilter, FormsModule, FormField, Modal, Button, ConfirmModal, Switch],
   templateUrl: './reasons-management.html',
   styleUrl: './reasons-management.css'
 })
@@ -24,8 +30,12 @@ export default class ReasonsManagement implements OnInit {
   protected openModal = signal<boolean>(false);
   protected closeModal = signal<boolean>(false);
 
-  protected reasonName = signal<string>('');
-  protected reasonRequiresDescription = signal<boolean>(false);
+  protected reasonModel = signal<ReasonForm>({ name: '', requiresDescription: false });
+
+  protected reasonForm = form(this.reasonModel, (schemaPath) => {
+    required(schemaPath.name, { message: 'Nombre del motivo requerido' });
+  });
+
   protected modalType = signal<ModalType>('add');
   protected modalTitle = signal<string>('');
   protected selectedReason = signal<Reason | null>(null);
@@ -57,18 +67,20 @@ export default class ReasonsManagement implements OnInit {
     this.selectedReason.set(reason);
     this.modalType.set('edit');
     this.modalTitle.set('Modificar Motivo');
-    this.reasonName.set(reason?.name!);
-    this.reasonRequiresDescription.set(reason?.requiresDescription!);
+    this.reasonModel.set({ name: reason?.name!, requiresDescription: reason?.requiresDescription! });
     this.openModal.set(true);
   }
 
   protected async editReason(): Promise<void> {
-    if (!this.reasonName()) return;
+    this.reasonForm().markAsTouched();
+    if (this.reasonForm().invalid()) return;
+
+    const { name, requiresDescription } = this.reasonModel();
 
     const updatedTeam: Reason = {
       ...this.selectedReason()!,
-      name: this.reasonName().trim(),
-      requiresDescription: this.reasonRequiresDescription()
+      name: name.trim(),
+      requiresDescription
     };
 
     await this.reasonManager.updateReasons([updatedTeam]);
@@ -106,13 +118,16 @@ export default class ReasonsManagement implements OnInit {
   }
 
   protected async addReason(): Promise<void> {
-    if (!this.reasonName()) return;
+    this.reasonForm().markAsTouched();
+    if (this.reasonForm().invalid()) return;
+
+    const { name, requiresDescription } = this.reasonModel();
 
     const newReason: Reason = {
       id: null,
-      name: this.reasonName().trim(),
+      name: name.trim(),
       order: this.reasonManager.reasons().length + 1,
-      requiresDescription:this.reasonRequiresDescription(),
+      requiresDescription,
       isActive: true,
       clubId: this.userManager.activeUser()?.clubId!
     };
@@ -127,8 +142,7 @@ export default class ReasonsManagement implements OnInit {
   protected modalClosed(): void {
     this.openModal.set(false);
     this.modalTitle.set('');
-    this.reasonName.set('');
-    this.reasonRequiresDescription.set(false);
+    this.reasonForm().reset({ name: '', requiresDescription: false });
     this.selectedReason.set(null);
     this.closeModal.set(false);
   }

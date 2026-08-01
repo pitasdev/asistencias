@@ -40,33 +40,40 @@
     <div class="flex flex-col gap-8 justify-center items-center">
       <h3 class="font-semibold text-xl">{{modalTitle()}}</h3>
     
-      <div class="flex gap-4 items-center">
-        <label for="add-team" class="w-24 text-start">Equipo</label>
-        <input id="add-team" type="text" class="h-10 p-2 border border-grey rounded-sm" [ngModel]="teamName()" (ngModelChange)="teamName.set($event)">
-      </div>
-    
-      <div class="flex gap-4">
-        <app-button
-          [text]="'Cancelar'"
-          [width]="'sm'"
-          [color]="'cancel'"
-          (click)="closeModal.set(true)"
-        />
-
-        @if (modalType() === 'add') {
-          <app-button
-            [text]="'Crear'"
-            [width]="'sm'"
-            (click)="addTeam()"
-          />
-        } @else if (modalType() === 'edit') {
-          <app-button
-            [text]="'Modificar'"
-            [width]="'sm'"
-            (click)="editTeam()"
-          />
+      <form (submit)="modalType() === 'add' ? addTeam() : editTeam(); $event.preventDefault()" novalidate class="flex flex-col gap-1">
+        <div class="flex gap-4 items-center">
+          <label for="add-team" class="w-24 text-start">Equipo</label>
+          <input id="add-team" type="text" class="h-10 p-2 border border-grey rounded-sm" [formField]="teamForm.name">
+        </div>
+        @if (teamForm.name().touched() && teamForm.name().invalid()) {
+          <span class="text-xs text-primary-red ml-28">{{ teamForm.name().errors()[0].message }}</span>
         }
-      </div>
+
+        <div class="flex gap-4 mt-4">
+          <app-button
+            [text]="'Cancelar'"
+            [width]="'sm'"
+            [color]="'cancel'"
+            (click)="closeModal.set(true)"
+          />
+
+          @if (modalType() === 'add') {
+            <app-button
+              [text]="'Crear'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!teamForm().valid()"
+            />
+          } @else if (modalType() === 'edit') {
+            <app-button
+              [text]="'Modificar'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!teamForm().valid()"
+            />
+          }
+        </div>
+      </form>
     </div>
   </app-modal>
 }

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
-import { FormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Player } from '@/app/shared/models/player.model';
 import { PlayerTeams } from '@/app/shared/models/player-teams.model';
 import { Team } from '@/app/shared/models/team.model';
@@ -15,9 +15,14 @@ import { IsActiveId } from '@/app/shared/models/is-active-id.model';
 
 type ModalType = 'add' | 'edit';
 
+interface PlayerForm {
+  name: string;
+  lastName: string;
+}
+
 @Component({
   selector: 'app-players-management',
-  imports: [Button, Modal, FormsModule, ConfirmModal, FindFilter],
+  imports: [Button, Modal, FormField, ConfirmModal, FindFilter],
   templateUrl: './players-management.html',
   styleUrl: './players-management.css'
 })
@@ -27,10 +32,15 @@ export default class PlayersManagement implements OnInit {
   protected openEditModal = signal<boolean>(false);
   protected closeEditModal = signal<boolean>(false);
   protected modalTitle = signal<string>('');
-  protected modalName = signal<string>('');
-  protected modalLastName = signal<string>('');
   protected modalType = signal<ModalType>('add');
   protected selectedPlayer = signal<Player | null>(null);
+
+  protected playerModel = signal<PlayerForm>({ name: '', lastName: '' });
+
+  protected playerForm = form(this.playerModel, (schemaPath) => {
+    required(schemaPath.name, { message: 'Nombre requerido' });
+    required(schemaPath.lastName, { message: 'Apellidos requeridos' });
+  });
 
   protected openTeamsModal = signal<boolean>(false);
   protected closeTeamsModal = signal<boolean>(false);
@@ -73,12 +83,15 @@ export default class PlayersManagement implements OnInit {
   }
 
   protected async addUser(): Promise<void> {
-    if (!this.modalName() || !this.modalLastName()) return;
+    this.playerForm().markAsTouched();
+    if (this.playerForm().invalid()) return;
+
+    const { name, lastName } = this.playerModel();
 
     const player: Player = {
       id: null,
-      name: this.modalName().trim(),
-      lastName: this.modalLastName().trim(),
+      name: name.trim(),
+      lastName: lastName.trim(),
       isActive: true,
       clubId: this.userManager.activeUser()?.clubId!
     };
@@ -93,19 +106,21 @@ export default class PlayersManagement implements OnInit {
   protected showEditPlayerModal(player: Player): void {
     this.modalType.set('edit');
     this.modalTitle.set('Editar Jugador');
-    this.modalName.set(player.name);
-    this.modalLastName.set(player.lastName);
+    this.playerModel.set({ name: player.name, lastName: player.lastName });
     this.selectedPlayer.set(player);
     this.openEditModal.set(true);
   }
 
   protected async editUser(): Promise<void> {
-    if (!this.modalName() || !this.modalLastName()) return;
+    this.playerForm().markAsTouched();
+    if (this.playerForm().invalid()) return;
+
+    const { name, lastName } = this.playerModel();
 
     const player: Player = {
       ...this.selectedPlayer()!,
-      name: this.modalName().trim(),
-      lastName: this.modalLastName().trim()
+      name: name.trim(),
+      lastName: lastName.trim()
     };
 
     await this.playerManager.updatePlayer(player);
@@ -173,8 +188,7 @@ export default class PlayersManagement implements OnInit {
   protected modalClosed(): void {
     this.openEditModal.set(false);
     this.modalTitle.set('');
-    this.modalName.set('');
-    this.modalLastName.set('');
+    this.playerForm().reset({ name: '', lastName: '' });
     this.selectedPlayer.set(null);
     this.closeEditModal.set(false);
   }

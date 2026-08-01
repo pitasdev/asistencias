@@ -48,52 +48,62 @@
     <div class="flex flex-col gap-8 justify-center items-center">
       <h3 class="font-semibold text-2xl">{{modalTitle()}}</h3>
 
-      <div class="flex flex-col gap-4">
-        <div class="flex gap-4 items-center">
-          <label for="name" class="text-start w-24">Nombre</label>
-          <input 
-            id="name" 
-            type="text" 
-            class="h-10 p-2 border border-grey rounded-sm" 
-            [ngModel]="modalName()" 
-            (ngModelChange)="modalName.set($event)"
-          >
+      <form (submit)="modalType() === 'add' ? addUser() : editUser(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <div class="flex gap-4 items-center">
+            <label for="name" class="text-start w-24">Nombre</label>
+            <input 
+              id="name" 
+              type="text" 
+              class="h-10 p-2 border border-grey rounded-sm" 
+              [formField]="playerForm.name"
+            >
+          </div>
+          @if (playerForm.name().touched() && playerForm.name().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ playerForm.name().errors()[0].message }}</span>
+          }
         </div>
-  
-        <div class="flex gap-4 items-center">
-          <label for="lastName" class="text-start w-24">Apellidos</label>
-          <input 
-            id="lastName" 
-            type="text" 
-            class="h-10 p-2 border border-grey rounded-sm" 
-            [ngModel]="modalLastName()" 
-            (ngModelChange)="modalLastName.set($event)"
-          >
+    
+        <div class="flex flex-col gap-1">
+          <div class="flex gap-4 items-center">
+            <label for="lastName" class="text-start w-24">Apellidos</label>
+            <input 
+              id="lastName" 
+              type="text" 
+              class="h-10 p-2 border border-grey rounded-sm" 
+              [formField]="playerForm.lastName"
+            >
+          </div>
+          @if (playerForm.lastName().touched() && playerForm.lastName().invalid()) {
+            <span class="text-xs text-primary-red ml-28">{{ playerForm.lastName().errors()[0].message }}</span>
+          }
         </div>
-      </div>
 
-      <div class="flex gap-4">
-        <app-button
-          [text]="'Cancelar'"
-          [width]="'sm'"
-          [color]="'cancel'"
-          (click)="closeEditModal.set(true)"
-        />
-        
-        @if (modalType() === 'add') {
+        <div class="flex gap-4 mt-4">
           <app-button
-            [text]="'Crear'"
+            [text]="'Cancelar'"
             [width]="'sm'"
-            (click)="addUser()"
+            [color]="'cancel'"
+            (click)="closeEditModal.set(true)"
           />
-        } @else if (modalType() === 'edit') {
-          <app-button
-            [text]="'Modificar'"
-            [width]="'sm'"
-            (click)="editUser()"
-          />
-        }
-      </div>
+          
+          @if (modalType() === 'add') {
+            <app-button
+              [text]="'Crear'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!playerForm().valid()"
+            />
+          } @else if (modalType() === 'edit') {
+            <app-button
+              [text]="'Modificar'"
+              [width]="'sm'"
+              [type]="'submit'"
+              [disabled]="!playerForm().valid()"
+            />
+          }
+        </div>
+      </form>
     </div>
   </app-modal>
 }
@@ -109,14 +119,13 @@
       <div class="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto px-1 w-full max-w-lg">
         @for (team of teamManager.allTeams(); track team.id) {
           <label class="flex items-center gap-2 p-2 border border-grey rounded cursor-pointer transition-colors">
-            <input type="checkbox" 
-                   [checked]="isSelectedTeam(team.id!)" 
-                   (change)="teamSelected(team)" 
-                   class="min-w-4 min-h-4 w-4 h-4 rounded border-grey text-blue-600 focus:ring-blue-500"
+            <input 
+              type="checkbox" 
+              [checked]="isSelectedTeam(team.id!)" 
+              (change)="teamSelected(team)" 
+              class="min-w-4 min-h-4 w-4 h-4 rounded border-grey text-blue-600 focus:ring-blue-500"
             >
-            <span class="flex-1 truncate text-sm" [title]="team.name">
-              {{team.name}}
-            </span>
+            <span class="flex-1 truncate text-sm" [title]="team.name">{{team.name}}</span>
           </label>
         }
       </div>
