@@ -119,8 +119,8 @@ export default class UserPanel implements OnInit {
     );
     
     if (response) {
-      this.passwordForm().reset({ actualPassword: '', newPassword: '', confirmPassword: '' });
       (this.document.activeElement as HTMLElement)?.blur();
+      this.passwordForm().reset({ actualPassword: '', newPassword: '', confirmPassword: '' });
     }
   }
 
