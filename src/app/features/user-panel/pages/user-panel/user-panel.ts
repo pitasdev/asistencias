@@ -1,5 +1,4 @@
-import { Component, inject, OnInit, signal, DOCUMENT } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, input, OnInit, signal, DOCUMENT } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, minLength, validate } from '@angular/forms/signals';
 import { Button } from "@/app/shared/components/button/button";
@@ -24,9 +23,12 @@ interface PasswordForm {
   styleUrl: './user-panel.css'
 })
 export default class UserPanel implements OnInit {
+  protected requiredPasswordChange = input(false, {
+    transform: (value: boolean | string | undefined) => value === true || value === 'true'
+  });
+  
   protected editName = signal<boolean>(false);
   protected name = signal<string>('');
-  protected requiredPasswordChange = signal<boolean>(false);
   protected validActualPassword = signal<boolean>(true);
 
   protected passwordModel = signal<PasswordForm>({
@@ -55,15 +57,10 @@ export default class UserPanel implements OnInit {
   protected readonly roleManager = inject(RoleManager);
   private readonly authManager = inject(AuthManager);
   private readonly infoModalManager = inject(InfoModalManager);
-  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
 
   ngOnInit(): void {
     this.name.set(this.userManager.activeUser()?.name!);
-    
-    if (this.activatedRoute.snapshot.queryParamMap.get('requiredPasswordChange') === 'true') {
-      this.requiredPasswordChange.set(true);
-    }
   }
 
   protected getTeamsString(): string {
