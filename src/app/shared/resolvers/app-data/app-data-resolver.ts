@@ -1,5 +1,6 @@
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
+import { ClubManager } from '@/app/domain/club/services/club-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
@@ -14,6 +15,7 @@ export const appDataResolver: ResolveFn<boolean> = async (route, state) => {
   const reasonManager = inject(ReasonManager);
   const authManager = inject(AuthManager);
   const userTeamsManager = inject(UserTeamsManager);
+  const clubManager = inject(ClubManager);
   
   if (!authManager.token()) return false;
 
@@ -22,6 +24,7 @@ export const appDataResolver: ResolveFn<boolean> = async (route, state) => {
   await attendanceTypeManager.getAttendanceTypesByClubId(userManager.activeUser()?.clubId!);
   await reasonManager.getReasonsByClubId(userManager.activeUser()?.clubId!);
   await userTeamsManager.getUserTeamsByUserId(userManager.activeUser()?.id!);
+  await clubManager.getSeasonsByClubId(userManager.activeUser()?.clubId!);
   
   return true;
 };

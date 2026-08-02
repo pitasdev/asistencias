@@ -31,10 +31,10 @@
       <select 
         name="reason" 
         class="min-w-40 w-fit h-10 p-2 border rounded-sm border-grey" 
-        [ngModel]="attendance().reasonId" 
+        [ngModel]="attendance().reasonId ?? 0" 
         (ngModelChange)="reasonChange($event)"
       >
-        <option value="0"></option>
+        <option value="0">Seleccionar motivo</option>
         @for (reason of reasons(); track reason.id) {
           <option value="{{reason.id}}">{{reason.name}}</option>
         }

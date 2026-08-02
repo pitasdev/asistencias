@@ -9,8 +9,8 @@
       <span>Equipo</span>
     </div>
   
-    <select class="w-full h-10 p-2 border rounded-sm border-grey" [ngModel]="selectedTeam()?.id" (ngModelChange)="onTeamsChange($event)">
-      <option value="0"></option>
+    <select class="w-full h-10 p-2 border rounded-sm border-grey" [ngModel]="selectedTeam()?.id ?? 0" (ngModelChange)="onTeamsChange($event)">
+      <option value="0">Seleccionar equipo</option>
       @for (team of teams(); track team.id) {
         <option value="{{team.id}}">{{team.name}}</option>
       }

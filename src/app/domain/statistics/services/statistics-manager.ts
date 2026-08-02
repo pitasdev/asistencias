@@ -1,55 +1,40 @@
 import { inject, Service, signal } from '@angular/core';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
-import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type.model';
-import { AttendanceTypeManager } from '../../attendance-type/services/attendance-type-manager';
+import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 
 @Service()
 export class StatisticsManager {
+  private readonly attendanceManager = inject(AttendanceManager);
+  private readonly attendanceTypeManager = inject(AttendanceTypeManager);
+
   teamAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceStats = signal<Map<AttendanceType, Attendance[]>>(new Map());
 
-  private attendanceQueryFilter: AttendanceQueryFilters = {
-    startDate: '',
-    endDate: ''
-  };
-
-  private readonly attendanceManager = inject(AttendanceManager);
-  private readonly attendanceTypeManager = inject(AttendanceTypeManager);
-
-  constructor() {
-    this.setFilterDates();
-  }
-
-  private setFilterDates(): void {
-    const now = new Date();
-    const isPastAugust = now.getMonth() >= 7;
-    const year = now.getFullYear();
-
-    this.attendanceQueryFilter = {
-      startDate: `${isPastAugust ? year : year - 1}-08-01`,
-      endDate: `${isPastAugust ? year + 1 : year}-07-31`
-    };
-  }
-
-  async getTeamStats(teamId: number): Promise<void> {
-    await this.attendanceManager.getAttendancesByTeamIds([teamId], this.attendanceQueryFilter);
+  async getTeamStats(teamId: number, seasonName: string): Promise<void> {
+    await this.attendanceManager.getAttendancesByTeamIds([teamId], { season: seasonName });
     const attendances = this.attendanceManager.attendances();
     
     const { averagesByType } = this.calculateStats(attendances);
     this.teamAttendanceAverage.set(averagesByType);
   }
 
-  async getPlayerStats(playerId: number): Promise<void> {
-    await this.attendanceManager.getAttendancesByPlayerId(playerId, this.attendanceQueryFilter);
+  async getPlayerStats(playerId: number, seasonName: string): Promise<void> {
+    await this.attendanceManager.getAttendancesByPlayerId(playerId, { season: seasonName });
     const attendances = this.attendanceManager.attendances();
     
     const { averagesByType, attendancesByType } = this.calculateStats(attendances);
     
     this.playerAttendanceAverage.set(averagesByType);
     this.playerAttendanceStats.set(attendancesByType);
+  }
+
+  clearStats(): void {
+    this.teamAttendanceAverage.set(new Map());
+    this.playerAttendanceAverage.set(new Map());
+    this.playerAttendanceStats.set(new Map());
   }
 
   private calculateStats(attendances: Attendance[]): { 

@@ -6,8 +6,11 @@
     [selectedTeam]="selectedTeam()"
     [players]="playerManager.players()"
     [selectedPlayer]="selectedPlayer()"
+    [seasons]="clubManager.seasons()"
+    [selectedSeason]="selectedSeason()"
     (teamsChange)="onTeamsChange($event)"
     (playerChange)="onPlayerChange($event)"
+    (seasonChange)="onSeasonChange($event)"
   />
 
   @if (attendanceManager.attendances().length > 0 && selectedTeam() !== null && selectedPlayer() !== null) {

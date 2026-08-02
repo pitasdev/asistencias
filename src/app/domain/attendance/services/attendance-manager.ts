@@ -24,7 +24,7 @@ export class AttendanceManager {
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getAttendancesByTeamIds(teamIds: number[], filters: AttendanceQueryFilters): Promise<void> {
-    if (!filters.selectedDate && (!filters.startDate || !filters.endDate)) return;
+    if (!filters.selectedDate && (!filters.startDate || !filters.endDate) && !filters.season) return;
 
     const attendances: Attendance[] = [];
     

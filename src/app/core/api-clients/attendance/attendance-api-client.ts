@@ -16,6 +16,8 @@ export class AttendanceApiClient {
       queryParams += `?selectedDate=${filters.selectedDate}`;
     } else if (filters.startDate && filters.endDate) {
       queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
+    } else if (filters.season) {
+      queryParams += `?season=${filters.season}`;
     }
 
     return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/team/${teamId}${queryParams}`);
@@ -27,6 +29,8 @@ export class AttendanceApiClient {
       queryParams += `?selectedDate=${filters.selectedDate}`;
     } else if (filters.startDate && filters.endDate) {
       queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
+    } else if (filters.season) {
+      queryParams += `?season=${filters.season}`;
     }
 
     return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/club/${clubId}${queryParams}`);
@@ -38,6 +42,8 @@ export class AttendanceApiClient {
       queryParams += `?selectedDate=${filters.selectedDate}`;
     } else if (filters.startDate && filters.endDate) {
       queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
+    } else if (filters.season) {
+      queryParams += `?season=${filters.season}`;
     }
 
     return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}${queryParams}`);

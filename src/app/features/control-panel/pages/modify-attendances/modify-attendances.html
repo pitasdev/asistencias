@@ -19,10 +19,10 @@
 
       <select 
         class="w-full h-10 p-2 border rounded-sm border-grey" 
-        [ngModel]="selectedModifyTeam()?.id" 
+        [ngModel]="selectedModifyTeam()?.id ?? 0" 
         (ngModelChange)="selectedModifyTeamChange($event)"
       >
-        <option value="0"></option>
+        <option value="0">Seleccionar equipo</option>
         @for (team of teamManager.userTeams(); track team.id) {
           <option value="{{team.id}}">{{team.name}}</option>
         }
@@ -76,10 +76,10 @@
 
       <select 
         class="w-full h-10 p-2 border rounded-sm border-grey" 
-        [ngModel]="selectedDeleteTeam()?.id" 
+        [ngModel]="selectedDeleteTeam()?.id ?? 0" 
         (ngModelChange)="selectedDeleteTeamChange($event)"
       >
-        <option value="0"></option>
+        <option value="0">Seleccionar equipo</option>
         @for (team of teamManager.userTeams(); track team.id) {
           <option value="{{team.id}}">{{team.name}}</option>
         }

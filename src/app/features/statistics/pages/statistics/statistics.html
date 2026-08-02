@@ -6,8 +6,12 @@
     [selectedTeam]="selectedTeam()"
     [players]="playerManager.players()" 
     [selectedPlayer]="selectedPlayer()" 
+    [seasons]="clubManager.seasons()"
+    [selectedSeason]="selectedSeason()"
+    [showSeason]="canManageSeason()"
     (teamChange)="onTeamChange($event)"
-    (playerChange)="onPlayerChange($event)" 
+    (playerChange)="onPlayerChange($event)"
+    (seasonChange)="onSeasonChange($event)" 
   />
 
   @if (selectedTeam()) {

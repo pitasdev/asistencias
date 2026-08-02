@@ -1,5 +1,6 @@
 import { Player } from '@/app/shared/models/player.model';
 import { Team } from '@/app/shared/models/team.model';
+import { Season } from '@/app/shared/models/season.model';
 import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToggleContent } from '@/app/shared/components/toggle-content/toggle-content';
@@ -16,9 +17,13 @@ export class StatisticsFilter {
   selectedTeam = input.required<Team | null>();
   players = input.required<Player[]>();
   selectedPlayer = input.required<Player | null>();
+  seasons = input.required<Season[]>();
+  selectedSeason = input.required<Season | null>();
+  showSeason = input(true);
 
   teamChange = output<Team | null>();
   playerChange = output<Player | null>();
+  seasonChange = output<Season | null>();
 
   forceUpdateHeight = signal<boolean>(false);
 
@@ -35,5 +40,15 @@ export class StatisticsFilter {
   onPlayerChange(event: string) {
     const player = this.players().find(p => p.id === Number(event));
     this.playerChange.emit(player || null);
+  }
+
+  onSeasonChange(event: string) {
+    const season = this.seasons().find(s => s.name === event);
+    this.seasonChange.emit(season || null);
+
+    // Trigger height recalculation after the DOM updates with the new selector
+    setTimeout(() => {
+      this.forceUpdateHeight.set(true);
+    }, 50);
   }
 }
