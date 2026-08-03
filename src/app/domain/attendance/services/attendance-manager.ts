@@ -1,4 +1,4 @@
-import { Attendance } from '@/app/shared/models/attendance.model';
+﻿import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -48,7 +48,7 @@ export class AttendanceManager {
         playersTeamIds.push(teamId);
       }
 
-      if (a.isAdicional && !adicionalPlayersId.includes(a.playerId)) {
+      if (a.isAdditional && !adicionalPlayersId.includes(a.playerId)) {
         adicionalPlayersId.push(a.playerId);
       }
     });
@@ -106,7 +106,7 @@ export class AttendanceManager {
     });
     await this.playerManager.getPlayersByTeamIds(playersTeamIds);
 
-    const adicionalPlayers = attendances.filter(a => a.isAdicional);
+    const adicionalPlayers = attendances.filter(a => a.isAdditional);
     for (const adicionalPlayer of adicionalPlayers) {
       if (!this.playerManager.players().some(p => p.id === adicionalPlayer.playerId)) {
         const player = await this.playerManager.getPlayerById(adicionalPlayer.playerId);
@@ -245,7 +245,7 @@ export class AttendanceManager {
         id: null,
         hasAttended: true,
         date: date,
-        isAdicional: false,
+        isAdditional: false,
         reasonDescription: null,
         attendanceTypeId: attendanceTypeId,
         reasonId: null,
@@ -263,7 +263,7 @@ export class AttendanceManager {
       id: null,
       hasAttended: true,
       date: date,
-      isAdicional: true,
+      isAdditional: true,
       reasonDescription: null,
       attendanceTypeId: attendanceTypeId,
       reasonId: null,
