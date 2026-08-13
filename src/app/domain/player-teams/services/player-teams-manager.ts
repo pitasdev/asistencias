@@ -1,6 +1,7 @@
 import { PlayerTeamsApiClient } from '@/app/core/api-clients/player-teams/player-teams-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { PlayerTeams } from '@/app/shared/models/player-teams.model';
+import { PlayerTeamsRequest } from '@/app/shared/models/player/player-teams-request.model';
+import { PlayerTeams } from '@/app/shared/models/player/player-teams.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -24,7 +25,7 @@ export class PlayerTeamsManager {
     this._playerTeams.set(playerTeams);
   }
 
-  async updatePlayerTeams(playerTeams: PlayerTeams): Promise<void> {
+  async updatePlayerTeams(playerTeams: PlayerTeamsRequest): Promise<void> {
     const response = await firstValueFrom(
       this.playerTeamsApiClient.updatePlayerTeams(playerTeams)
         .pipe(
@@ -49,5 +50,12 @@ export class PlayerTeamsManager {
   deletePlayer(playerId: number): void {
     const updatePlayer = this._playerTeams().filter(pt => pt.player.id !== playerId);
     this._playerTeams.set(updatePlayer);
+  }
+
+  toPlayerTeamsRequest(playerTeams: PlayerTeams): PlayerTeamsRequest {
+    return {
+      player: { ...playerTeams.player, clubId: playerTeams.player.club.id },
+      teams: playerTeams.teams.map(t => ({ ...t, clubId: t.club.id }))
+    };
   }
 }

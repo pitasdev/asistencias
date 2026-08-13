@@ -1,5 +1,5 @@
 import { AttendanceTypeApiClient } from '@/app/core/api-clients/attendance-type/attendance-type-api-client';
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 

@@ -1,14 +1,14 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { PlayerControlFilter } from "@/app/features/control-panel/components/player-control-filter/player-control-filter";
-import { Team } from '@/app/shared/models/team.model';
-import { Player } from '@/app/shared/models/player.model';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { AttendancePlayerControlResult } from "@/app/features/control-panel/components/attendance-player-control-result/attendance-player-control-result";
-import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
-import { Season } from '@/app/shared/models/season.model';
+import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
+import { Season } from '@/app/shared/models/season/season.model';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
+import { Team } from '@/app/shared/models/team/team.model';
+import { Player } from '@/app/shared/models/player/player.model';
 
 @Component({
   selector: 'app-player-control',

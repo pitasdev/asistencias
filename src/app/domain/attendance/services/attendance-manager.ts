@@ -1,17 +1,15 @@
-﻿import { AttendanceRequest } from '@/app/shared/models/attendance-request.model';
-import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
+﻿import { AttendanceRequest } from '@/app/shared/models/attendance/attendance-request.model';
+import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
-import { Player } from '@/app/shared/models/player.model';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
-import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
-import { Attendance } from '@/app/shared/models/attendance.model';
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
-import { Team } from '@/app/shared/models/team.model';
-import { ClubManager } from '../../club/services/club-manager';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
+import { Team } from '@/app/shared/models/team/team.model';
+import { Player } from '@/app/shared/models/player/player.model';
 
 @Service()
 export class AttendanceManager {
@@ -23,9 +21,7 @@ export class AttendanceManager {
 
   private readonly attendanceApiClient = inject(AttendanceApiClient);
   private readonly playerManager = inject(PlayerManager);
-  private readonly userManager = inject(UserManager);
   private readonly teamManager = inject(TeamManager);
-  private readonly clubManager = inject(ClubManager);
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getAttendancesByTeamIds(teamIds: number[], filters: AttendanceQueryFilters): Promise<void> {
@@ -244,6 +240,8 @@ export class AttendanceManager {
   async loadDefaultAttendances(team: Team, date: string, attendanceType: AttendanceType): Promise<Attendance[]> {
     await this.playerManager.getPlayersByTeamIds([team.id!]);
     const attendances: Attendance[] = [];
+    console.log(team);
+    
     
     this.playerManager.players().forEach(player => {
       attendances.push({
@@ -267,8 +265,8 @@ export class AttendanceManager {
           name: team.name
         },
         club: {
-          id: team.clubId,
-          name: this.clubManager.club()?.name ?? ''
+          id: team.club.id,
+          name: team.club.name
         }
       });
     });
@@ -298,8 +296,8 @@ export class AttendanceManager {
         name: team.name
       },
       club: {
-        id: team.clubId,
-        name: this.clubManager.club()?.name ?? ''
+        id: team.club.id,
+        name: team.club.name
       }
     }
 

@@ -1,4 +1,4 @@
-export interface Reason {
+export interface ReasonRequest {
   readonly id: number | null,
   name: string,
   order: number,

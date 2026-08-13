@@ -2,8 +2,13 @@ export interface User {
   readonly id: number | null,
   name: string,
   username: string,
-  password?: string,
   hasDefaultPassword: boolean,
-  roleId: number,
-  clubId: number
+  role: {
+    id: number,
+    name: string
+  },
+  club: {
+    id: number,
+    name: string
+  }
 }

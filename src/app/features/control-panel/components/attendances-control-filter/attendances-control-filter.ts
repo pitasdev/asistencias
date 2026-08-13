@@ -1,8 +1,8 @@
-import { Team } from '@/app/shared/models/team.model';
 import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
+import { Team } from '@/app/shared/models/team/team.model';
 
 @Component({
   selector: 'app-attendances-control-filter',

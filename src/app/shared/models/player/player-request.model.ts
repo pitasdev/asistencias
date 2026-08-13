@@ -1,4 +1,4 @@
-export interface Player {
+export interface PlayerRequest {
   readonly id: number | null,
   name: string,
   lastName: string,

@@ -1,5 +1,5 @@
-import { Club } from '@/app/shared/models/club.model';
-import { Season } from '@/app/shared/models/season.model';
+import { Club } from '@/app/shared/models/club/club.model';
+import { Season } from '@/app/shared/models/season/season.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';

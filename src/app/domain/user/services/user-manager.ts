@@ -1,7 +1,8 @@
 import { UserApiClient } from '@/app/core/api-clients/user/user-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { ResetPassword } from '@/app/shared/models/reset-password.model';
-import { User } from '@/app/shared/models/user.model';
+import { ResetPassword } from '@/app/shared/models/password/reset-password.model';
+import { UserRequest } from '@/app/shared/models/user/user-request.model';
+import { User } from '@/app/shared/models/user/user.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -54,7 +55,7 @@ export class UserManager {
     return isAvailable;
   }
 
-  async createUser(user: User): Promise<void> {
+  async createUser(user: UserRequest): Promise<void> {
     const createUser = await firstValueFrom(
       this.userApiClient.createUser(user)
         .pipe(
@@ -67,7 +68,7 @@ export class UserManager {
     }
   }
 
-  async updateUser(user: User): Promise<void> {
+  async updateUser(user: UserRequest): Promise<void> {
     const updateUser = await firstValueFrom(
       this.userApiClient.updateUser(user)
         .pipe(

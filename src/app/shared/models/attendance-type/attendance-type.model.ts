@@ -3,5 +3,8 @@ export interface AttendanceType {
   name: string,
   order: number,
   isActive: boolean,
-  clubId: number
+  club: { 
+    id: number, 
+    name: string 
+  } 
 }

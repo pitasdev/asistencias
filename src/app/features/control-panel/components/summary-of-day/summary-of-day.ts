@@ -2,8 +2,8 @@ import { Component, computed, effect, inject, output, Signal, signal } from '@an
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
-import { Team } from '@/app/shared/models/team.model';
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { Team } from '@/app/shared/models/team/team.model';
 
 interface AttendanceSummary {
   team: Team;

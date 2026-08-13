@@ -1,4 +1,4 @@
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';

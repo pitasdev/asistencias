@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { CustomHttpResponse } from '../../models/custom-http-response.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
 
 export const errorHandlingInterceptor: HttpInterceptorFn = (req, next) => {
   const infoModalManager = inject(InfoModalManager);

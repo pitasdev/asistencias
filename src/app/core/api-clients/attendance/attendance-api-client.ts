@@ -1,7 +1,7 @@
-import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
-import { Attendance } from '@/app/shared/models/attendance.model';
-import { AttendanceRequest } from '@/app/shared/models/attendance-request.model';
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
+import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { AttendanceRequest } from '@/app/shared/models/attendance/attendance-request.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';

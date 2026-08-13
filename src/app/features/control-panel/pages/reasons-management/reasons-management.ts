@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FindFilter } from "../../components/find-filter/find-filter";
-import { Reason } from '@/app/shared/models/reason.model';
+import { ReasonRequest } from '@/app/shared/models/reason/reason-request.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,8 @@ import { Modal } from "@/app/shared/components/modal/modal";
 import { Button } from "@/app/shared/components/button/button";
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
 import { Switch } from "@/app/shared/components/switch/switch";
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { Reason } from '@/app/shared/models/reason/reason.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -47,7 +48,7 @@ export default class ReasonsManagement implements OnInit {
   protected readonly reasonManager = inject(ReasonManager);
 
   async ngOnInit(): Promise<void> {
-    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.club.id!);
     this.reasons.set(this.reasonManager.reasons());
   }
 
@@ -77,14 +78,15 @@ export default class ReasonsManagement implements OnInit {
 
     const { name, requiresDescription } = this.reasonModel();
 
-    const updatedTeam: Reason = {
+    const updatedTeam: ReasonRequest = {
       ...this.selectedReason()!,
       name: name.trim(),
-      requiresDescription
+      requiresDescription,
+      clubId: this.selectedReason()?.club.id!
     };
 
     await this.reasonManager.updateReasons([updatedTeam]);
-    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.club.id!);
     
     this.closeModal.set(true);
   }
@@ -123,17 +125,17 @@ export default class ReasonsManagement implements OnInit {
 
     const { name, requiresDescription } = this.reasonModel();
 
-    const newReason: Reason = {
+    const newReason: ReasonRequest = {
       id: null,
       name: name.trim(),
       order: this.reasonManager.reasons().length + 1,
       requiresDescription,
       isActive: true,
-      clubId: this.userManager.activeUser()?.clubId!
+      clubId: this.userManager.activeUser()?.club.id!
     };
 
     await this.reasonManager.createReason(newReason);
-    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.club.id!);
     this.reasons.set(this.reasonManager.reasons());
 
     this.closeModal.set(true);

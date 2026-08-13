@@ -1,6 +1,7 @@
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
-import { ResetPassword } from '@/app/shared/models/reset-password.model';
-import { User } from '@/app/shared/models/user.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
+import { ResetPassword } from '@/app/shared/models/password/reset-password.model';
+import { UserRequest } from '@/app/shared/models/user/user-request.model';
+import { User } from '@/app/shared/models/user/user.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
@@ -22,11 +23,11 @@ export class UserApiClient {
     return this.http.get<{ isAvailable: boolean }>(`${environment.baseUrlApi}/user/check/${username}`);
   }
 
-  createUser(user: User): Observable<CustomHttpResponse> {
+  createUser(user: UserRequest): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/user`, user);
   }
 
-  updateUser(user: User): Observable<CustomHttpResponse> {
+  updateUser(user: UserRequest): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/user`, user);
   }
 

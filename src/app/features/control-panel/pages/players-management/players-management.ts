@@ -2,16 +2,17 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { form, FormField, required } from '@angular/forms/signals';
-import { Player } from '@/app/shared/models/player.model';
-import { PlayerTeams } from '@/app/shared/models/player-teams.model';
-import { Team } from '@/app/shared/models/team.model';
+import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
+import { PlayerTeams } from '@/app/shared/models/player/player-teams.model';
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { PlayerTeamsManager } from '@/app/domain/player-teams/services/player-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { Player } from '@/app/shared/models/player/player.model';
+import { Team } from '@/app/shared/models/team/team.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -56,7 +57,7 @@ export default class PlayersManagement implements OnInit {
   protected readonly teamManager = inject(TeamManager);
 
   async ngOnInit(): Promise<void> {
-    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.playerTeams.set(this.playerTeamsManager.playerTeams());
   }
 
@@ -93,11 +94,15 @@ export default class PlayersManagement implements OnInit {
       name: name.trim(),
       lastName: lastName.trim(),
       isActive: true,
-      clubId: this.userManager.activeUser()?.clubId!
+      club: {
+        id: this.userManager.activeUser()?.club.id!,
+        name: this.userManager.activeUser()?.club.name!
+      }
     };
 
-    await this.playerManager.createPlayer(player);
-    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    const playerRequest = this.toPlayerRequest(player);
+    await this.playerManager.createPlayer(playerRequest);
+    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.playerTeams.set(this.playerTeamsManager.playerTeams());
 
     this.closeEditModal.set(true);
@@ -123,15 +128,17 @@ export default class PlayersManagement implements OnInit {
       lastName: lastName.trim()
     };
 
-    await this.playerManager.updatePlayer(player);
-    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    const playerRequest = this.toPlayerRequest(player);
+    await this.playerManager.updatePlayer(playerRequest);
+    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
 
     this.closeEditModal.set(true);
   }
 
   protected showTeamsModal(player: Player): void {
-    this.selectedPlayerTeams.set(this.playerTeamsManager.findPlayerTeamsByPlayerId(player.id!));
-    this.originalPlayerTeams = JSON.parse(JSON.stringify(this.selectedPlayerTeams()));
+    const playerTeams = this.playerTeamsManager.findPlayerTeamsByPlayerId(player.id!);
+    this.originalPlayerTeams = structuredClone(playerTeams);
+    this.selectedPlayerTeams.set(structuredClone(playerTeams));
     this.openTeamsModal.set(true);
   }
 
@@ -151,7 +158,9 @@ export default class PlayersManagement implements OnInit {
   }
 
   protected async saveTeams(): Promise<void> {
-    await this.playerTeamsManager.updatePlayerTeams(this.selectedPlayerTeams()!);
+    const playerTeamsRequest = this.playerTeamsManager.toPlayerTeamsRequest(this.selectedPlayerTeams()!);
+    await this.playerTeamsManager.updatePlayerTeams(playerTeamsRequest);
+    this.playerTeamsManager.replacePlayerTeams(this.selectedPlayerTeams()!);
     this.closeTeamsModal.set(true);
   }
 
@@ -198,5 +207,9 @@ export default class PlayersManagement implements OnInit {
     this.selectedPlayerTeams.set(null);
     this.originalPlayerTeams = null;
     this.closeTeamsModal.set(false);
+  }
+
+  protected toPlayerRequest(player: Player): PlayerRequest {
+    return { ...player, clubId: player.club.id };
   }
 }

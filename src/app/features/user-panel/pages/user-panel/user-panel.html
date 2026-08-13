@@ -59,7 +59,7 @@
   
       <div class="flex flex-col">
         <span class=" font-semibold text-[.875rem]">Rol</span>
-        <span class="text-[.875rem] text-[#777]">{{roleManager.findRoleById(userManager.activeUser()?.roleId!)?.name}}</span>
+        <span class="text-[.875rem] text-[#777]">{{userManager.activeUser()?.role?.name}}</span>
       </div>
     </div>
   </app-toggle-content>

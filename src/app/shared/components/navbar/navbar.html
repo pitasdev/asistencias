@@ -42,10 +42,7 @@
       </a>
     </li>
 
-    @if (
-      userManager.activeUser()?.roleId === roleManager.findRoleByName('admin')?.id ||
-      userManager.activeUser()?.roleId === roleManager.findRoleByName('super')?.id
-    ) {
+    @if (userManager.activeUser()?.role?.name === 'admin' || userManager.activeUser()?.role?.name === 'super') {
       <li class="h-16 flex-1 content-center overflow-hidden">
         <a 
           routerLink="/panel-de-control" 

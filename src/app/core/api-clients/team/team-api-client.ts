@@ -1,6 +1,7 @@
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Team } from '@/app/shared/models/team.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { TeamRequest } from '@/app/shared/models/team/team-request.model';
+import { Team } from '@/app/shared/models/team/team.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
@@ -18,11 +19,11 @@ export class TeamApiClient {
     return this.http.get<Team[]>(`${environment.baseUrlApi}/team/club/${clubId}`);
   }
 
-  createTeam(team: Team): Observable<CustomHttpResponse> {
+  createTeam(team: TeamRequest): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/team`, team);
   }
 
-  updateTeams(teams: Team[]): Observable<CustomHttpResponse> {
+  updateTeams(teams: TeamRequest[]): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/team`, teams);
   }
 

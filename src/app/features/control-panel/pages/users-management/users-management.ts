@@ -3,16 +3,18 @@ import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, minLength, validate, disabled } from '@angular/forms/signals';
-import { User } from '@/app/shared/models/user.model';
-import { ResetPassword } from '@/app/shared/models/reset-password.model';
-import { UserTeams } from '@/app/shared/models/user-teams.model';
-import { Team } from '@/app/shared/models/team.model';
+import { UserRequest } from '@/app/shared/models/user/user-request.model';
+import { ResetPassword } from '@/app/shared/models/password/reset-password.model';
+import { UserTeams } from '@/app/shared/models/user/user-teams.model';
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { Team } from '@/app/shared/models/team/team.model';
+import { User } from '@/app/shared/models/user/user.model';
+import { UserTeamsRequest } from '@/app/shared/models/user/user-teams-request.model';
 
 type ModalType = 'add' | 'edit' | 'resetPassword';
 
@@ -47,8 +49,6 @@ export default class UsersManagement implements OnInit {
     return map;
   });
   protected canEditUserById = computed(() => {
-    const superRoleId = this.roleManager.findRoleByName('super')?.id;
-    const adminRoleId = this.roleManager.findRoleByName('admin')?.id;
     const activeUser = this.userManager.activeUser();
 
     const map = new Map<number, boolean>();
@@ -56,14 +56,12 @@ export default class UsersManagement implements OnInit {
       const user = ut.user;
       let canEdit = false;
 
-      if (superRoleId && adminRoleId) {
-        if (activeUser?.roleId === superRoleId) {
-          canEdit = true;
-        } else if (activeUser?.roleId === adminRoleId && activeUser?.id === user.id) {
-          canEdit = true;
-        } else if (activeUser?.roleId === adminRoleId) {
-          canEdit = user.roleId !== adminRoleId && user.roleId !== superRoleId;
-        }
+      if (activeUser?.role.name === 'super') {
+        canEdit = true;
+      } else if (activeUser?.role.name === 'admin' && activeUser?.id === user.id) {
+        canEdit = true;
+      } else if (activeUser?.role.name === 'admin') {
+        canEdit = user.role.name !== 'admin' && user.role.name !== 'super';
       }
 
       map.set(user.id!, canEdit);
@@ -118,6 +116,7 @@ export default class UsersManagement implements OnInit {
   protected openTeamsModal = signal<boolean>(false);
   protected closeTeamsModal = signal<boolean>(false);
   protected selectedUserTeams = signal<UserTeams | null>(null);
+  private originalUserTeams: UserTeams | null = null;
 
   protected openDeleteModal = signal<boolean>(false);
   protected deleteModalText = signal<string>('');
@@ -128,7 +127,7 @@ export default class UsersManagement implements OnInit {
   protected readonly teamManager = inject(TeamManager);
 
   async ngOnInit(): Promise<void> {
-    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.userTeams.set(this.userTeamsManager.userTeams());
   }
 
@@ -151,7 +150,7 @@ export default class UsersManagement implements OnInit {
       username: user.username,
       password: '',
       confirmPassword: '',
-      roleId: String(user.roleId),
+      roleId: String(user.role.id),
     });
     this.openAddModal.set(true);
   }
@@ -164,7 +163,7 @@ export default class UsersManagement implements OnInit {
       username: '',
       password: '',
       confirmPassword: '',
-      roleId: String(this.roleManager.findRoleByName('user')?.id!),
+      roleId: String(this.roleManager.roles()[0].id),
     });
     this.openAddModal.set(true);
   }
@@ -187,18 +186,18 @@ export default class UsersManagement implements OnInit {
     const check = await this.userManager.checkAvailableUsername(username);
     if (!check.isAvailable) return;
 
-    const user: User = {
+    const user: UserRequest = {
       id: null,
       name,
       username,
       password,
       hasDefaultPassword: true,
       roleId: Number(roleId),
-      clubId: this.userManager.activeUser()?.clubId!
+      clubId: this.userManager.activeUser()?.club.id!
     };
 
     await this.userManager.createUser(user);
-    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.userTeams.set(this.userTeamsManager.userTeams());
 
     this.closeModal.set(true);
@@ -210,14 +209,15 @@ export default class UsersManagement implements OnInit {
 
     const { name, roleId } = this.userModel();
     
-    const updatedUser: User = {
+    const updatedUser: UserRequest = {
       ...this.selectedUser()!,
       name,
-      roleId: Number(roleId)
+      roleId: Number(roleId),
+      clubId: this.selectedUser()?.club.id!
     };
 
     await this.userManager.updateUser(updatedUser);
-    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
 
     this.closeModal.set(true);
   }
@@ -249,7 +249,7 @@ export default class UsersManagement implements OnInit {
       username: user.username,
       password: '',
       confirmPassword: '',
-      roleId: String(user.roleId),
+      roleId: String(user.role.id),
     });
     this.openAddModal.set(true);
   }
@@ -273,6 +273,7 @@ export default class UsersManagement implements OnInit {
 
   protected showTeamsModal(user: User): void {
     const userTeams = this.userTeamsManager.findUserTeamsByUserId(user.id!);
+    this.originalUserTeams = structuredClone(userTeams);
     this.selectedUserTeams.set(structuredClone(userTeams));
     this.openTeamsModal.set(true);
   }
@@ -293,12 +294,14 @@ export default class UsersManagement implements OnInit {
   }
 
   protected async saveTeams(): Promise<void> {
-    await this.userTeamsManager.updateUserTeams(this.selectedUserTeams()!);
+    const userTeamsRequest = this.userTeamsManager.toUserTeamsRequest(this.selectedUserTeams()!);
+    await this.userTeamsManager.updateUserTeams(userTeamsRequest);
     this.userTeamsManager.replaceUserTeams(this.selectedUserTeams()!);
     this.closeTeamsModal.set(true);
   }
 
   protected cancelTeamsModal(): void {
+    this.userTeamsManager.replaceUserTeams(this.originalUserTeams!);
     this.closeTeamsModal.set(true);
   }
 
@@ -313,6 +316,7 @@ export default class UsersManagement implements OnInit {
   protected teamsModalClosed(): void {
     this.openTeamsModal.set(false);
     this.selectedUserTeams.set(null);
+    this.originalUserTeams = null;
     this.closeTeamsModal.set(false);
   }
 }

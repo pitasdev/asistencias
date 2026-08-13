@@ -1,4 +1,3 @@
-import { Team } from '@/app/shared/models/team.model';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button, ButtonColor } from "@/app/shared/components/button/button";
@@ -7,6 +6,7 @@ import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-moda
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { dateFormatter } from '@/app/shared/utils/dateFormatter';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
+import { Team } from '@/app/shared/models/team/team.model';
 
 type ModalType = 'modify' | 'delete';
 

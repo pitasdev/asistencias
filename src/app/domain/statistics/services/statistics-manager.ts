@@ -1,8 +1,8 @@
 import { inject, Service, signal } from '@angular/core';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
 
 @Service()
 export class StatisticsManager {

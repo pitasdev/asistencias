@@ -1,6 +1,7 @@
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Reason } from '@/app/shared/models/reason.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { ReasonRequest } from '@/app/shared/models/reason/reason-request.model';
+import { Reason } from '@/app/shared/models/reason/reason.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
@@ -14,11 +15,11 @@ export class ReasonApiClient {
     return this.http.get<Reason[]>(`${environment.baseUrlApi}/reason/club/${clubId}`);
   }
 
-  createReason(reason: Reason): Observable<CustomHttpResponse> {
+  createReason(reason: ReasonRequest): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/reason`, reason);
   }
 
-  updateReasons(reasons: Reason[]): Observable<CustomHttpResponse> {
+  updateReasons(reasons: ReasonRequest[]): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/reason`, reasons);
   }
 

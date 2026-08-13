@@ -20,12 +20,12 @@ export const appDataResolver: ResolveFn<boolean> = async (route, state) => {
   if (!authManager.token()) return false;
 
   await teamManager.getTeamsByUserId(userManager.activeUser()?.id!);
-  await teamManager.getTeamsByClubId(userManager.activeUser()?.clubId!);
-  await attendanceTypeManager.getAttendanceTypesByClubId(userManager.activeUser()?.clubId!);
-  await reasonManager.getReasonsByClubId(userManager.activeUser()?.clubId!);
+  await teamManager.getTeamsByClubId(userManager.activeUser()?.club.id!);
+  await attendanceTypeManager.getAttendanceTypesByClubId(userManager.activeUser()?.club.id!);
+  await reasonManager.getReasonsByClubId(userManager.activeUser()?.club.id!);
   await userTeamsManager.getUserTeamsByUserId(userManager.activeUser()?.id!);
-  await clubManager.getClubById(userManager.activeUser()?.clubId!);
-  await clubManager.getSeasonsByClubId(userManager.activeUser()?.clubId!);
+  await clubManager.getClubById(userManager.activeUser()?.club.id!);
+  await clubManager.getSeasonsByClubId(userManager.activeUser()?.club.id!);
   
   return true;
 };

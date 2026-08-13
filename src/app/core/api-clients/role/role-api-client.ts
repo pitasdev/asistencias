@@ -1,4 +1,4 @@
-import { Role } from '@/app/shared/models/role.model';
+import { Role } from '@/app/shared/models/role/role.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';

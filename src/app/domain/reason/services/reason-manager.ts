@@ -1,7 +1,8 @@
 import { ReasonApiClient } from '@/app/core/api-clients/reason/reason-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Reason } from '@/app/shared/models/reason.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { ReasonRequest } from '@/app/shared/models/reason/reason-request.model';
+import { Reason } from '@/app/shared/models/reason/reason.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -26,7 +27,7 @@ export class ReasonManager {
     this._reasons.set(reasons);
   }
 
-  async createReason(reason: Reason): Promise<void> {
+  async createReason(reason: ReasonRequest): Promise<void> {
     const response = await firstValueFrom(
       this.reasonApiClient.createReason(reason)
         .pipe(
@@ -39,7 +40,7 @@ export class ReasonManager {
     }
   }
 
-  async updateReasons(reasons: Reason[]): Promise<void> {
+  async updateReasons(reasons: ReasonRequest[]): Promise<void> {
     const response = await firstValueFrom(
       this.reasonApiClient.updateReasons(reasons)
         .pipe(
@@ -66,7 +67,9 @@ export class ReasonManager {
     for (let i = 0; i < updateReasons.length; i++) {
       if (updateReasons[i].order !== i + 1) updateReasons[i].order = i + 1;
     }
-    await this.updateReasons(updateReasons);
+
+    const reasonRequest = this.toReasonRequest(updateReasons);
+    await this.updateReasons(reasonRequest);
 
     this._reasons.set(updateReasons);
 
@@ -89,8 +92,13 @@ export class ReasonManager {
       if (newReasons[i].order !== i + 1) newReasons[i].order = i + 1;
     }
 
-    await this.updateReasons(newReasons);
+    const reasonRequest = this.toReasonRequest(newReasons);
+    await this.updateReasons(reasonRequest);
     
     this._reasons.set(newReasons);
+  }
+
+  toReasonRequest(reason: Reason[]): ReasonRequest[] {
+    return reason.map(r => ({ ...r, clubId: r.club.id }));
   }
 }

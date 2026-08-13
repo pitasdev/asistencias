@@ -1,9 +1,9 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { Switch } from '@/app/shared/components/switch/switch';
 import { FormsModule } from '@angular/forms';
-import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { Reason } from '@/app/shared/models/reason/reason.model';
 
 @Component({
   selector: 'app-save-attendance-result',

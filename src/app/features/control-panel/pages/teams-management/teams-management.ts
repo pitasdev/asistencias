@@ -3,12 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
 import { Button } from "@/app/shared/components/button/button";
 import { Modal } from "@/app/shared/components/modal/modal";
-import { Team } from '@/app/shared/models/team.model';
+import { TeamRequest } from '@/app/shared/models/team/team-request.model';
 import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { Team } from '@/app/shared/models/team/team.model';
 
 type ModalType = 'add' | 'edit';
 
@@ -41,7 +42,7 @@ export default class TeamsManagement implements OnInit {
   protected readonly userManager = inject(UserManager);
 
   async ngOnInit(): Promise<void> {
-    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.teams.set(this.teamManager.allTeams());
   }
 
@@ -73,8 +74,8 @@ export default class TeamsManagement implements OnInit {
       name: this.teamModel().name.trim()
     };
 
-    await this.teamManager.updateTeams([updatedTeam]);
-    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.teamManager.updateTeams(this.teamManager.toTeamRequest([updatedTeam]));
+    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
     
     this.closeModal.set(true);
   }
@@ -111,16 +112,16 @@ export default class TeamsManagement implements OnInit {
     this.teamForm().markAsTouched();
     if (this.teamForm().invalid()) return;
 
-    const newTeam: Team = {
+    const newTeam: TeamRequest = {
       id: null,
       name: this.teamModel().name.trim(),
       order: this.teamManager.allTeams().length + 1,
       isActive: true,
-      clubId: this.userManager.activeUser()?.clubId!
+      clubId: this.userManager.activeUser()?.club.id!
     };
 
     await this.teamManager.createTeam(newTeam);
-    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.clubId!);
+    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.teams.set(this.teamManager.allTeams());
 
     this.closeModal.set(true);

@@ -1,10 +1,10 @@
 import { Component, input, output, signal } from '@angular/core';
-import { Team } from '@/app/shared/models/team.model';
 import { FormsModule } from '@angular/forms';
-import { Player } from '@/app/shared/models/player.model';
-import { Season } from '@/app/shared/models/season.model';
+import { Season } from '@/app/shared/models/season/season.model';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
+import { Team } from '@/app/shared/models/team/team.model';
+import { Player } from '@/app/shared/models/player/player.model';
 
 @Component({
   selector: 'app-player-control-filter',

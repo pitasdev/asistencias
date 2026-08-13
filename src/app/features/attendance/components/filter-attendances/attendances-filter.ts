@@ -1,10 +1,10 @@
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
-import { Team } from '@/app/shared/models/team.model';
 import { formatDateTimeToDate } from '@/app/shared/utils/formatDateTimeToDate';
 import { Component, input, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
+import { Team } from '@/app/shared/models/team/team.model';
 
 @Component({
   selector: 'app-attendances-filter',

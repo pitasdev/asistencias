@@ -5,14 +5,14 @@ import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Team } from '@/app/shared/models/team.model';
-import { Player } from '@/app/shared/models/player.model';
-import { Season } from '@/app/shared/models/season.model';
+import { Season } from '@/app/shared/models/season/season.model';
 import { StatisticsFilter } from '@/app/features/statistics/components/statistics-filter/statistics-filter';
 import { StatisticsManager } from '@/app/domain/statistics/services/statistics-manager';
 import { KeyValuePipe, KeyValue } from '@angular/common';
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
+import { Team } from '@/app/shared/models/team/team.model';
+import { Player } from '@/app/shared/models/player/player.model';
 
 @Component({
   selector: 'app-statistics',
@@ -33,7 +33,7 @@ export default class Statistics implements OnInit {
   protected selectedSeason = signal<Season | null>(null);
 
   protected canManageSeason = computed(() => {
-    return this.userManager.activeUser()?.roleId !== this.roleManager.findRoleByName('user')?.id;
+    return this.userManager.activeUser()?.role.name !== 'user';
   });
 
   ngOnInit(): void {

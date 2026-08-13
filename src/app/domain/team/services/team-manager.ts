@@ -1,7 +1,8 @@
 import { TeamApiClient } from '@/app/core/api-clients/team/team-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Team } from '@/app/shared/models/team.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { TeamRequest } from '@/app/shared/models/team/team-request.model';
+import { Team } from '@/app/shared/models/team/team.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -40,7 +41,7 @@ export class TeamManager {
     this._allTeams.set(teams);
   }
 
-  async createTeam(team: Team): Promise<void> {
+  async createTeam(team: TeamRequest): Promise<void> {
     const response = await firstValueFrom(
       this.teamApiClient.createTeam(team)
         .pipe(
@@ -53,7 +54,7 @@ export class TeamManager {
     }
   }
 
-  async updateTeams(teams: Team[]): Promise<void> {
+  async updateTeams(teams: TeamRequest[]): Promise<void> {
     const response = await firstValueFrom(
       this.teamApiClient.updateTeams(teams)
         .pipe(
@@ -69,9 +70,10 @@ export class TeamManager {
   async deactivateTeam(teamId: number): Promise<void> {
     const deactivateTeam = this._allTeams().find(t => t.id === teamId);
     if (deactivateTeam) {
-      const updateTeam: Team = {
+      const updateTeam: TeamRequest = {
         ...deactivateTeam,
-        isActive: false
+        isActive: false,
+        clubId: deactivateTeam.club.id
       };
 
       await this.updateTeams([updateTeam]);
@@ -94,7 +96,9 @@ export class TeamManager {
     for (let i = 0; i < updateTeams.length; i++) {
       if (updateTeams[i].order !== i + 1) updateTeams[i].order = i + 1;
     }
-    await this.updateTeams(updateTeams);
+
+    const teamRequest = this.toTeamRequest(updateTeams);
+    await this.updateTeams(teamRequest);
 
     this._allTeams.set(updateTeams);
 
@@ -122,8 +126,13 @@ export class TeamManager {
       if (newTeams[i].order !== i + 1) newTeams[i].order = i + 1;
     }
 
-    await this.updateTeams(newTeams);
+    const teamRequest = this.toTeamRequest(newTeams);
+    await this.updateTeams(teamRequest);
     
     this._allTeams.set(newTeams);
+  }
+
+  toTeamRequest(team: Team[]): TeamRequest[] {
+    return team.map(t => ({ ...t, clubId: t.club.id }));
   }
 }

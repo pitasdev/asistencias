@@ -1,6 +1,7 @@
-import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Player } from '@/app/shared/models/player.model';
+import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
+import { Player } from '@/app/shared/models/player/player.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
@@ -22,11 +23,11 @@ export class PlayerApiClient {
     return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}`);
   }
 
-  createPlayer(player: Player): Observable<CustomHttpResponse> {
+  createPlayer(player: PlayerRequest): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/player`, player);
   }
 
-  updatePlayer(player: Player): Observable<CustomHttpResponse> {
+  updatePlayer(player: PlayerRequest): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/player`, player);
   }
 

@@ -1,6 +1,7 @@
 import { UserTeamsApiClient } from '@/app/core/api-clients/user-teams/user-teams-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { UserTeams } from '@/app/shared/models/user-teams.model';
+import { UserTeamsRequest } from '@/app/shared/models/user/user-teams-request.model';
+import { UserTeams } from '@/app/shared/models/user/user-teams.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -37,7 +38,7 @@ export class UserTeamsManager {
     this._activeUserUserTeams.set(userTeams);
   }
 
-  async updateUserTeams(userTeams: UserTeams): Promise<void> {
+  async updateUserTeams(userTeams: UserTeamsRequest): Promise<void> {
     const response = await firstValueFrom(
       this.userTeamsApiClient.updateUserTeams(userTeams)
         .pipe(
@@ -63,5 +64,12 @@ export class UserTeamsManager {
     const updateUser = this._userTeams().filter(ut => ut.user.id !== userId);
     this._userTeams.set(updateUser);
     this.infoModalManager.success('Usuario eliminado correctamente');
+  }
+
+  toUserTeamsRequest(userTeams: UserTeams): UserTeamsRequest {
+    return {
+      user: { ...userTeams.user, roleId: userTeams.user.role.id, clubId: userTeams.user.club.id },
+      teams: userTeams.teams.map(t => ({ ...t, clubId: t.club.id }))
+    };
   }
 }

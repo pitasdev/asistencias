@@ -1,9 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { AttendancesFilter } from '@/app/features/attendance/components/filter-attendances/attendances-filter';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
-import { Team } from '@/app/shared/models/team.model';
-import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
-import { AttendanceType } from '@/app/shared/models/attendance-type.model';
+import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
 import { SaveAttendanceResult } from '@/app/features/attendance/components/save-attendance-result/save-attendance-result';
 import { Button } from "@/app/shared/components/button/button";
 import { FormsModule } from '@angular/forms';
@@ -13,7 +11,9 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { Modal } from '@/app/shared/components/modal/modal';
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
+import { Team } from '@/app/shared/models/team/team.model';
 
 @Component({
   selector: 'app-attendances',
@@ -27,7 +27,7 @@ import { Attendance } from '@/app/shared/models/attendance.model';
 export default class Attendances implements OnInit {
   protected selectedTeam = signal<Team | null>(null);
   protected selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
-  protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, clubId: 0 });
+  protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, club: { id: 0, name: '' } });
 
   protected disabledButton = signal<boolean>(false);
   protected addAdicionalPlayer = signal<boolean>(false);

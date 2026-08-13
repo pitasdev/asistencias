@@ -1,7 +1,8 @@
 import { PlayerApiClient } from '@/app/core/api-clients/player/player-api-client';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
-import { IsActiveId } from '@/app/shared/models/is-active-id.model';
-import { Player } from '@/app/shared/models/player.model';
+import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
+import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
+import { Player } from '@/app/shared/models/player/player.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
@@ -68,7 +69,7 @@ export class PlayerManager {
     this._adicionalPlayers.set(players);
   }
 
-  async createPlayer(player: Player): Promise<void> {
+  async createPlayer(player: PlayerRequest): Promise<void> {
     const response = await firstValueFrom(
       this.playerApiClient.createPlayer(player)
         .pipe(
@@ -81,7 +82,7 @@ export class PlayerManager {
     }
   }
 
-  async updatePlayer(player: Player): Promise<void> {
+  async updatePlayer(player: PlayerRequest): Promise<void> {
     const response = await firstValueFrom(
       this.playerApiClient.updatePlayer(player)
         .pipe(

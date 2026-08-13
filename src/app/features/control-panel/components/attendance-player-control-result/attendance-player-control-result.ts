@@ -1,4 +1,4 @@
-import { Attendance } from '@/app/shared/models/attendance.model';
+import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 

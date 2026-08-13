@@ -14,7 +14,7 @@
         <div class="w-[calc(100%-(24px*2)-(16px*2))] flex flex-col gap-1 p-2 border rounded-sm border-grey border-l-4 border-l-primary border-r-4 border-r-primary">
           <span class="font-semibold w-full truncate">{{userTeams.user.name}}</span>
 
-          <span>{{userTeams.user.username}} | {{roleManager.findRoleById(userTeams.user.roleId)?.name}}</span>
+          <span>{{userTeams.user.username}} | {{userTeams.user.role.name}}</span>
 
           @let teams = teamsStringByUserId().get(userTeams.user.id!);
           @if (teams) {

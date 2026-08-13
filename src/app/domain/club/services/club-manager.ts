@@ -1,6 +1,6 @@
 import { ClubApiClient } from '@/app/core/api-clients/club/club-api-client';
-import { Club } from '@/app/shared/models/club.model';
-import { Season } from '@/app/shared/models/season.model';
+import { Club } from '@/app/shared/models/club/club.model';
+import { Season } from '@/app/shared/models/season/season.model';
 import { computed, inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 
