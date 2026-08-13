@@ -24,6 +24,7 @@ export const appDataResolver: ResolveFn<boolean> = async (route, state) => {
   await attendanceTypeManager.getAttendanceTypesByClubId(userManager.activeUser()?.clubId!);
   await reasonManager.getReasonsByClubId(userManager.activeUser()?.clubId!);
   await userTeamsManager.getUserTeamsByUserId(userManager.activeUser()?.id!);
+  await clubManager.getClubById(userManager.activeUser()?.clubId!);
   await clubManager.getSeasonsByClubId(userManager.activeUser()?.clubId!);
   
   return true;
