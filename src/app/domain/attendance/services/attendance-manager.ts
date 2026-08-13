@@ -1,4 +1,4 @@
-﻿import { Attendance } from '@/app/shared/models/attendance.model';
+﻿import { AttendanceRequest } from '@/app/shared/models/attendance-request.model';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -8,6 +8,10 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { AttendanceApiClient } from '@/app/core/api-clients/attendance/attendance-api-client';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
+import { Attendance } from '@/app/shared/models/attendance.model';
+import { AttendanceType } from '@/app/shared/models/attendance-type.model';
+import { Team } from '@/app/shared/models/team.model';
+import { ClubManager } from '../../club/services/club-manager';
 
 @Service()
 export class AttendanceManager {
@@ -21,6 +25,7 @@ export class AttendanceManager {
   private readonly playerManager = inject(PlayerManager);
   private readonly userManager = inject(UserManager);
   private readonly teamManager = inject(TeamManager);
+  private readonly clubManager = inject(ClubManager);
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getAttendancesByTeamIds(teamIds: number[], filters: AttendanceQueryFilters): Promise<void> {
@@ -43,13 +48,13 @@ export class AttendanceManager {
     const playersTeamIds: number[] = [];
     const adicionalPlayersId: number[] = [];
     attendances.forEach(a => {
-      if (a.teamId !== teamId) {
-        teamId = a.teamId;
+      if (a.team.id !== teamId) {
+        teamId = a.team.id;
         playersTeamIds.push(teamId);
       }
 
-      if (a.isAdditional && !adicionalPlayersId.includes(a.playerId)) {
-        adicionalPlayersId.push(a.playerId);
+      if (a.isAdditional && !adicionalPlayersId.includes(a.player.id)) {
+        adicionalPlayersId.push(a.player.id);
       }
     });
     
@@ -99,8 +104,8 @@ export class AttendanceManager {
     let teamId = 0;
     const playersTeamIds: number[] = [];
     attendances.forEach(a => {
-      if (a.teamId !== teamId) {
-        teamId = a.teamId;
+      if (a.team.id !== teamId) {
+        teamId = a.team.id;
         playersTeamIds.push(teamId);
       }
     });
@@ -108,15 +113,15 @@ export class AttendanceManager {
 
     const adicionalPlayers = attendances.filter(a => a.isAdditional);
     for (const adicionalPlayer of adicionalPlayers) {
-      if (!this.playerManager.players().some(p => p.id === adicionalPlayer.playerId)) {
-        const player = await this.playerManager.getPlayerById(adicionalPlayer.playerId);
+      if (!this.playerManager.players().some(p => p.id === adicionalPlayer.player.id)) {
+        const player = await this.playerManager.getPlayerById(adicionalPlayer.player.id);
         if (player !== null) this.playerManager.addAdicionalPlayerToPlayers(player);
       }
     }
 
     attendances.sort((a, b) => {
-      const teamA = this.teamManager.findTeamById(a.teamId);
-      const teamB = this.teamManager.findTeamById(b.teamId);
+      const teamA = this.teamManager.findTeamById(a.team.id);
+      const teamB = this.teamManager.findTeamById(b.team.id);
 
       if (teamA && teamB) {
         if (teamA.order > teamB.order) return 1;
@@ -147,7 +152,7 @@ export class AttendanceManager {
   }
 
   updateAttendance(attendance: Attendance): void {
-    const newAttendances = this._attendances().map(a => a.playerId === attendance.playerId ? attendance : a);
+    const newAttendances = this._attendances().map(a => a.player.id === attendance.player.id ? attendance : a);
     this._attendances.set(newAttendances);
   }
 
@@ -155,12 +160,12 @@ export class AttendanceManager {
     if (this._attendances().some(a => a.id !== null)) {
       let attendancesForUpdate = this._attendances();
       for (const adicionalAttendance of this._addAdicionalAttendances) {
-        attendancesForUpdate = attendancesForUpdate.filter(a => a.playerId !== adicionalAttendance.playerId);
+        attendancesForUpdate = attendancesForUpdate.filter(a => a.player.id !== adicionalAttendance.player.id);
       }
 
       if (this._addAdicionalAttendances.length > 0) {
         const response = await firstValueFrom(
-          this.attendanceApiClient.createAdicionalAttendances(this._addAdicionalAttendances)
+          this.attendanceApiClient.createAdicionalAttendances(this.toAttendances(this._addAdicionalAttendances))
             .pipe(
               catchError((error) => of(error))
             )
@@ -188,7 +193,7 @@ export class AttendanceManager {
       }
       
       const updateResponse = await firstValueFrom(
-        this.attendanceApiClient.updateAttendances(attendancesForUpdate)
+        this.attendanceApiClient.updateAttendances(this.toAttendances(attendancesForUpdate))
           .pipe(
             catchError((error) => of(error))
           )
@@ -200,7 +205,7 @@ export class AttendanceManager {
       }
     } else {
       const createResponse = await firstValueFrom(
-        this.attendanceApiClient.createAttendances(this._attendances())
+        this.attendanceApiClient.createAttendances(this.toAttendances(this._attendances()))
           .pipe(
             catchError((error) => of(error))
           )
@@ -212,7 +217,7 @@ export class AttendanceManager {
       }
     }
     
-    const teamId = this._attendances()[0]?.teamId!;
+    const teamId = this._attendances()[0]?.team.id;
     const filters: AttendanceQueryFilters = {
       selectedDate: this._attendances()[0]?.date
     }
@@ -236,8 +241,8 @@ export class AttendanceManager {
     }
   }
 
-  async loadDefaultAttendances(teamId: number, date: string, attendanceTypeId: number): Promise<Attendance[]> {
-    await this.playerManager.getPlayersByTeamIds([teamId]);
+  async loadDefaultAttendances(team: Team, date: string, attendanceType: AttendanceType): Promise<Attendance[]> {
+    await this.playerManager.getPlayersByTeamIds([team.id!]);
     const attendances: Attendance[] = [];
     
     this.playerManager.players().forEach(player => {
@@ -247,36 +252,62 @@ export class AttendanceManager {
         date: date,
         isAdditional: false,
         reasonDescription: null,
-        attendanceTypeId: attendanceTypeId,
-        reasonId: null,
-        playerId: player.id!,
-        teamId: teamId,
-        clubId: this.userManager.activeUser()?.clubId!
+        attendanceType: {
+          id: attendanceType.id!,
+          name: attendanceType.name
+        },
+        reason: null,
+        player: {
+          id: player.id!,
+          name: player.name,
+          lastName: player.lastName
+        },
+        team: {
+          id: team.id!,
+          name: team.name
+        },
+        club: {
+          id: team.clubId,
+          name: this.clubManager.club()?.name ?? ''
+        }
       });
     });
 
     return attendances;
   }
 
-  addAdicionalPlayerToAttendances(player: Player, date: string, attendanceTypeId: number, teamId: number): void {
+  addAdicionalPlayerToAttendances(player: Player, date: string, attendanceType: AttendanceType, team: Team): void {
     let attendance: Attendance = {
       id: null,
       hasAttended: true,
       date: date,
       isAdditional: true,
       reasonDescription: null,
-      attendanceTypeId: attendanceTypeId,
-      reasonId: null,
-      playerId: player.id!,
-      teamId: teamId,
-      clubId: this.userManager.activeUser()?.clubId!
+      attendanceType: {
+        id: attendanceType.id!,
+        name: attendanceType.name
+      },
+      reason: null,
+      player: {
+        id: player.id!,
+        name: player.name,
+        lastName: player.lastName
+      },
+      team: {
+        id: team.id!,
+        name: team.name
+      },
+      club: {
+        id: team.clubId,
+        name: this.clubManager.club()?.name ?? ''
+      }
     }
 
     if (this._attendances().some(a => a.id !== null)) {
-      if (this._deleteAdicionalAttendances.some(a => a.playerId === attendance.playerId)) {
-        const deletedAttendance = this._deleteAdicionalAttendances.find(a => a.playerId === attendance.playerId)!;
+      if (this._deleteAdicionalAttendances.some(a => a.player.id === attendance.player.id)) {
+        const deletedAttendance = this._deleteAdicionalAttendances.find(a => a.player.id === attendance.player.id)!;
         attendance = deletedAttendance;
-        this._deleteAdicionalAttendances = this._deleteAdicionalAttendances.filter(a => a.playerId !== attendance.playerId);
+        this._deleteAdicionalAttendances = this._deleteAdicionalAttendances.filter(a => a.player.id !== attendance.player.id);
       } else {
         this._addAdicionalAttendances = [...this._addAdicionalAttendances, attendance];
       }
@@ -290,11 +321,30 @@ export class AttendanceManager {
   deleteAdicionalPlayer(attendance: Attendance) {
     if (attendance.id !== null) {
       this._deleteAdicionalAttendances = [...this._deleteAdicionalAttendances, attendance];
-    } else if (attendance.id === null && this._addAdicionalAttendances.some(a => a.playerId === attendance.playerId)) {
-      this._addAdicionalAttendances = this._addAdicionalAttendances.filter(a => a.playerId !== attendance.playerId);
+    } else if (attendance.id === null && this._addAdicionalAttendances.some(a => a.player.id === attendance.player.id)) {
+      this._addAdicionalAttendances = this._addAdicionalAttendances.filter(a => a.player.id !== attendance.player.id);
     }
 
-    const newAttendances = this._attendances().filter(a => a.playerId !== attendance.playerId);
+    const newAttendances = this._attendances().filter(a => a.player.id !== attendance.player.id);
     this._attendances.set(newAttendances);
+  }
+
+  private toAttendance(attendance: Attendance): AttendanceRequest {
+    return {
+      id: attendance.id,
+      hasAttended: attendance.hasAttended,
+      date: attendance.date,
+      isAdditional: attendance.isAdditional,
+      reasonDescription: attendance.reasonDescription,
+      attendanceTypeId: attendance.attendanceType.id,
+      reasonId: attendance.reason?.id ?? null,
+      playerId: attendance.player.id,
+      teamId: attendance.team.id,
+      clubId: attendance.club.id
+    }
+  }
+
+  private toAttendances(attendances: Attendance[]): AttendanceRequest[] {
+    return attendances.map(a => this.toAttendance(a));
   }
 }

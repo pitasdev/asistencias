@@ -5,13 +5,13 @@
 >
   <div class="min-h-8 flex gap-8 justify-between items-center">
     <span class="font-semibold">{{attendance().date | date: 'dd/MM/yyyy'}}</span>
-    <span>{{attendanceTypeManager.findAttendanceTypeById(attendance().attendanceTypeId)?.name}}</span>
-    <span>{{teamManager.findTeamById(attendance().teamId)?.name}}</span>
+    <span>{{attendance().attendanceType.name}}</span>
+    <span>{{attendance().team.name}}</span>
   </div>
 
   @if (!attendance().hasAttended) {
     <div class="min-h-8 flex gap-8 justify-between items-center">
-      <span>{{reasonManager.findReasonById(attendance().reasonId ?? 0)?.name}}</span>
+      <span>{{attendance().reason?.name}}</span>
       <span>{{attendance().reasonDescription}}</span>
     </div>
   }

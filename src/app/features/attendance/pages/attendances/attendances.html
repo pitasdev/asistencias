@@ -15,10 +15,9 @@
       <p class="text-xs text-center mb-2"><em>Estás editando una asistencia</em></p>
     }
 
-    @for (attendance of attendanceManager.attendances(); track attendance.playerId) {
+    @for (attendance of attendanceManager.attendances(); track attendance.player.id) {
       <app-save-attendance-result
         [attendance]="attendance"
-        [player]="playerManager.findPlayerById(attendance.playerId)!"
         [reasons]="reasonManager.reasons()"
         (attendanceChange)="onAttendanceChange($event)"
         (deleteAdicionalPlayer)="deleteAdicionalPlayer($event)"

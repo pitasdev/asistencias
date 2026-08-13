@@ -4,7 +4,7 @@
   [class.border-l-primary-red]="!attendance().hasAttended"
 >
   <div class="min-h-8 flex gap-8 justify-between items-center">
-    <span class="font-semibold">{{player().name}} {{player().lastName}}</span>
+    <span class="font-semibold">{{attendance().player.name}} {{attendance().player.lastName}}</span>
 
     @if (attendance().isAdditional) {
       <svg class="cursor-pointer" (click)="deleteAdicionalPlayer.emit(attendance());" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="min-w-fit cursor-pointer">
@@ -31,7 +31,7 @@
       <select 
         name="reason" 
         class="min-w-40 w-fit h-10 p-2 border rounded-sm border-grey" 
-        [ngModel]="attendance().reasonId ?? 0" 
+        [ngModel]="attendance().reason?.id ?? 0" 
         (ngModelChange)="reasonChange($event)"
       >
         <option value="0">Seleccionar motivo</option>
@@ -44,11 +44,11 @@
     @if (showReasonDescription()) {
       <div 
         class="h-0 flex gap-8 justify-between items-center -mb-2 opacity-0 overflow-hidden transition-all duration-300 ease-out"
-        [class.h-10]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
-        [class.mb-0]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
-        [class.opacity-100]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
-        [class.overflow-visible]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription"
-        [class.duration-150]="reasonManager.findReasonById(attendance().reasonId!)?.requiresDescription && attendance().hasAttended"
+        [class.h-10]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
+        [class.mb-0]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
+        [class.opacity-100]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
+        [class.overflow-visible]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
+        [class.duration-150]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription && attendance().hasAttended"
       >
         <label id="reason-description" class="whitespace-nowrap">Indicar motivo</label>
         <input 

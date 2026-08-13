@@ -11,8 +11,8 @@ import { Season } from '@/app/shared/models/season.model';
 import { StatisticsFilter } from '@/app/features/statistics/components/statistics-filter/statistics-filter';
 import { StatisticsManager } from '@/app/domain/statistics/services/statistics-manager';
 import { KeyValuePipe, KeyValue } from '@angular/common';
-import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type.model';
+import { Attendance } from '@/app/shared/models/attendance.model';
 
 @Component({
   selector: 'app-statistics',

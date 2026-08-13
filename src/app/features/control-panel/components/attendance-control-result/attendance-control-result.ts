@@ -1,10 +1,6 @@
-import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
-import { PlayerManager } from '@/app/domain/player/services/player-manager';
-import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
-import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { Attendance } from '@/app/shared/models/attendance.model';
 import { DatePipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-attendance-control-result',
@@ -14,9 +10,4 @@ import { Component, inject, input } from '@angular/core';
 })
 export class AttendanceControlResult {
   readonly attendance = input.required<Attendance>();
-
-  protected readonly playerManager = inject(PlayerManager);
-  protected readonly teamManager = inject(TeamManager);
-  protected readonly attendanceTypeManager = inject(AttendanceTypeManager);
-  protected readonly reasonManager = inject(ReasonManager);
 }

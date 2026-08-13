@@ -1,5 +1,6 @@
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
 import { Attendance } from '@/app/shared/models/attendance.model';
+import { AttendanceRequest } from '@/app/shared/models/attendance-request.model';
 import { CustomHttpResponse } from '@/app/shared/models/custom-http-response.model';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -49,15 +50,15 @@ export class AttendanceApiClient {
     return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}${queryParams}`);
   }
 
-  createAttendances(attendances: Attendance[]): Observable<CustomHttpResponse> {
+  createAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, attendances);
   }
 
-  createAdicionalAttendances(attendances: Attendance[]): Observable<CustomHttpResponse> {
+  createAdicionalAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance/adicional`, attendances);
   }
 
-  updateAttendances(attendances: Attendance []): Observable<CustomHttpResponse> {
+  updateAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, attendances);
   }
 

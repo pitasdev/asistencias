@@ -40,13 +40,13 @@ export class SummaryOfDay {
     const attendancesSummary: AttendanceSummary[] = [];
 
     attendances.forEach(a => {
-      const attendanceSummaryTeam = attendancesSummary.find(s => s.team.id === a.teamId);
+      const attendanceSummaryTeam = attendancesSummary.find(s => s.team.id === a.team.id);
 
       if (attendanceSummaryTeam) {
         attendanceSummaryTeam.attendanceTrue += a.hasAttended ? 1 : 0;
         attendanceSummaryTeam.attendanceFalse += a.hasAttended ? 0 : 1;
       } else {
-        const team = this.teamManager.findTeamById(a.teamId);
+        const team = this.teamManager.findTeamById(a.team.id);
         if (!team) return;
 
         attendancesSummary.push({ 

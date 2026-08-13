@@ -1,8 +1,8 @@
 import { inject, Service, signal } from '@angular/core';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
-import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type.model';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
+import { Attendance } from '@/app/shared/models/attendance.model';
 
 @Service()
 export class StatisticsManager {
@@ -71,7 +71,7 @@ export class StatisticsManager {
 
   private groupAttendancesByTypeIdAndDate(attendances: Attendance[]): Map<number, Map<string, Attendance[]>> {
     const attendancesByTypeIdAndDate = attendances.reduce((acc, attendance) => {
-      const typeId = attendance.attendanceTypeId;
+      const typeId = attendance.attendanceType.id;
       if (!acc.has(typeId)) {
         acc.set(typeId, new Map<string, Attendance[]>());
       }

@@ -1,10 +1,9 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { Switch } from '@/app/shared/components/switch/switch';
-import { Attendance } from '@/app/shared/models/attendance.model';
 import { FormsModule } from '@angular/forms';
-import { Player } from '@/app/shared/models/player.model';
 import { Reason } from '@/app/shared/models/reason.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
+import { Attendance } from '@/app/shared/models/attendance.model';
 
 @Component({
   selector: 'app-save-attendance-result',
@@ -14,7 +13,6 @@ import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 })
 export class SaveAttendanceResult {
   readonly attendance = input.required<Attendance>();
-  readonly player = input.required<Player>();
   readonly reasons = input.required<Reason[]>();
 
   readonly attendanceChange = output<Attendance>();
@@ -30,7 +28,7 @@ export class SaveAttendanceResult {
       if (!this.attendance().hasAttended) {
         this.showReasons.set(true);
         
-        if (this.reasons().find(r => r.id === this.attendance().reasonId)?.requiresDescription) {
+        if (this.reasons().find(r => r.id === this.attendance().reason?.id)?.requiresDescription) {
           this.showReasonDescription.set(true);
         }
       }
@@ -42,7 +40,7 @@ export class SaveAttendanceResult {
       this.attendanceChange.emit({
         ...this.attendance(),
         hasAttended: value,
-        reasonId: null,
+        reason: null,
         reasonDescription: null
       });
 
@@ -67,25 +65,22 @@ export class SaveAttendanceResult {
   }
 
   protected reasonChange(event: string) {
-    const reasonId = parseInt(event);
-    if (typeof reasonId !== 'number') {
-      console.error('Invalid reason id');
-      return;
-    }
+    const reason = this.reasons().find(r => r.id === Number(event));
+    if (!reason) return;
     
-    if (this.reasons().find(r => r.id === reasonId)?.requiresDescription) {
+    if (reason?.requiresDescription) {
       this.showReasonDescription.set(true);
 
       setTimeout(() => {
         this.attendanceChange.emit({
           ...this.attendance(),
-          reasonId: reasonId,
+          reason: { id: reason.id!, name: reason.name },
         });
       }, 0);
     } else {
       this.attendanceChange.emit({
           ...this.attendance(),
-          reasonId: reasonId,
+          reason: { id: reason.id!, name: reason.name }
         });
 
       setTimeout(() => {

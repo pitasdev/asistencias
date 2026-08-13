@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { AttendancesFilter } from '@/app/features/attendance/components/filter-attendances/attendances-filter';
-import { Attendance } from '@/app/shared/models/attendance.model';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { Team } from '@/app/shared/models/team.model';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance-query-filters.model';
@@ -14,6 +13,7 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { Modal } from '@/app/shared/components/modal/modal';
+import { Attendance } from '@/app/shared/models/attendance.model';
 
 @Component({
   selector: 'app-attendances',
@@ -37,7 +37,7 @@ export default class Attendances implements OnInit {
   protected closeModalAdicionalPlayers = signal<boolean>(false);
   protected selectedAdicionalPlayerIds = signal<number[]>([]);
 
-  protected attendancePlayerIdsSet = computed(() => new Set(this.attendanceManager.attendances().map(a => a.playerId)));
+  protected attendancePlayerIdsSet = computed(() => new Set(this.attendanceManager.attendances().map(a => a.player.id)));
   
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly teamManager = inject(TeamManager);
@@ -53,7 +53,7 @@ export default class Attendances implements OnInit {
   private checkSelectedDay(): void {
     const attendanceId = this.attendanceManager.attendances()[0]?.id;
     if (attendanceId) {
-      const attendanceType = this.attendanceTypeManager.findAttendanceTypeById(this.attendanceManager.attendances()[0].attendanceTypeId);
+      const attendanceType = this.attendanceTypeManager.findAttendanceTypeById(this.attendanceManager.attendances()[0].attendanceType.id);
       if (attendanceType === null) return;
       this.selectedAttendanceType.set(attendanceType);
     } else {
@@ -94,7 +94,7 @@ export default class Attendances implements OnInit {
     this.attendanceManager.attendances().forEach(a => {
       this.attendanceManager.updateAttendance({
         ...a,
-        attendanceTypeId: attendanceType.id!
+        attendanceType: { ...a.attendanceType, id: attendanceType.id! }
       });
     });
   }
@@ -104,13 +104,16 @@ export default class Attendances implements OnInit {
       selectedDate: this.selectedDate()
     };
     
+    const team = this.teamManager.findTeamById(teamId);
+    if (team === null) return;
+
     await this.attendanceManager.getAttendancesByTeamIds([teamId], filters);
     
     if (this.attendanceManager.attendances().length === 0) {
       const attendances = await this.attendanceManager.loadDefaultAttendances(
-        teamId, 
+        team, 
         this.selectedDate(), 
-        this.attendanceTypeManager.attendanceTypes()[0].id!
+        this.attendanceTypeManager.attendanceTypes()[0]
       );
       this.attendanceManager.setDefaultAttendances(attendances);
     }
@@ -123,8 +126,8 @@ export default class Attendances implements OnInit {
   private checkValidAttendances(): boolean {
     const hasAttendedFalseAttendances = this.attendanceManager.attendances().filter(a => !a.hasAttended);
     for (const attendance of hasAttendedFalseAttendances) {
-      if (attendance.reasonId === null) {
-        const player = this.playerManager.findPlayerById(attendance.playerId!);
+      if (attendance.reason === null) {
+        const player = this.playerManager.findPlayerById(attendance.player.id);
         this.infoModalManager.warning(
           `Debe seleccionar una razón por la que no ha asistido <strong>${player?.name} ${player?.lastName}</strong>`
         );
@@ -132,10 +135,10 @@ export default class Attendances implements OnInit {
       }
     }
 
-    const requiresDescriptionAttendances = hasAttendedFalseAttendances.filter(a => this.reasonManager.findReasonById(a.reasonId!)?.requiresDescription);
+    const requiresDescriptionAttendances = hasAttendedFalseAttendances.filter(a => this.reasonManager.findReasonById(a.reason!.id)?.requiresDescription);
     for (const attendance of requiresDescriptionAttendances) {
       if (attendance.reasonDescription === null || attendance.reasonDescription === '') {
-        const player = this.playerManager.findPlayerById(attendance.playerId!);
+        const player = this.playerManager.findPlayerById(attendance.player.id);
         this.infoModalManager.warning(
           `Debe indicar la razón por la que no ha asistido <strong>${player?.name} ${player?.lastName}</strong>`
         );
@@ -199,8 +202,8 @@ export default class Attendances implements OnInit {
       this.attendanceManager.addAdicionalPlayerToAttendances(
         player, 
         this.selectedDate(), 
-        this.selectedAttendanceType().id!,
-        this.selectedTeam()?.id!
+        this.selectedAttendanceType(),
+        this.selectedTeam()!
       );
     }
     
