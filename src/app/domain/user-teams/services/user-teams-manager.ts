@@ -48,6 +48,10 @@ export class UserTeamsManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      const clubId = userTeams.user.clubId ?? userTeams.teams[0]?.clubId;
+      if (clubId) await this.getUserTeamsByClubId(clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 

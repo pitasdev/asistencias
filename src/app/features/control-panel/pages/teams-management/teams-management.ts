@@ -53,8 +53,9 @@ export default class TeamsManagement implements OnInit {
     );
   }
 
-  protected orderChange(teamId: number, order: string): void {
-    this.teamManager.updateSortOrder(teamId, Number(order));
+  protected async orderChange(teamId: number, order: string): Promise<void> {
+    await this.teamManager.updateSortOrder(teamId, Number(order));
+    this.teams.set(this.teamManager.allTeams());
   }
 
   protected showEditTeamModal(team: Team): void {
@@ -75,7 +76,7 @@ export default class TeamsManagement implements OnInit {
     };
 
     await this.teamManager.updateTeams(this.teamManager.toTeamRequest([updatedTeam]));
-    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
+    this.teams.set(this.teamManager.allTeams());
     
     this.closeModal.set(true);
   }
@@ -97,7 +98,7 @@ export default class TeamsManagement implements OnInit {
   }
 
   protected async deleteTeam(isActiveId: IsActiveId): Promise<void> {
-    await this.teamManager.deleteTeam(isActiveId);
+    await this.teamManager.deleteTeam(isActiveId, this.userManager.activeUser()?.club.id!);
     this.deleteModalText.set('');
     this.teams.set(this.teamManager.allTeams());
   }
@@ -121,7 +122,6 @@ export default class TeamsManagement implements OnInit {
     };
 
     await this.teamManager.createTeam(newTeam);
-    await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.teams.set(this.teamManager.allTeams());
 
     this.closeModal.set(true);

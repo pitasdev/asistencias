@@ -218,6 +218,7 @@ export default class UsersManagement implements OnInit {
 
     await this.userManager.updateUser(updatedUser);
     await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
+    this.userTeams.set(this.userTeamsManager.userTeams());
 
     this.closeModal.set(true);
   }
@@ -236,7 +237,7 @@ export default class UsersManagement implements OnInit {
 
   protected async deleteUser(userId: number): Promise<void> {
     await this.userManager.deleteUser(userId);
-    this.userTeamsManager.deleteUserTeams(userId);
+    await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.userTeams.set(this.userTeamsManager.userTeams());
   }
 
@@ -296,7 +297,7 @@ export default class UsersManagement implements OnInit {
   protected async saveTeams(): Promise<void> {
     const userTeamsRequest = this.userTeamsManager.toUserTeamsRequest(this.selectedUserTeams()!);
     await this.userTeamsManager.updateUserTeams(userTeamsRequest);
-    this.userTeamsManager.replaceUserTeams(this.selectedUserTeams()!);
+    this.userTeams.set(this.userTeamsManager.userTeams());
     this.closeTeamsModal.set(true);
   }
 

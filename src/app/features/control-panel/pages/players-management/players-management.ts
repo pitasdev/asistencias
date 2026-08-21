@@ -131,6 +131,7 @@ export default class PlayersManagement implements OnInit {
     const playerRequest = this.toPlayerRequest(player);
     await this.playerManager.updatePlayer(playerRequest);
     await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
+    this.playerTeams.set(this.playerTeamsManager.playerTeams());
 
     this.closeEditModal.set(true);
   }
@@ -160,7 +161,7 @@ export default class PlayersManagement implements OnInit {
   protected async saveTeams(): Promise<void> {
     const playerTeamsRequest = this.playerTeamsManager.toPlayerTeamsRequest(this.selectedPlayerTeams()!);
     await this.playerTeamsManager.updatePlayerTeams(playerTeamsRequest);
-    this.playerTeamsManager.replacePlayerTeams(this.selectedPlayerTeams()!);
+    this.playerTeams.set(this.playerTeamsManager.playerTeams());
     this.closeTeamsModal.set(true);
   }
 
@@ -184,7 +185,7 @@ export default class PlayersManagement implements OnInit {
 
   private async deletePlayer(isActiveId: IsActiveId): Promise<void> {
     await this.playerManager.deletePlayer(isActiveId);
-    this.playerTeamsManager.deletePlayer(isActiveId.id);
+    await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.selectedPlayer.set(null);
     this.playerTeams.set(this.playerTeamsManager.playerTeams());
   }

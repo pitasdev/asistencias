@@ -35,6 +35,10 @@ export class PlayerTeamsManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      const clubId = playerTeams.player.clubId ?? playerTeams.teams[0]?.clubId;
+      if (clubId) await this.getPlayerTeamsByClubId(clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 

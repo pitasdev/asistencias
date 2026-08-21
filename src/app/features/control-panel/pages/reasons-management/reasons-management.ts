@@ -86,7 +86,7 @@ export default class ReasonsManagement implements OnInit {
     };
 
     await this.reasonManager.updateReasons([updatedTeam]);
-    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.club.id!);
+    this.reasons.set(this.reasonManager.reasons());
     
     this.closeModal.set(true);
   }
@@ -108,7 +108,7 @@ export default class ReasonsManagement implements OnInit {
   }
 
   protected async deleteReason(isActiveId: IsActiveId): Promise<void> {
-    await this.reasonManager.deleteReason(isActiveId);
+    await this.reasonManager.deleteReason(isActiveId, this.userManager.activeUser()?.club.id!);
     this.deleteModalText.set('');
     this.reasons.set(this.reasonManager.reasons());
   }
@@ -135,7 +135,6 @@ export default class ReasonsManagement implements OnInit {
     };
 
     await this.reasonManager.createReason(newReason);
-    await this.reasonManager.getReasonsByClubId(this.userManager.activeUser()?.club.id!);
     this.reasons.set(this.reasonManager.reasons());
 
     this.closeModal.set(true);

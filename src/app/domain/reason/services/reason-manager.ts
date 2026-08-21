@@ -37,6 +37,9 @@ export class ReasonManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      await this.getReasonsByClubId(reason.clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
@@ -50,10 +53,13 @@ export class ReasonManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      if (reasons.length > 0) await this.getReasonsByClubId(reasons[0].clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
-  async deleteReason(isActiveId: IsActiveId): Promise<void> {
+  async deleteReason(isActiveId: IsActiveId, clubId: number): Promise<void> {
     const response = await firstValueFrom(
       this.reasonApiClient.deleteReason(isActiveId)
         .pipe(
@@ -61,19 +67,13 @@ export class ReasonManager {
         )
     );
 
-    if (!response || !response.isSuccess) return;
-
-    const updateReasons = this._reasons().filter(t => t.id !== isActiveId.id);
-    for (let i = 0; i < updateReasons.length; i++) {
-      if (updateReasons[i].order !== i + 1) updateReasons[i].order = i + 1;
+    if (!response || !response.isSuccess) {
+      if (response && response.error) this.infoModalManager.error(response.error);
+      return;
     }
 
-    const reasonRequest = this.toReasonRequest(updateReasons);
-    await this.updateReasons(reasonRequest);
-
-    this._reasons.set(updateReasons);
-
     this.infoModalManager.success(response.message!);
+    await this.getReasonsByClubId(clubId);
   }
 
   findReasonById(reasonId: number): Reason | null {
@@ -94,8 +94,6 @@ export class ReasonManager {
 
     const reasonRequest = this.toReasonRequest(newReasons);
     await this.updateReasons(reasonRequest);
-    
-    this._reasons.set(newReasons);
   }
 
   toReasonRequest(reason: Reason[]): ReasonRequest[] {

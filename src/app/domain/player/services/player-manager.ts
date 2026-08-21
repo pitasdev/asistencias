@@ -79,6 +79,8 @@ export class PlayerManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
@@ -92,6 +94,8 @@ export class PlayerManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
@@ -103,10 +107,10 @@ export class PlayerManager {
         )
     );
 
-    if (!response || !response.isSuccess) return;
-
-    const updatePlayers = this._players().filter(p => p.id !== isActiveId.id);
-    this._allPlayers.set(updatePlayers);
+    if (!response || !response.isSuccess) {
+      if (response && response.error) this.infoModalManager.error(response.error);
+      return;
+    }
 
     this.infoModalManager.success(response.message!);
   }

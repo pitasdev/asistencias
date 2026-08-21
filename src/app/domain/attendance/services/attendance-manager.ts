@@ -167,6 +167,7 @@ export class AttendanceManager {
             )
         );
         if (response && response.error) {
+          this.infoModalManager.error(response.error ?? 'Error al crear asistencias adicionales');
           return;
         } else {
           this._addAdicionalAttendances = [];
@@ -182,6 +183,7 @@ export class AttendanceManager {
             )
         );
         if (response && response.error) {
+          this.infoModalManager.error(response.error);
           return;
         } else {
           this._deleteAdicionalAttendances = [];
@@ -194,9 +196,10 @@ export class AttendanceManager {
             catchError((error) => of(error))
           )
       );
-      if (updateResponse && updateResponse.message) {
-        this.infoModalManager.success(updateResponse.message);
+      if (updateResponse && updateResponse.isSuccess) {
+        this.infoModalManager.success(updateResponse.message!);
       } else {
+        this.infoModalManager.error(updateResponse?.error ?? updateResponse?.message ?? 'Error al actualizar asistencias');
         return;
       }
     } else {
@@ -206,9 +209,10 @@ export class AttendanceManager {
             catchError((error) => of(error))
           )
       );
-      if (createResponse && createResponse.message) {
-        this.infoModalManager.success(createResponse.message);
+      if (createResponse && createResponse.isSuccess) {
+        this.infoModalManager.success(createResponse.message!);
       } else {
+        this.infoModalManager.error(createResponse?.error ?? 'Error al crear asistencias');
         return;
       }
     }
@@ -232,8 +236,11 @@ export class AttendanceManager {
           catchError((error) => of(error))
         )
     );
-    if (response && response.message) {
-      this.infoModalManager.success(response.message);
+    if (response && response.isSuccess) {
+      this.infoModalManager.success(response.message!);
+      this._attendances.set([]);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 

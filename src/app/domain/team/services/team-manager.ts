@@ -60,6 +60,9 @@ export class TeamManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      await this.getTeamsByClubId(team.clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
@@ -73,6 +76,9 @@ export class TeamManager {
 
     if (response && response.isSuccess) {
       this.infoModalManager.notifySuccess(response.message!);
+      if (teams.length > 0) await this.getTeamsByClubId(teams[0].clubId);
+    } else if (response && response.error) {
+      this.infoModalManager.error(response.error);
     }
   }
 
@@ -91,7 +97,7 @@ export class TeamManager {
     }
   }
 
-  async deleteTeam(isActiveId: IsActiveId): Promise<void> {
+  async deleteTeam(isActiveId: IsActiveId, clubId: number): Promise<void> {
     const response = await firstValueFrom(
       this.teamApiClient.deleteTeam(isActiveId)
         .pipe(
@@ -99,19 +105,13 @@ export class TeamManager {
         )
     );
 
-    if (!response || !response.isSuccess) return;
-
-    const updateTeams = this._allTeams().filter(t => t.id !== isActiveId.id);
-    for (let i = 0; i < updateTeams.length; i++) {
-      if (updateTeams[i].order !== i + 1) updateTeams[i].order = i + 1;
+    if (!response || !response.isSuccess) {
+      if (response && response.error) this.infoModalManager.error(response.error);
+      return;
     }
 
-    const teamRequest = this.toTeamRequest(updateTeams);
-    await this.updateTeams(teamRequest);
-
-    this._allTeams.set(updateTeams);
-
     this.infoModalManager.success(response.message!);
+    await this.getTeamsByClubId(clubId);
   }
 
   findTeamById(teamId: number): Team | null {
@@ -137,8 +137,6 @@ export class TeamManager {
 
     const teamRequest = this.toTeamRequest(newTeams);
     await this.updateTeams(teamRequest);
-    
-    this._allTeams.set(newTeams);
   }
 
   toTeamRequest(team: Team[]): TeamRequest[] {
