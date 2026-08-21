@@ -11,6 +11,8 @@ import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { SummaryOfDay } from "../../components/summary-of-day/summary-of-day";
 import { Team } from '@/app/shared/models/team/team.model';
+import { Season } from '@/app/shared/models/season/season.model';
+import { ClubManager } from '@/app/domain/club/services/club-manager';
 
 @Component({
   selector: 'app-attendances-control',
@@ -19,6 +21,7 @@ import { Team } from '@/app/shared/models/team/team.model';
   styleUrl: './attendances-control.css'
 })
 export default class AttendancesControl implements OnInit {
+  protected selectedSeason = signal<Season | null>(null);
   protected selectedTeam = signal<Team | null>(null);
   protected selectedDate = signal<string>('');
   protected selectedStartDate = signal<string>('');
@@ -26,6 +29,7 @@ export default class AttendancesControl implements OnInit {
 
   private filters = computed<AttendanceQueryFilters>(() => {
     const filters: AttendanceQueryFilters = {
+      season: this.selectedSeason()?.name,
       selectedDate: this.selectedDate() ? this.selectedDate() : undefined,
       startDate: this.selectedStartDate() ? this.selectedStartDate() : undefined,
       endDate: this.selectedEndDate() ? this.selectedEndDate() : undefined
@@ -38,11 +42,30 @@ export default class AttendancesControl implements OnInit {
   protected readonly playerManager = inject(PlayerManager);
   protected readonly attendanceTypeManager = inject(AttendanceTypeManager);
   protected readonly reasonManager = inject(ReasonManager);
+  protected readonly clubManager = inject(ClubManager);
   private readonly userManager = inject(UserManager);
 
   async ngOnInit(): Promise<void> {
+    this.selectedSeason.set(this.clubManager.actualSeason());
+
+    if (!this.selectedSeason()) return;
+
     this.selectedDate.set(formatDateTimeToDate(new Date()));
     await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
+  }
+
+  protected async seasonChange(season: Season | null): Promise<void> {
+    this.selectedSeason.set(season);
+    this.selectedTeam.set(null);
+    this.selectedDate.set(formatDateTimeToDate(new Date()));
+    this.selectedStartDate.set('');
+    this.selectedEndDate.set('');
+
+    if (season) {
+      await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
+    } else {
+      this.attendanceManager.setDefaultAttendances([]);
+    }
   }
 
   protected async teamsChange(team: Team | null): Promise<void> {

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
 import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
 import { Team } from '@/app/shared/models/team/team.model';
+import { Season } from '@/app/shared/models/season/season.model';
 
 @Component({
   selector: 'app-attendances-control-filter',
@@ -11,6 +12,8 @@ import { Team } from '@/app/shared/models/team/team.model';
   styleUrl: './attendances-control-filter.css'
 })
 export class AttendancesControlFilter {
+  seasons = input.required<Season[]>();
+  selectedSeason = input.required<Season | null>();
   teams = input.required<Team[]>();
   selectedTeam = input.required<Team | null>();
   date = input.required<string>();
@@ -18,11 +21,18 @@ export class AttendancesControlFilter {
   endDate = input.required<string>();
 
   teamsChange = output<Team | null>();
+  seasonChange = output<Season | null>();
   dateChange = output<string>();
   startDateChange = output<string>();
   endDateChange = output<string>();
 
   protected showEndDate = signal<boolean>(false);
+
+  onSeasonChange(event: string) {
+    const season = this.seasons().find(s => s.name === event);
+    this.seasonChange.emit(season || null);
+    this.showEndDate.set(false);
+  }
 
   onTeamsChange(event: string) {
     const team = this.teams().find(t => t.id === Number(event));

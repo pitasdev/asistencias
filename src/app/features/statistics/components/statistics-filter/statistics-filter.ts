@@ -19,7 +19,7 @@ export class StatisticsFilter {
   selectedPlayer = input.required<Player | null>();
   seasons = input.required<Season[]>();
   selectedSeason = input.required<Season | null>();
-  showSeason = input(true);
+  showSeasonSelector = input.required<boolean>();
 
   teamChange = output<Team | null>();
   playerChange = output<Player | null>();

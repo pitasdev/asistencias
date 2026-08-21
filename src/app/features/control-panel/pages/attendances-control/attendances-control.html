@@ -2,12 +2,15 @@
   <h1 class="font-bold text-2xl text-center">Control de Asistencias</h1>
 
   <app-attendances-control-filter 
+    [seasons]="clubManager.seasons()"
+    [selectedSeason]="selectedSeason()"
     [teams]="teamManager.userTeams()"
     [selectedTeam]="selectedTeam()"
     [date]="selectedDate()"
     [startDate]="selectedStartDate()"
     [endDate]="selectedEndDate()"
     (teamsChange)="teamsChange($event)"
+    (seasonChange)="seasonChange($event)"
     (dateChange)="dateChange($event)"
     (startDateChange)="startDateChange($event)"
     (endDateChange)="endDateChange($event)"

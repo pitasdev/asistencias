@@ -33,7 +33,7 @@ export default class Statistics implements OnInit {
   protected selectedSeason = signal<Season | null>(null);
 
   protected canManageSeason = computed(() => {
-    return this.userManager.activeUser()?.role.name !== 'user';
+    return this.userManager.activeUser()?.role.name !== 'user' || this.clubManager.seasons().length > 1;
   });
 
   ngOnInit(): void {
