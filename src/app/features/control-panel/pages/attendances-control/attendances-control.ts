@@ -26,6 +26,10 @@ export default class AttendancesControl implements OnInit {
   protected selectedDate = signal<string>('');
   protected selectedStartDate = signal<string>('');
   protected selectedEndDate = signal<string>('');
+  protected teams = computed(() => this.selectedSeason()?.currentSeason
+    ? this.teamManager.userTeams()
+    : this.teamManager.allHistoryTeams()
+  );
 
   private filters = computed<AttendanceQueryFilters>(() => {
     const filters: AttendanceQueryFilters = {
@@ -54,7 +58,7 @@ export default class AttendancesControl implements OnInit {
     await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
   }
 
-  protected async seasonChange(season: Season | null): Promise<void> {
+  protected seasonChange(season: Season | null): void {
     this.selectedSeason.set(season);
     this.selectedTeam.set(null);
     this.selectedDate.set(formatDateTimeToDate(new Date()));
@@ -62,7 +66,10 @@ export default class AttendancesControl implements OnInit {
     this.selectedEndDate.set('');
 
     if (season) {
-      await this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
+      if (!season.currentSeason) {
+        this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+        this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
+      }
     } else {
       this.attendanceManager.setDefaultAttendances([]);
     }

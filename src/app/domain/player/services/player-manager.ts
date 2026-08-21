@@ -19,9 +19,9 @@ export class PlayerManager {
   private readonly playerApiClient = inject(PlayerApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
 
-  async getPlayerById(playerId: number): Promise<Player | null> {
+  async getPlayerById(playerId: number, season?: string): Promise<Player | null> {
     const player = await firstValueFrom(
-      this.playerApiClient.getPlayerById(playerId)
+      this.playerApiClient.getPlayerById(playerId, season)
         .pipe(
           catchError(() => of(null))
         )
@@ -30,12 +30,12 @@ export class PlayerManager {
     return player;
   }
 
-  async getPlayersByTeamIds(teamIds: number[]): Promise<void> {
+  async getPlayersByTeamIds(teamIds: number[], season?: string): Promise<void> {
     const players: Player[] = [];
 
     for (const teamId of teamIds) {
       const playersByTeamId = await firstValueFrom(
-        this.playerApiClient.getPlayersByTeamId(teamId)
+        this.playerApiClient.getPlayersByTeamId(teamId, season)
           .pipe(
             catchError(() => of([]))
           )
@@ -47,9 +47,9 @@ export class PlayerManager {
     this._players.set(players);
   }
 
-  async getPlayersByClubId(clubId: number): Promise<void> {
+  async getPlayersByClubId(clubId: number, season?: string): Promise<void> {
     const players = await firstValueFrom(
-      this.playerApiClient.getPlayersByClubId(clubId)
+      this.playerApiClient.getPlayersByClubId(clubId, season)
         .pipe(
           catchError(() => of([]))
         )
@@ -58,9 +58,9 @@ export class PlayerManager {
     this._allPlayers.set(players);
   }
 
-  async getAdicionalPlayersByTeamId(teamId: number): Promise<void> {
+  async getAdicionalPlayersByTeamId(teamId: number, season?: string): Promise<void> {
     const players = await firstValueFrom(
-      this.playerApiClient.getPlayersByTeamId(teamId)
+      this.playerApiClient.getPlayersByTeamId(teamId, season)
         .pipe(
           catchError(() => of([]))
         )

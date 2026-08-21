@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 export class AttendanceTypeApiClient {
   private readonly http = inject(HttpClient);
 
-  getAttendanceTypesByClubId(clubId: number): Observable<AttendanceType[]> {
-    return this.http.get<AttendanceType[]>(`${environment.baseUrlApi}/attendance-type/club/${clubId}`);
+  getAttendanceTypesByClubId(clubId: number, season?: string): Observable<AttendanceType[]> {
+    const queryParams = season ? `?season=${season}` : '';
+    return this.http.get<AttendanceType[]>(`${environment.baseUrlApi}/attendance-type/club/${clubId}${queryParams}`);
   }
 }

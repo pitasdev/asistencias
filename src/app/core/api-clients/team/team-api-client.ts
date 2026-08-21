@@ -15,8 +15,9 @@ export class TeamApiClient {
     return this.http.get<Team[]>(`${environment.baseUrlApi}/team/user/${userId}`);
   }
   
-  getTeamsByClubId(clubId: number): Observable<Team[]> {
-    return this.http.get<Team[]>(`${environment.baseUrlApi}/team/club/${clubId}`);
+  getTeamsByClubId(clubId: number, season?: string): Observable<Team[]> {
+    const queryParams = season ? `?season=${season}` : '';
+    return this.http.get<Team[]>(`${environment.baseUrlApi}/team/club/${clubId}${queryParams}`);
   }
 
   createTeam(team: TeamRequest): Observable<CustomHttpResponse> {

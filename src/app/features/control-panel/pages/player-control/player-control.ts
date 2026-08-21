@@ -9,6 +9,7 @@ import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
 import { Team } from '@/app/shared/models/team/team.model';
 import { Player } from '@/app/shared/models/player/player.model';
+import { UserManager } from '@/app/domain/user/services/user-manager';
 
 @Component({
   selector: 'app-player-control',
@@ -21,10 +22,15 @@ export default class PlayerControl implements OnInit {
   protected readonly playerManager = inject(PlayerManager);
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly clubManager = inject(ClubManager);
+  private readonly userManager = inject(UserManager);
 
   protected selectedTeam = signal<Team | null>(null);
   protected selectedPlayer = signal<Player | null>(null);
   protected selectedSeason = signal<Season | null>(null);
+  protected teams = computed(() => this.selectedSeason()?.currentSeason
+    ? this.teamManager.userTeams()
+    : this.teamManager.allHistoryTeams()
+  );
 
   private filters = computed<AttendanceQueryFilters>(() => {
     return {
@@ -59,5 +65,9 @@ export default class PlayerControl implements OnInit {
     this.selectedTeam.set(null);
     this.selectedPlayer.set(null);
     this.attendanceManager.setDefaultAttendances([]);
+
+    if (season && season.currentSeason) {
+      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+    }
   }
 }

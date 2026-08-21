@@ -14,9 +14,9 @@ export class PlayerTeamsManager {
   private readonly playerTeamsApiClient = inject(PlayerTeamsApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
 
-  async getPlayerTeamsByClubId(clubId: number): Promise<void> {
+  async getPlayerTeamsByClubId(clubId: number, season?: string): Promise<void> {
     const playerTeams = await firstValueFrom(
-      this.playerTeamsApiClient.getPlayerTeamsByClubId(clubId)
+      this.playerTeamsApiClient.getPlayerTeamsByClubId(clubId, season)
         .pipe(
           catchError(() => of([]))
         )

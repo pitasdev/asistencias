@@ -31,18 +31,17 @@ export default class Statistics implements OnInit {
   protected selectedTeam = signal<Team | null>(null);
   protected selectedPlayer = signal<Player | null>(null);
   protected selectedSeason = signal<Season | null>(null);
+  protected teams = computed(() => this.selectedSeason()?.currentSeason 
+    ? this.teamManager.userTeams()
+    : this.teamManager.allHistoryTeams()
+  );
 
   protected canManageSeason = computed(() => {
-    return this.userManager.activeUser()?.role.name !== 'user' || this.clubManager.seasons().length > 1;
+    return this.userManager.activeUser()?.role.name !== 'user' && this.clubManager.seasons().length > 1;
   });
 
   ngOnInit(): void {
     this.selectedSeason.set(this.clubManager.actualSeason());
-
-    const userId = this.userManager.activeUser()?.id;
-    if (userId) {
-      this.teamManager.getTeamsByUserId(userId);
-    }
   }
 
   protected async onTeamChange(team: Team | null): Promise<void> {
@@ -80,6 +79,10 @@ export default class Statistics implements OnInit {
     this.selectedTeam.set(null);
     this.selectedPlayer.set(null);
     this.statisticsManager.clearStats();
+    
+    if (season && !season.currentSeason) {
+      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+    }
   }
 
   protected getProgressColor(percentage: number | undefined): string {

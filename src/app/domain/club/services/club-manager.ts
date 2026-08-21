@@ -40,4 +40,10 @@ export class ClubManager {
     seasons.sort((a, b) => a.name < b.name ? 1 : -1);
     this._seasons.set(seasons);
   }
+
+  isCurrentSeason(seasonName: string): boolean {
+    const season = this._seasons().find(s => s.name === seasonName);
+    if (season?.currentSeason) return true;
+    return false;
+  }
 }

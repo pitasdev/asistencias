@@ -12,42 +12,15 @@ export class AttendanceApiClient {
   private readonly http = inject(HttpClient);
 
   getAttendancesByTeamId(teamId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    let queryParams = '';
-    if (filters.selectedDate) {
-      queryParams += `?selectedDate=${filters.selectedDate}`;
-    } else if (filters.startDate && filters.endDate) {
-      queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
-    } else if (filters.season) {
-      queryParams += `?season=${filters.season}`;
-    }
-
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/team/${teamId}${queryParams}`);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/team/${teamId}${this.buildQueryParams(filters)}`);
   }
 
   getAttendancesByClubId(clubId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    let queryParams = '';
-    if (filters.selectedDate) {
-      queryParams += `?selectedDate=${filters.selectedDate}`;
-    } else if (filters.startDate && filters.endDate) {
-      queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
-    } else if (filters.season) {
-      queryParams += `?season=${filters.season}`;
-    }
-
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/club/${clubId}${queryParams}`);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/club/${clubId}${this.buildQueryParams(filters)}`);
   }
 
   getAttendancesByPlayerId(playerId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    let queryParams = '';
-    if (filters.selectedDate) {
-      queryParams += `?selectedDate=${filters.selectedDate}`;
-    } else if (filters.startDate && filters.endDate) {
-      queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
-    } else if (filters.season) {
-      queryParams += `?season=${filters.season}`;
-    }
-
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}${queryParams}`);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}${this.buildQueryParams(filters)}`);
   }
 
   createAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
@@ -64,5 +37,20 @@ export class AttendanceApiClient {
 
   deleteOnBulkAttendances(attendanceIds: number[]): Observable<CustomHttpResponse> {
     return this.http.delete<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, { body: attendanceIds });
+  }
+
+  private buildQueryParams(filters: AttendanceQueryFilters): string {
+    let queryParams = '';
+    if (filters.selectedDate) {
+      queryParams += `?selectedDate=${filters.selectedDate}`;
+    } else if (filters.startDate && filters.endDate) {
+      queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
+    }
+
+    if (filters.season) {
+      queryParams += `${queryParams ? '&' : '?'}season=${filters.season}`;
+    }
+
+    return queryParams;
   }
 }

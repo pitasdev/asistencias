@@ -5,16 +5,20 @@ import { TeamRequest } from '@/app/shared/models/team/team-request.model';
 import { Team } from '@/app/shared/models/team/team.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
+import { ClubManager } from '../../club/services/club-manager';
 
 @Service()
 export class TeamManager {
   private _userTeams = signal<Team[]>([]);
   private _allTeams = signal<Team[]>([]);
+  private _allHistoryTeams = signal<Team[]>([]);
 
   userTeams = this._userTeams.asReadonly();
   allTeams = this._allTeams.asReadonly();
+  allHistoryTeams = this._allHistoryTeams.asReadonly();
 
   private readonly teamApiClient = inject(TeamApiClient);
+  private readonly clubManager = inject(ClubManager);
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getTeamsByUserId(userId: number): Promise<void> {
@@ -29,16 +33,21 @@ export class TeamManager {
     this._userTeams.set(teams);
   }
 
-  async getTeamsByClubId(clubId: number): Promise<void> {
+  async getTeamsByClubId(clubId: number, season?: string): Promise<void> {
     const teams = await firstValueFrom(
-      this.teamApiClient.getTeamsByClubId(clubId)
+      this.teamApiClient.getTeamsByClubId(clubId, season)
         .pipe(
           catchError(() => of([]))
       )
     );
 
     teams.sort((a, b) => a.order - b.order);
-    this._allTeams.set(teams);
+
+    if (season && !this.clubManager.isCurrentSeason(season)){
+      this._allHistoryTeams.set(teams);
+    } else {
+      this._allTeams.set(teams);
+    }
   }
 
   async createTeam(team: TeamRequest): Promise<void> {

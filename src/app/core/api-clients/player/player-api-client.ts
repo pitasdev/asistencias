@@ -11,16 +11,19 @@ import { Observable } from 'rxjs';
 export class PlayerApiClient {
   private readonly http = inject(HttpClient);
 
-  getPlayerById(playerId: number): Observable<Player> {
-    return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}`);
+  getPlayerById(playerId: number, season?: string): Observable<Player> {
+    const queryParams = season ? `?season=${season}` : '';
+    return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}${queryParams}`);
   }
 
-  getPlayersByTeamId(teamId: number): Observable<Player[]> {
-    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/team/${teamId}`);
+  getPlayersByTeamId(teamId: number, season?: string): Observable<Player[]> {
+    const queryParams = season ? `?season=${season}` : '';
+    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/team/${teamId}${queryParams}`);
   }
 
-  getPlayersByClubId(clubId: number): Observable<Player[]> {
-    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}`);
+  getPlayersByClubId(clubId: number, season?: string): Observable<Player[]> {
+    const queryParams = season ? `?season=${season}` : '';
+    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}${queryParams}`);
   }
 
   createPlayer(player: PlayerRequest): Observable<CustomHttpResponse> {
