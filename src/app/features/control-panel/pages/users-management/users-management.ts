@@ -1,20 +1,25 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Button } from "@/app/shared/components/button/button";
-import { Modal } from "@/app/shared/components/modal/modal";
+import { Button } from "@/app/shared/components/ui/button";
+import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { FormsModule } from '@angular/forms';
 import { form, FormField, required, minLength, validate, disabled } from '@angular/forms/signals';
 import { UserRequest } from '@/app/shared/models/user/user-request.model';
 import { ResetPassword } from '@/app/shared/models/password/reset-password.model';
 import { UserTeams } from '@/app/shared/models/user/user-teams.model';
-import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
+import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { RoleManager } from '@/app/domain/role/services/role-manager';
 import { UserTeamsManager } from '@/app/domain/user-teams/services/user-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { UiAvatar } from '@/app/shared/components/ui/avatar';
+import { UiBadge } from '@/app/shared/components/ui/badge';
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiMenu, UiMenuItem } from '@/app/shared/components/ui/menu';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { Team } from '@/app/shared/models/team/team.model';
 import { User } from '@/app/shared/models/user/user.model';
-import { UserTeamsRequest } from '@/app/shared/models/user/user-teams-request.model';
 
 type ModalType = 'add' | 'edit' | 'resetPassword';
 
@@ -28,11 +33,18 @@ interface UserForm {
 
 @Component({
   selector: 'app-users-management',
-  imports: [Button, Modal, FormsModule, FormField, ConfirmModal, FindFilter],
+  imports: [Button, Modal, FormsModule, FormField, ConfirmModal, FindFilter, UiAvatar, UiBadge, UiEmptyState, UiField, UiMenu, UiPageHeader],
   templateUrl: './users-management.html',
-  styleUrl: './users-management.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class UsersManagement implements OnInit {
+  protected readonly userManager = inject(UserManager);
+  protected readonly roleManager = inject(RoleManager);
+  protected readonly userTeamsManager = inject(UserTeamsManager);
+  protected readonly teamManager = inject(TeamManager);
+
   protected userTeams = signal<UserTeams[]>([]);
 
   protected openAddModal = signal<boolean>(false);
@@ -40,6 +52,14 @@ export default class UsersManagement implements OnInit {
   protected modalTitle = signal<string>('');
   protected modalType = signal<ModalType>('add');
   protected selectedUser = signal<User | null>(null);
+
+  protected openTeamsModal = signal<boolean>(false);
+  protected closeTeamsModal = signal<boolean>(false);
+  protected selectedUserTeams = signal<UserTeams | null>(null);
+
+  protected openDeleteModal = signal<boolean>(false);
+  protected deleteModalText = signal<string>('');
+
   protected teamsStringByUserId = computed(() => {
     const map = new Map<number, string>();
     for (const ut of this.userTeams()) {
@@ -74,32 +94,32 @@ export default class UsersManagement implements OnInit {
     username: '',
     password: '',
     confirmPassword: '',
-    roleId: '0',
-  });
+    roleId: '0'
+});
 
   protected userForm = form(this.userModel, (schemaPath) => {
     disabled(schemaPath.name, { when: () => this.modalType() === 'resetPassword' });
     required(schemaPath.name, {
-      message: 'Nombre requerido',
-    });
+      message: 'Nombre requerido'
+});
 
     disabled(schemaPath.username, { when: () => this.modalType() !== 'add' });
     required(schemaPath.username, {
-      message: 'Username requerido',
-    });
+      message: 'Username requerido'
+});
 
     disabled(schemaPath.password, { when: () => this.modalType() === 'edit' });
     required(schemaPath.password, {
-      message: 'Contraseña requerida',
-    });
+      message: 'Contraseña requerida'
+});
     minLength(schemaPath.password, 8, {
-      message: 'La contraseña debe tener al menos 8 caracteres',
-    });
+      message: 'La contraseña debe tener al menos 8 caracteres'
+});
 
     disabled(schemaPath.confirmPassword, { when: () => this.modalType() === 'edit' });
     required(schemaPath.confirmPassword, {
-      message: 'Confirmación requerida',
-    });
+      message: 'Confirmación requerida'
+});
     validate(schemaPath.confirmPassword, ({ value, valueOf }) => {
       if (value() !== valueOf(schemaPath.password)) {
         return { kind: 'passwordMismatch', message: 'Las contraseñas no coinciden' };
@@ -109,36 +129,63 @@ export default class UsersManagement implements OnInit {
 
     disabled(schemaPath.roleId, { when: () => this.modalType() === 'resetPassword' });
     required(schemaPath.roleId, {
-      message: 'Rol requerido',
-    });
+      message: 'Rol requerido'
+});
   });
 
-  protected openTeamsModal = signal<boolean>(false);
-  protected closeTeamsModal = signal<boolean>(false);
-  protected selectedUserTeams = signal<UserTeams | null>(null);
   private originalUserTeams: UserTeams | null = null;
-
-  protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
-  
-  protected readonly userManager = inject(UserManager);
-  protected readonly roleManager = inject(RoleManager);
-  protected readonly userTeamsManager = inject(UserTeamsManager);
-  protected readonly teamManager = inject(TeamManager);
 
   async ngOnInit(): Promise<void> {
     await this.userTeamsManager.getUserTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.userTeams.set(this.userTeamsManager.userTeams());
   }
 
+  protected userMenuItems(user: User): UiMenuItem[] {
+    const items: UiMenuItem[] = [
+      { id: 'edit', label: 'Editar', icon: 'pencil' },
+      { id: 'teams', label: 'Equipos', icon: 'shirt' },
+      { id: 'resetPassword', label: 'Restablecer contraseña', icon: 'rotate-ccw' }
+    ];
+
+    if (user.id !== this.userManager.activeUser()?.id) {
+      items.push({ id: 'delete', label: 'Eliminar', icon: 'trash', danger: true });
+    }
+
+    return items;
+  }
+
+  protected onUserMenu(item: UiMenuItem, user: User): void {
+    switch (item.id) {
+      case 'edit':
+        this.showEditUserModal(user);
+        break;
+      case 'teams':
+        this.showTeamsModal(user);
+        break;
+      case 'resetPassword':
+        this.showResetPasswordModal(user);
+        break;
+      case 'delete':
+        this.showConfirmDeleteModal(user);
+        break;
+    }
+  }
+
   protected filterUsers(searchText: string): void {
     this.userTeams.set(
       this.userTeamsManager.userTeams()
-        .filter(u => 
+        .filter(u =>
           u.user.name?.toLowerCase().includes(searchText?.toLowerCase()) ||
           u.user.username?.toLowerCase().includes(searchText?.toLowerCase())
         )
     );
+  }
+
+  protected fieldError(field: { touched(): boolean; invalid(): boolean; errors(): Array<{ message?: string }> }): string {
+    if (field.touched() && field.invalid()) {
+      return field.errors()[0]?.message ?? '';
+    }
+    return '';
   }
 
   protected showEditUserModal(user: User): void {
@@ -150,8 +197,8 @@ export default class UsersManagement implements OnInit {
       username: user.username,
       password: '',
       confirmPassword: '',
-      roleId: String(user.role.id),
-    });
+      roleId: String(user.role.id)
+});
     this.openAddModal.set(true);
   }
 
@@ -163,8 +210,8 @@ export default class UsersManagement implements OnInit {
       username: '',
       password: '',
       confirmPassword: '',
-      roleId: String(this.roleManager.roles()[0].id),
-    });
+      roleId: String(this.roleManager.roles()[0].id)
+});
     this.openAddModal.set(true);
   }
 
@@ -250,8 +297,8 @@ export default class UsersManagement implements OnInit {
       username: user.username,
       password: '',
       confirmPassword: '',
-      roleId: String(user.role.id),
-    });
+      roleId: String(user.role.id)
+});
     this.openAddModal.set(true);
   }
 

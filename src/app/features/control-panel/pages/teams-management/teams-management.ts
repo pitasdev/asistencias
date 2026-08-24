@@ -1,13 +1,18 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
 import { form, FormField, required } from '@angular/forms/signals';
-import { Button } from "@/app/shared/components/button/button";
-import { Modal } from "@/app/shared/components/modal/modal";
+import { Button } from "@/app/shared/components/ui/button";
+import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { TeamRequest } from '@/app/shared/models/team/team-request.model';
-import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
+import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiIcon } from '@/app/shared/components/ui/icon';
+import { UiMenu, UiMenuItem } from '@/app/shared/components/ui/menu';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
 import { Team } from '@/app/shared/models/team/team.model';
 
@@ -15,22 +20,25 @@ type ModalType = 'add' | 'edit';
 
 @Component({
   selector: 'app-teams-management',
-  imports: [FormsModule, Button, Modal, FormField, ConfirmModal, FindFilter],
+  imports: [Button, Modal, FormField, ConfirmModal, FindFilter, CdkDropList, CdkDrag, CdkDragHandle, UiEmptyState, UiField, UiIcon, UiMenu, UiPageHeader],
   templateUrl: './teams-management.html',
-  styleUrl: './teams-management.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class TeamsManagement implements OnInit {
+  protected readonly teamManager = inject(TeamManager);
+  protected readonly userManager = inject(UserManager);
+
+  protected readonly teamMenuItems: UiMenuItem[] = [
+    { id: 'edit', label: 'Editar', icon: 'pencil' },
+    { id: 'delete', label: 'Eliminar', icon: 'trash', danger: true }
+  ];
+
   protected teams = signal<Team[]>([]);
 
   protected openModal = signal<boolean>(false);
   protected closeModal = signal<boolean>(false);
-
-  protected teamModel = signal({ name: '' });
-
-  protected teamForm = form(this.teamModel, (schemaPath) => {
-    required(schemaPath.name, { message: 'Nombre del equipo requerido' });
-  });
-
   protected modalType = signal<ModalType>('add');
   protected modalTitle = signal<string>('');
   protected selectedTeam = signal<Team | null>(null);
@@ -38,8 +46,11 @@ export default class TeamsManagement implements OnInit {
   protected openDeleteModal = signal<boolean>(false);
   protected deleteModalText = signal<string>('');
 
-  protected readonly teamManager = inject(TeamManager);
-  protected readonly userManager = inject(UserManager);
+  protected teamModel = signal({ name: '' });
+
+  protected teamForm = form(this.teamModel, (schemaPath) => {
+    required(schemaPath.name, { message: 'Nombre del equipo requerido' });
+  });
 
   async ngOnInit(): Promise<void> {
     await this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!);
@@ -53,9 +64,32 @@ export default class TeamsManagement implements OnInit {
     );
   }
 
-  protected async orderChange(teamId: number, order: string): Promise<void> {
-    await this.teamManager.updateSortOrder(teamId, Number(order));
+  protected fieldError(field: { touched(): boolean; invalid(): boolean; errors(): Array<{ message?: string }> }): string {
+    if (field.touched() && field.invalid()) {
+      return field.errors()[0]?.message ?? '';
+    }
+    return '';
+  }
+
+  protected async drop(event: CdkDragDrop<Team[]>): Promise<void> {
+    const reordered = [...this.teams()];
+    moveItemInArray(reordered, event.previousIndex, event.currentIndex);
+    reordered.forEach((team, index) => team.order = index + 1);
+    this.teams.set(reordered);
+
+    await this.teamManager.updateTeams(this.teamManager.toTeamRequest(reordered));
     this.teams.set(this.teamManager.allTeams());
+  }
+
+  protected onTeamMenu(item: UiMenuItem, team: Team): void {
+    switch (item.id) {
+      case 'edit':
+        this.showEditTeamModal(team);
+        break;
+      case 'delete':
+        this.showConfirmDeleteModal(team);
+        break;
+    }
   }
 
   protected showEditTeamModal(team: Team): void {
@@ -77,7 +111,7 @@ export default class TeamsManagement implements OnInit {
 
     await this.teamManager.updateTeams(this.teamManager.toTeamRequest([updatedTeam]));
     this.teams.set(this.teamManager.allTeams());
-    
+
     this.closeModal.set(true);
   }
 

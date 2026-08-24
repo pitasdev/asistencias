@@ -1,17 +1,17 @@
+import { signal } from '@angular/core';
 import { Season } from '@/app/shared/models/season/season.model';
-import { Component, input, output, signal } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ToggleContent } from '@/app/shared/components/toggle-content/toggle-content';
-import { SearchFiltersTitle } from '@/app/shared/components/search-filters-title/search-filters-title';
+import { UiDisclosure } from '@/app/shared/components/ui/disclosure';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiIcon } from '@/app/shared/components/ui/icon';
 import { Team } from '@/app/shared/models/team/team.model';
 import { Player } from '@/app/shared/models/player/player.model';
 
 @Component({
   selector: 'app-statistics-filter',
-  imports: [FormsModule, ToggleContent, SearchFiltersTitle],
-  templateUrl: './statistics-filter.html',
-  styleUrl: './statistics-filter.css'
-})
+  imports: [FormsModule, UiDisclosure, UiField, UiIcon],
+  templateUrl: './statistics-filter.html',})
 export class StatisticsFilter {
   teams = input.required<Team[]>();
   selectedTeam = input.required<Team | null>();
@@ -25,16 +25,20 @@ export class StatisticsFilter {
   playerChange = output<Player | null>();
   seasonChange = output<Season | null>();
 
-  forceUpdateHeight = signal<boolean>(false);
+  protected expanded = signal(true);
+
+  protected summary = computed(() => {
+    const parts: string[] = [];
+    const season = this.selectedSeason();
+    if (season && !season.currentSeason) parts.push(season.name);
+    if (this.selectedTeam()) parts.push(this.selectedTeam()!.name);
+    if (this.selectedPlayer()) parts.push(`${this.selectedPlayer()!.name} ${this.selectedPlayer()!.lastName}`.trim());
+    return parts.length > 0 ? parts.join(' · ') : 'Sin filtros';
+  });
 
   onTeamChange(event: string) {
     const team = this.teams().find(t => t.id === Number(event));
     this.teamChange.emit(team || null);
-    
-    // Trigger height recalculation after the DOM updates with the new selector
-    setTimeout(() => {
-      this.forceUpdateHeight.set(true);
-    }, 50);
   }
 
   onPlayerChange(event: string) {
@@ -45,10 +49,5 @@ export class StatisticsFilter {
   onSeasonChange(event: string) {
     const season = this.seasons().find(s => s.name === event);
     this.seasonChange.emit(season || null);
-
-    // Trigger height recalculation after the DOM updates with the new selector
-    setTimeout(() => {
-      this.forceUpdateHeight.set(true);
-    }, 50);
   }
 }

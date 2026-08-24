@@ -1,15 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Button } from "@/app/shared/components/button/button";
-import { Modal } from "@/app/shared/components/modal/modal";
+import { Button } from "@/app/shared/components/ui/button";
+import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { form, FormField, required } from '@angular/forms/signals';
 import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
 import { PlayerTeams } from '@/app/shared/models/player/player-teams.model';
-import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
+import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { PlayerTeamsManager } from '@/app/domain/player-teams/services/player-teams-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { FindFilter } from "../../components/find-filter/find-filter";
+import { UiAvatar } from '@/app/shared/components/ui/avatar';
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiMenu, UiMenuItem } from '@/app/shared/components/ui/menu';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
 import { Player } from '@/app/shared/models/player/player.model';
 import { Team } from '@/app/shared/models/team/team.model';
@@ -23,11 +28,24 @@ interface PlayerForm {
 
 @Component({
   selector: 'app-players-management',
-  imports: [Button, Modal, FormField, ConfirmModal, FindFilter],
+  imports: [Button, Modal, FormField, ConfirmModal, FindFilter, UiAvatar, UiEmptyState, UiField, UiMenu, UiPageHeader],
   templateUrl: './players-management.html',
-  styleUrl: './players-management.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class PlayersManagement implements OnInit {
+  protected readonly playerManager = inject(PlayerManager);
+  protected readonly userManager = inject(UserManager);
+  protected readonly playerTeamsManager = inject(PlayerTeamsManager);
+  protected readonly teamManager = inject(TeamManager);
+
+  protected readonly playerMenuItems: UiMenuItem[] = [
+    { id: 'edit', label: 'Editar', icon: 'pencil' },
+    { id: 'teams', label: 'Equipos', icon: 'shirt' },
+    { id: 'delete', label: 'Eliminar', icon: 'trash', danger: true }
+  ];
+
   protected playerTeams = signal<PlayerTeams[]>([]);
 
   protected openEditModal = signal<boolean>(false);
@@ -36,6 +54,13 @@ export default class PlayersManagement implements OnInit {
   protected modalType = signal<ModalType>('add');
   protected selectedPlayer = signal<Player | null>(null);
 
+  protected openTeamsModal = signal<boolean>(false);
+  protected closeTeamsModal = signal<boolean>(false);
+  protected selectedPlayerTeams = signal<PlayerTeams | null>(null);
+
+  protected openDeleteModal = signal<boolean>(false);
+  protected deleteModalText = signal<string>('');
+
   protected playerModel = signal<PlayerForm>({ name: '', lastName: '' });
 
   protected playerForm = form(this.playerModel, (schemaPath) => {
@@ -43,32 +68,42 @@ export default class PlayersManagement implements OnInit {
     required(schemaPath.lastName, { message: 'Apellidos requeridos' });
   });
 
-  protected openTeamsModal = signal<boolean>(false);
-  protected closeTeamsModal = signal<boolean>(false);
-  protected selectedPlayerTeams = signal<PlayerTeams | null>(null);
   private originalPlayerTeams: PlayerTeams | null = null;
-
-  protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
-
-  protected readonly playerManager = inject(PlayerManager);
-  protected readonly userManager = inject(UserManager);
-  protected readonly playerTeamsManager = inject(PlayerTeamsManager);
-  protected readonly teamManager = inject(TeamManager);
 
   async ngOnInit(): Promise<void> {
     await this.playerTeamsManager.getPlayerTeamsByClubId(this.userManager.activeUser()?.club.id!);
     this.playerTeams.set(this.playerTeamsManager.playerTeams());
   }
 
+  protected onPlayerMenu(item: UiMenuItem, player: Player): void {
+    switch (item.id) {
+      case 'edit':
+        this.showEditPlayerModal(player);
+        break;
+      case 'teams':
+        this.showTeamsModal(player);
+        break;
+      case 'delete':
+        this.showDeleteConfirmModal(player.id!);
+        break;
+    }
+  }
+
   protected filterPlayers(searchText: string): void {
     this.playerTeams.set(
       this.playerTeamsManager.playerTeams()
-        .filter(p => 
-          p.player.name?.toLowerCase().includes(searchText?.toLowerCase()) || 
+        .filter(p =>
+          p.player.name?.toLowerCase().includes(searchText?.toLowerCase()) ||
           p.player.lastName?.toLowerCase().includes(searchText?.toLowerCase())
-      )
+        )
     );
+  }
+
+  protected fieldError(field: { touched(): boolean; invalid(): boolean; errors(): Array<{ message?: string }> }): string {
+    if (field.touched() && field.invalid()) {
+      return field.errors()[0]?.message ?? '';
+    }
+    return '';
   }
 
   protected getTeamsStringByPlayerId(playerId: number): string {

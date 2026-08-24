@@ -1,16 +1,18 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
-import { Switch } from '@/app/shared/components/switch/switch';
+import { computed, inject, input, output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Switch } from '@/app/shared/components/ui/switch';
+import { UiAvatar } from '@/app/shared/components/ui/avatar';
+import { UiBadge } from '@/app/shared/components/ui/badge';
+import { UiField } from '@/app/shared/components/ui/field';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { Reason } from '@/app/shared/models/reason/reason.model';
 
 @Component({
   selector: 'app-save-attendance-result',
-  imports: [Switch, FormsModule],
-  templateUrl: './save-attendance-result.html',
-  styleUrl: './save-attendance-result.css'
-})
+  imports: [Switch, FormsModule, UiAvatar, UiBadge, UiField],
+  templateUrl: './save-attendance-result.html',})
 export class SaveAttendanceResult {
   readonly attendance = input.required<Attendance>();
   readonly reasons = input.required<Reason[]>();
@@ -18,78 +20,32 @@ export class SaveAttendanceResult {
   readonly attendanceChange = output<Attendance>();
   readonly deleteAdicionalPlayer = output<Attendance>();
 
-  protected showReasons = signal<boolean>(false);
-  protected showReasonDescription = signal<boolean>(false);
+  protected readonly reasonManager = inject(ReasonManager);
 
-  protected reasonManager = inject(ReasonManager);
+  protected readonly requiresDescription = computed(() => {
+    const reasonId = this.attendance().reason?.id;
+    return reasonId !== undefined && this.reasonManager.findReasonById(reasonId)?.requiresDescription === true;
+  });
 
-  constructor() {
-    effect(() => {
-      if (!this.attendance().hasAttended) {
-        this.showReasons.set(true);
-        
-        if (this.reasons().find(r => r.id === this.attendance().reason?.id)?.requiresDescription) {
-          this.showReasonDescription.set(true);
-        }
-      }
+  protected hasAttendedChange(value: boolean): void {
+    this.attendanceChange.emit(
+      value
+        ? { ...this.attendance(), hasAttended: value, reason: null, reasonDescription: null }
+        : { ...this.attendance(), hasAttended: value }
+    );
+  }
+
+  protected reasonChange(event: string): void {
+    const reason = this.reasons().find(r => r.id === Number(event));
+    if (!reason) return;
+
+    this.attendanceChange.emit({
+      ...this.attendance(),
+      reason: { id: reason.id!, name: reason.name }
     });
   }
 
-  protected hasAttendedChange(value: boolean) {
-    if (value) {
-      this.attendanceChange.emit({
-        ...this.attendance(),
-        hasAttended: value,
-        reason: null,
-        reasonDescription: null
-      });
-
-      setTimeout(() => {
-        this.showReasonDescription.set(false);
-      }, 150);
-
-      setTimeout(() => {
-        this.showReasons.set(false);
-      }, 300);
-    } else {
-      this.showReasons.set(true);
-
-      setTimeout(() => {
-        const updateAttendance = {
-          ...this.attendance(),
-          hasAttended: value
-        };
-        this.attendanceChange.emit(updateAttendance);
-      }, 0);
-    }
-  }
-
-  protected reasonChange(event: string) {
-    const reason = this.reasons().find(r => r.id === Number(event));
-    if (!reason) return;
-    
-    if (reason?.requiresDescription) {
-      this.showReasonDescription.set(true);
-
-      setTimeout(() => {
-        this.attendanceChange.emit({
-          ...this.attendance(),
-          reason: { id: reason.id!, name: reason.name },
-        });
-      }, 0);
-    } else {
-      this.attendanceChange.emit({
-          ...this.attendance(),
-          reason: { id: reason.id!, name: reason.name }
-        });
-
-      setTimeout(() => {
-        this.showReasonDescription.set(false);
-      }, 300);
-    }
-  }
-
-  protected reasonDescriptionChange(event: string) {
+  protected reasonDescriptionChange(event: string): void {
     this.attendanceChange.emit({
       ...this.attendance(),
       reasonDescription: event

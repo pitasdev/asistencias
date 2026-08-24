@@ -1,22 +1,31 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Button, ButtonColor } from "@/app/shared/components/button/button";
+import { Button, ButtonColor } from "@/app/shared/components/ui/button";
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
-import { ConfirmModal } from "@/app/shared/components/confirm-modal/confirm-modal";
+import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { dateFormatter } from '@/app/shared/utils/dateFormatter';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiIcon } from '@/app/shared/components/ui/icon';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { Team } from '@/app/shared/models/team/team.model';
 
 type ModalType = 'modify' | 'delete';
 
 @Component({
   selector: 'app-modify-attendances',
-  imports: [FormsModule, Button, ConfirmModal],
+  imports: [FormsModule, Button, ConfirmModal, UiField, UiIcon, UiPageHeader],
   templateUrl: './modify-attendances.html',
-  styleUrl: './modify-attendances.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class ModifyAttendances {
+  protected readonly attendanceManager = inject(AttendanceManager);
+  protected readonly teamManager = inject(TeamManager);
+  protected readonly infoModalManager = inject(InfoModalManager);
+
   protected selectedModifyTeam = signal<Team | null>(null);
   protected actualDateModify = signal<string>('');
   protected newDateModify = signal<string>('');
@@ -27,10 +36,6 @@ export default class ModifyAttendances {
   protected confirmModalTitle = signal<string>('');
   protected confirmModalType = signal<ModalType | null>(null);
   protected confirmModalButtonColor = signal<ButtonColor>('primary');
-
-  protected readonly attendanceManager = inject(AttendanceManager);
-  protected readonly teamManager = inject(TeamManager);
-  protected readonly infoModalManager = inject(InfoModalManager);
 
   protected selectedModifyTeamChange(teamId: string): void {
     const team = this.teamManager.findTeamById(Number(teamId));

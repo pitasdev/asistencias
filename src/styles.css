@@ -3,14 +3,60 @@
 @font-face {
   font-family: 'Inter';
   src: url('./fonts/Inter-VariableFont.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @theme {
-  --font-inter: 'Inter', sans-serif;
-  --color-primary: #155dfc;
-  --color-primary-red: #e7000b;
-  --color-selected: #badaff;
-  --color-grey: #ddd;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* ── Brand ─────────────────────────────── */
+  --color-primary-50: #eef5ff;
+  --color-primary-100: #d9e8ff;
+  --color-primary-200: #bcd7ff;
+  --color-primary-300: #8ebdff;
+  --color-primary-400: #5897fc;
+  --color-primary-500: #3374f8;
+  --color-primary-600: #155dfc;
+  --color-primary-700: #0e4ae0;
+  --color-primary-800: #123fb0;
+  --color-primary-900: #143a89;
+  --color-primary-950: #0f254f;
+
+  /* ── Surfaces & lines ──────────────────── */
+  --color-canvas: #f2f5fb;
+  --color-surface: #ffffff;
+  --color-line: #e4e9f2;
+  --color-line-strong: #cdd6e4;
+
+  /* ── Semantic (soft + strong pairs) ────── */
+  --color-positive-soft: #e7f8ef;
+  --color-positive-border: #b3e6c9;
+  --color-positive: #0a8754;
+  --color-negative-soft: #feecec;
+  --color-negative-border: #fbc4c4;
+  --color-negative: #dc2626;
+  --color-caution-soft: #fdf4e3;
+  --color-caution-border: #f4dfa8;
+  --color-caution: #b45309;
+  --color-info-soft: #e8f4fd;
+  --color-info-border: #b7dcf8;
+  --color-info: #0369a1;
+
+  /* ── Elevation (canales de tinta para sombras) ── */
+  --ink-rgb: 15 37 79;
+  --danger-ink-rgb: 127 29 29;
+
+  --shadow-card: 0 1px 2px rgb(var(--ink-rgb) / 4%), 0 10px 28px -18px rgb(var(--ink-rgb) / 18%);
+  --shadow-float: 0 2px 6px rgb(var(--ink-rgb) / 6%), 0 20px 44px -16px rgb(var(--ink-rgb) / 24%);
+  --shadow-pop: 0 24px 64px -12px rgb(var(--ink-rgb) / 32%);
+  --shadow-inset-field: inset 0 1px 2px rgb(var(--ink-rgb) / 3%);
+  --shadow-btn-primary: 0 1px 2px rgb(var(--ink-rgb) / 20%), inset 0 1px 0 rgb(255 255 255 / 14%);
+  --shadow-btn-danger: 0 1px 2px rgb(var(--danger-ink-rgb) / 20%);
+  --shadow-knob: 0 1px 3px rgb(var(--ink-rgb) / 30%);
+
+  /* ── Breakpoints (mobile-first, heredados del proyecto) ── */
   --breakpoint-xs: 24rem;
   --breakpoint-md: 30rem;
   --breakpoint-lg: 48rem;
@@ -18,11 +64,270 @@
   --breakpoint-2xl: 80rem;
 }
 
-html {
-  scrollbar-gutter: stable;
+/* ── Base ─────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-slate-800);
+    font-family: var(--font-inter);
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  button {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: var(--color-primary-200);
+  }
+
+  /* Anillo de foco accesible; las utilidades (focus-visible:outline-none)
+     pueden desactivarlo donde el contenedor ya indica el foco. */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary-600);
+    outline-offset: 2px;
+  }
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* ── Drag & drop (CDK) ───────────────────────────────────── */
+.cdk-drag-preview {
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-float);
+  opacity: 0.95;
+}
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .disabled {
   pointer-events: none;
   opacity: 0.4;
+}
+
+/* ── Utilidades de safe-area (iOS) ───────────────────────── */
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+.bottom-nav-safe {
+  bottom: calc(1rem + max(env(safe-area-inset-bottom), 0px));
+}
+
+/* ── Componentes compartidos ─────────────────────────────── */
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface shadow-card;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-float hover:border-line-strong;
+  }
+
+  .section-title {
+    @apply text-sm font-semibold tracking-wide uppercase text-slate-400;
+  }
+
+  .field-label {
+    @apply block text-[13px] font-semibold text-slate-600 mb-1.5;
+  }
+
+  .field-hint {
+    @apply mt-1.5 text-xs text-slate-400;
+  }
+
+  .field-error {
+    @apply mt-1.5 text-xs font-medium text-negative animate-error-in;
+  }
+
+  .input {
+    @apply h-11 w-full rounded-xl border border-line bg-white px-3.5 text-[15px] text-slate-800
+      placeholder:text-slate-400 shadow-inset-field outline-none focus-visible:outline-none
+      transition-all duration-150
+      focus:border-primary-400 focus:ring-4 focus:ring-primary-600/12;
+  }
+
+  .input-invalid {
+    @apply border-negative focus:border-negative focus:ring-negative/15;
+  }
+
+  /* Variante de foco para controles dentro de contextos "en rojo"
+     (p. ej. tarjeta de jugador ausente), para que el foco no destone. */
+  .input-on-danger {
+    @apply border-negative-border/80 focus:border-negative focus:ring-negative/12;
+  }
+
+  .icon-btn {
+    @apply inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-slate-500
+      transition-all duration-150 hover:bg-slate-100 hover:text-slate-700 active:scale-95;
+  }
+
+  .icon-btn-danger {
+    @apply hover:bg-negative-soft hover:text-negative;
+  }
+}
+
+/* ── Animaciones globales (animate.enter / animate.leave / utilidades) ── */
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes sheet-out {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pop-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(0.97); }
+  to { opacity: 0; transform: translateY(-8px) scale(0.97); }
+}
+@keyframes toast-bar {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+@keyframes error-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-overlay-in {
+  animation: overlay-in 0.2s ease-out both;
+}
+
+@utility animate-overlay-out {
+  animation: overlay-out 0.2s ease-in both;
+}
+
+@utility animate-sheet-in {
+  animation: sheet-in 0.32s cubic-bezier(0.32, 0.72, 0.25, 1) both;
+}
+
+@utility animate-sheet-out {
+  animation: sheet-out 0.26s cubic-bezier(0.55, 0, 0.85, 0.45) both;
+}
+
+@utility animate-pop-in {
+  animation: pop-in 0.24s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+}
+
+@utility animate-pop-out {
+  animation: pop-out 0.18s ease-in both;
+}
+
+@utility animate-toast-in {
+  animation: toast-in 0.24s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+}
+
+@utility animate-toast-out {
+  animation: toast-out 0.18s ease-in both;
+}
+
+@utility animate-toast-bar {
+  transform-origin: left;
+  animation: toast-bar var(--toast-duration, 3400ms) linear forwards;
+}
+
+@utility animate-error-in {
+  animation: error-in 0.16s ease-out both;
+}
+
+@utility animate-rise-in {
+  animation: rise-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+}
+
+@media (min-width: 48rem) {
+  .animate-sheet-in {
+    animation-name: pop-in;
+    animation-duration: 0.22s;
+  }
+
+  .animate-sheet-out {
+    animation-name: pop-out;
+    animation-duration: 0.16s;
+  }
+
+  .animate-toast-in {
+    animation-name: pop-in;
+  }
+
+  .animate-toast-out {
+    animation-name: pop-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

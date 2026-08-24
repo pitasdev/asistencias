@@ -3,28 +3,37 @@ import { AttendancesFilter } from '@/app/features/attendance/components/filter-a
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
 import { SaveAttendanceResult } from '@/app/features/attendance/components/save-attendance-result/save-attendance-result';
-import { Button } from "@/app/shared/components/button/button";
+import { Button } from "@/app/shared/components/ui/button";
 import { FormsModule } from '@angular/forms';
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
-import { Modal } from '@/app/shared/components/modal/modal';
+import { Modal } from '@/app/shared/components/ui/modal/modal';
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiIcon } from '@/app/shared/components/ui/icon';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
 import { Team } from '@/app/shared/models/team/team.model';
 
 @Component({
   selector: 'app-attendances',
-  imports: [AttendancesFilter, SaveAttendanceResult, Button, FormsModule, Modal],
+  imports: [AttendancesFilter, SaveAttendanceResult, Button, FormsModule, Modal, UiPageHeader, UiIcon, UiEmptyState],
   templateUrl: './attendances.html',
-  styleUrl: './attendances.css',
   host: {
     class: 'flex flex-col gap-4'
   }
 })
 export default class Attendances implements OnInit {
+  protected readonly attendanceManager = inject(AttendanceManager);
+  protected readonly teamManager = inject(TeamManager);
+  protected readonly playerManager = inject(PlayerManager);
+  protected readonly attendanceTypeManager = inject(AttendanceTypeManager);
+  protected readonly reasonManager = inject(ReasonManager);
+  protected readonly infoModalManager = inject(InfoModalManager);
+
   protected selectedTeam = signal<Team | null>(null);
   protected selectedDate = signal<string>(new Date().toISOString().split('T')[0]);
   protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, club: { id: 0, name: '' } });
@@ -38,35 +47,23 @@ export default class Attendances implements OnInit {
   protected selectedAdicionalPlayerIds = signal<number[]>([]);
 
   protected attendancePlayerIdsSet = computed(() => new Set(this.attendanceManager.attendances().map(a => a.player.id)));
-  
-  protected readonly attendanceManager = inject(AttendanceManager);
-  protected readonly teamManager = inject(TeamManager);
-  protected readonly playerManager = inject(PlayerManager);
-  protected readonly attendanceTypeManager = inject(AttendanceTypeManager);
-  protected readonly reasonManager = inject(ReasonManager);
-  protected readonly infoModalManager = inject(InfoModalManager);
+
+  protected presentCount = computed(() => this.attendanceManager.attendances().filter(a => a.hasAttended).length);
+  protected absentCount = computed(() => this.attendanceManager.attendances().length - this.presentCount());
+  protected hasInvalidAttendances = computed(() => {
+    for (const a of this.attendanceManager.attendances()) {
+      if (!a.hasAttended && a.reason === null) return true;
+      if (!a.hasAttended && a.reason) {
+        const reason = this.reasonManager.findReasonById(a.reason.id);
+        if (reason?.requiresDescription && (!a.reasonDescription || a.reasonDescription.trim() === '')) return true;
+      }
+    }
+    return false;
+  });
+  protected isSaveDisabled = computed(() => this.disabledButton() || this.hasInvalidAttendances());
 
   ngOnInit(): void {
     this.checkSelectedDay();
-  }
-
-  private checkSelectedDay(): void {
-    const attendanceId = this.attendanceManager.attendances()[0]?.id;
-    if (attendanceId) {
-      const attendanceType = this.attendanceTypeManager.findAttendanceTypeById(this.attendanceManager.attendances()[0].attendanceType.id);
-      if (attendanceType === null) return;
-      this.selectedAttendanceType.set(attendanceType);
-    } else {
-      const dateParts = this.selectedDate().split('-');
-      const date = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
-      if (date.getDay() === 6 || date.getDay() === 0) {
-        this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[1]);
-      } else {
-        this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[0]);
-      }
-
-      this.attendanceTypeChange(this.selectedAttendanceType());
-    }
   }
 
   protected async teamsChange(team: Team | null): Promise<void> {
@@ -187,6 +184,10 @@ export default class Attendances implements OnInit {
     }
   }
 
+  protected isSelectedAdicional(playerId: number): boolean {
+    return this.selectedAdicionalPlayerIds().includes(playerId);
+  }
+
   protected confirmAdicionalPlayers(): void {
     if (this.selectedAdicionalPlayerIds().length === 0) {
       this.closeAdicionalModal();
@@ -230,5 +231,24 @@ export default class Attendances implements OnInit {
     this.addAdicionalPlayer.set(false);
     this.adicionalTeam.set(null);
     this.selectedAdicionalPlayerIds.set([]);
+  }
+
+  private checkSelectedDay(): void {
+    const attendanceId = this.attendanceManager.attendances()[0]?.id;
+    if (attendanceId) {
+      const attendanceType = this.attendanceTypeManager.findAttendanceTypeById(this.attendanceManager.attendances()[0].attendanceType.id);
+      if (attendanceType === null) return;
+      this.selectedAttendanceType.set(attendanceType);
+    } else {
+      const dateParts = this.selectedDate().split('-');
+      const date = new Date(Number(dateParts[0]), Number(dateParts[1]) - 1, Number(dateParts[2]));
+      if (date.getDay() === 6 || date.getDay() === 0) {
+        this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[1]);
+      } else {
+        this.selectedAttendanceType.set(this.attendanceTypeManager.attendanceTypes()[0]);
+      }
+
+      this.attendanceTypeChange(this.selectedAttendanceType());
+    }
   }
 }

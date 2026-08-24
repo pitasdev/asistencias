@@ -1,0 +1,46 @@
+@if (feedback.dialog(); as dialog) {
+  <div class="fixed inset-0 z-80 flex items-center justify-center bg-slate-950/45 backdrop-blur-[2px] px-4 animate-overlay-in">
+    <div
+      class="card w-full max-w-sm p-6 animate-pop-in flex flex-col items-center gap-4 text-center"
+      role="alertdialog"
+      [attr.aria-label]="dialog.tone"
+    >
+      <span class="flex size-14 items-center justify-center rounded-2xl" [class]="tone(dialog.tone).chip">
+        <app-ui-icon [name]="tone(dialog.tone).icon" [size]="26" />
+      </span>
+
+      <p [innerHTML]="safeMessage(dialog.message)" class="text-[15px] leading-relaxed text-slate-600"></p>
+
+      <button
+        type="button"
+        class="mt-1 h-11 w-full rounded-xl bg-primary-600 font-semibold text-white shadow-btn-primary transition-all hover:bg-primary-700 active:scale-[0.98]"
+        (click)="feedback.closeDialog()"
+      >
+        Aceptar
+      </button>
+    </div>
+  </div>
+}
+
+<div class="pointer-events-none fixed z-70 flex flex-col items-center gap-2 top-3 inset-x-4 lg:inset-x-auto lg:right-5 lg:bottom-6 lg:top-auto lg:items-end">
+  @for (toast of feedback.toasts(); track toast.id) {
+    <div
+      class="pointer-events-auto relative w-full max-w-sm overflow-hidden rounded-xl border border-line bg-surface shadow-float"
+      [style.--toast-duration]="toast.durationMs + 'ms'"
+      [class.animate-toast-in]="!toast.leaving"
+      [class.animate-toast-out]="toast.leaving"
+      (click)="feedback.dismissToast(toast.id)"
+      role="status"
+    >
+      <div class="flex items-center gap-3 py-3 pl-3.5 pr-4">
+        <span class="flex size-8 shrink-0 items-center justify-center rounded-lg" [class]="tone(toast.tone).chip">
+          <app-ui-icon [name]="tone(toast.tone).icon" [size]="16" />
+        </span>
+
+        <p class="min-w-0 flex-1 text-sm font-medium leading-snug text-slate-700" [innerHTML]="safeMessage(toast.message)"></p>
+      </div>
+
+      <span class="absolute inset-x-0 bottom-0 h-0.75 origin-left animate-toast-bar" [class]="tone(toast.tone).bar"></span>
+    </div>
+  }
+</div>

@@ -1,0 +1,109 @@
+<!-- ══ Sidebar (tablet horizontal / desktop) ══ -->
+<aside class="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-line bg-surface xl:flex">
+  <div class="flex items-center gap-3 px-6 pt-7 pb-2">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-10">
+      <rect width="24" height="24" rx="7" class="fill-primary-600" />
+      <path d="M6.5 12.5l3.4 3.4L17.5 8.8" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+
+    <div class="min-w-0">
+      <p class="truncate text-[17px] font-extrabold tracking-tight text-slate-900">Asistencias</p>
+      @if (clubManager.club(); as club) {
+        <p class="truncate text-xs font-medium text-slate-400">{{ club.name }}</p>
+      }
+    </div>
+  </div>
+
+  <nav class="flex flex-1 flex-col gap-6 overflow-y-auto px-4 pt-6">
+    <div class="flex flex-col gap-1">
+      <p class="section-title px-3 pb-1.5">General</p>
+
+      @for (item of mainItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all"
+          [class]="isActive(item)
+            ? 'bg-primary-50 text-primary-700'
+            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
+        >
+          <app-ui-icon [name]="item.icon" [size]="19" />
+          {{ item.label }}
+        </a>
+      }
+    </div>
+
+    @if (isAdmin) {
+      <div class="flex flex-col gap-1">
+        <p class="section-title px-3 pb-1.5">Administración</p>
+
+        @for (item of adminItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all"
+            [class]="isActive(item)
+              ? 'bg-primary-50 text-primary-700'
+              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
+          >
+            <app-ui-icon [name]="item.icon" [size]="19" />
+            {{ item.label }}
+          </a>
+        }
+      </div>
+    }
+
+    <div class="flex flex-col gap-1">
+      <p class="section-title px-3 pb-1.5">Cuenta</p>
+
+      @for (item of accountItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all"
+          [class]="isActive(item)
+            ? 'bg-primary-50 text-primary-700'
+            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
+        >
+          <app-ui-icon [name]="item.icon" [size]="19" />
+          {{ item.label }}
+        </a>
+      }
+    </div>
+  </nav>
+
+  @if (userManager.activeUser(); as user) {
+    <div class="border-t border-line p-4 xl:pb-4">
+      <div class="flex items-center gap-3 rounded-xl bg-canvas p-3">
+        <app-ui-avatar [name]="user.name" size="md" />
+
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-bold text-slate-800">{{ user.name }}</p>
+          <span class="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold capitalize text-slate-500 border border-line mt-0.5">
+            {{ user.role?.name }}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="icon-btn icon-btn-danger"
+          aria-label="Cerrar sesión"
+          (click)="logout()"
+        >
+          <app-ui-icon name="log-out" [size]="18" />
+        </button>
+      </div>
+    </div>
+  }
+</aside>
+
+<!-- ══ Barra inferior flotante (móvil / tablet vertical) ══ -->
+<nav class="bottom-nav-safe fixed inset-x-3 z-40 flex gap-1 rounded-2xl border border-line bg-white/92 p-1.5 shadow-float backdrop-blur-md xl:hidden">
+  @for (item of visibleMobileItems(); track item.path) {
+    <a
+      [routerLink]="item.path"
+      class="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-all active:scale-95"
+      [class]="isActive(item) ? 'bg-primary-50 text-primary-700' : 'text-slate-400 hover:text-slate-600'"
+    >
+      <app-ui-icon [name]="item.icon" [size]="21" />
+      <span class="max-w-full truncate text-[10px] font-bold tracking-tight">{{ item.label }}</span>
+    </a>
+  }
+</nav>

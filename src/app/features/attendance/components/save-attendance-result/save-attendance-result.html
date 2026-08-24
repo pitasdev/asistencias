@@ -1,64 +1,83 @@
-﻿<article 
-  class="flex flex-col p-2 border rounded-sm border-grey border-l-4 border-l-primary transition-all" 
-  [class.gap-2]="!attendance().hasAttended"
-  [class.border-l-primary-red]="!attendance().hasAttended"
+﻿<article
+  class="card p-2 overflow-hidden transition-all duration-300"
+  [class.border-negative-border]="!attendance().hasAttended"
+  [class.bg-negative-soft]="!attendance().hasAttended"
 >
-  <div class="min-h-8 flex gap-8 justify-between items-center">
-    <span class="font-semibold">{{attendance().player.name}} {{attendance().player.lastName}}</span>
+  <div class="flex items-center gap-3">
+    <app-ui-avatar [name]="attendance().player.name" [lastName]="attendance().player.lastName" size="md" />
+
+    <div class="min-w-0 flex-1 flex flex-col gap-1">
+      <p class="truncate text-sm font-semibold tracking-tight text-slate-800 xs:text-[15px]">
+        {{ attendance().player.name }} {{ attendance().player.lastName }}
+      </p>
+
+      <div class="flex items-center gap-2">
+        @if (attendance().hasAttended) {
+          <span class="flex items-center gap-1 text-xs font-semibold text-positive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="size-3"><path d="M20 6 9 17l-5-5"/></svg>
+            Asistió
+          </span>
+        } @else {
+          <span class="flex min-w-0 items-center gap-1 truncate text-xs font-semibold text-negative">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="size-3 shrink-0"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <span class="truncate">{{ attendance().reason?.name ?? 'Falta — indica el motivo' }}</span>
+          </span>
+        }
+
+        @if (attendance().isAdditional) {
+          <app-ui-badge tone="info" class="shrink-0">Extra</app-ui-badge>
+        }
+      </div>
+    </div>
 
     @if (attendance().isAdditional) {
-      <svg class="cursor-pointer" (click)="deleteAdicionalPlayer.emit(attendance());" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" class="min-w-fit cursor-pointer">
-        <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"></path>
-      </svg>
+      <button type="button" class="icon-btn icon-btn-danger" aria-label="Quitar jugador" (click)="deleteAdicionalPlayer.emit(attendance())">
+        <svg viewBox="0 0 24 24" class="size-[19px]">
+          <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12z"/>
+        </svg>
+      </button>
     } @else {
-      <app-switch 
-        [value]="attendance().hasAttended"
-        (valueChange)="hasAttendedChange($event)"
-      />
+      <app-switch [value]="attendance().hasAttended" (valueChange)="hasAttendedChange($event)" />
     }
   </div>
-  
-  @if (showReasons()) {
-    <hr class="text-grey" [class.opacity-0]="attendance().hasAttended" />
-  
-    <div 
-      class="h-0 flex gap-8 justify-between items-center opacity-0 overflow-hidden transition-all duration-300 ease-out"
-      [class.h-10]="!attendance().hasAttended"
-      [class.opacity-100]="!attendance().hasAttended"
-      [class.overflow-visible]="!attendance().hasAttended"
-    >
-      <label id="reason" class="whitespace-nowrap">Motivo</label>
-      <select 
-        name="reason" 
-        class="min-w-40 w-fit h-10 p-2 border rounded-sm border-grey" 
-        [ngModel]="attendance().reason?.id ?? 0" 
-        (ngModelChange)="reasonChange($event)"
-      >
-        <option value="0">Seleccionar motivo</option>
-        @for (reason of reasons(); track reason.id) {
-          <option value="{{reason.id}}">{{reason.name}}</option>
+
+  <div
+    class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+    [style.grid-template-rows]="attendance().hasAttended ? '0fr' : '1fr'"
+  >
+    <div class="-mx-1.5 overflow-hidden px-1.5">
+      <div class="mt-2 flex flex-col gap-3 border-t pt-2 pb-1.5"
+           [class.border-line]="attendance().hasAttended"
+           [class.border-negative-border]="!attendance().hasAttended">
+        <app-ui-field label="Motivo">
+          <select
+            name="reason"
+            class="input h-10 text-sm"
+            [class.input-on-danger]="!attendance().hasAttended"
+            [ngModel]="attendance().reason?.id ?? 0"
+            (ngModelChange)="reasonChange($event)"
+          >
+            <option value="0">Seleccionar motivo</option>
+            @for (reason of reasons(); track reason.id) {
+              <option value="{{reason.id}}">{{reason.name}}</option>
+            }
+          </select>
+        </app-ui-field>
+
+        @if (requiresDescription()) {
+          <app-ui-field label="Indicar motivo">
+            <input
+              name="reason-description"
+              type="text"
+              class="input h-10 text-sm"
+              [class.input-on-danger]="!attendance().hasAttended"
+              placeholder="Ej.: se lesionó en el partido del sábado…"
+              [ngModel]="attendance().reasonDescription"
+              (ngModelChange)="reasonDescriptionChange($event)"
+            >
+          </app-ui-field>
         }
-      </select>
-    </div>
-  
-    @if (showReasonDescription()) {
-      <div 
-        class="h-0 flex gap-8 justify-between items-center -mb-2 opacity-0 overflow-hidden transition-all duration-300 ease-out"
-        [class.h-10]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
-        [class.mb-0]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
-        [class.opacity-100]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
-        [class.overflow-visible]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription"
-        [class.duration-150]="reasonManager.findReasonById(attendance().reason?.id!)?.requiresDescription && attendance().hasAttended"
-      >
-        <label id="reason-description" class="whitespace-nowrap">Indicar motivo</label>
-        <input 
-          name="reason-description" 
-          type="text" 
-          class="w-full h-10 p-2 border rounded-sm border-grey" 
-          [ngModel]="attendance().reasonDescription" 
-          (ngModelChange)="reasonDescriptionChange($event)"
-        >
       </div>
-    }
-  }
+    </div>
+  </div>
 </article>

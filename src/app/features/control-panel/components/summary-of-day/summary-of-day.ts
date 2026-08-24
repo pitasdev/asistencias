@@ -1,7 +1,8 @@
-import { Component, computed, effect, inject, output, Signal, signal } from '@angular/core';
-import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
+import { computed, inject, output } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 import { AttendanceManager } from '@/app/domain/attendance/services/attendance-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
+import { UiIcon } from '@/app/shared/components/ui/icon';
 import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { Team } from '@/app/shared/models/team/team.model';
 
@@ -13,28 +14,17 @@ interface AttendanceSummary {
 
 @Component({
   selector: 'app-summary-of-day',
-  imports: [ToggleContent],
-  templateUrl: './summary-of-day.html',
-  styleUrl: './summary-of-day.css'
-})
+  imports: [UiIcon],
+  templateUrl: './summary-of-day.html',})
 export class SummaryOfDay {
   clickTeam = output<Team>();
-
-  protected attendancesSummary: Signal<AttendanceSummary[]> = computed(() => {
-    return this.summarizeTeams(this.attendanceManager.attendances());
-  });
-  protected forceUpdateState = signal<boolean>(false);
 
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly teamManager = inject(TeamManager);
 
-  constructor() {
-    effect(() => {
-      if(this.attendanceManager.attendances()){
-        this.forceUpdateState.set(true);
-      }
-    });
-  }
+  protected attendancesSummary: Signal<AttendanceSummary[]> = computed(() => {
+    return this.summarizeTeams(this.attendanceManager.attendances());
+  });
 
   private summarizeTeams(attendances: Attendance[]): AttendanceSummary[] {
     const attendancesSummary: AttendanceSummary[] = [];
@@ -49,8 +39,8 @@ export class SummaryOfDay {
         const team = this.teamManager.findTeamById(a.team.id);
         if (!team) return;
 
-        attendancesSummary.push({ 
-          team, 
+        attendancesSummary.push({
+          team,
           attendanceTrue: a.hasAttended ? 1 : 0,
           attendanceFalse: a.hasAttended ? 0 : 1
         });

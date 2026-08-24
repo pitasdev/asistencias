@@ -1,16 +1,17 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, computed, input, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
-import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
-import { Team } from '@/app/shared/models/team/team.model';
+import { UiDisclosure } from '@/app/shared/components/ui/disclosure';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiIcon } from '@/app/shared/components/ui/icon';
+import { Switch } from '@/app/shared/components/ui/switch';
 import { Season } from '@/app/shared/models/season/season.model';
+import { Team } from '@/app/shared/models/team/team.model';
+import { dateFormatter } from '@/app/shared/utils/dateFormatter';
 
 @Component({
   selector: 'app-attendances-control-filter',
-  imports: [FormsModule, SearchFiltersTitle, ToggleContent],
-  templateUrl: './attendances-control-filter.html',
-  styleUrl: './attendances-control-filter.css'
-})
+  imports: [FormsModule, UiDisclosure, UiField, UiIcon, Switch],
+  templateUrl: './attendances-control-filter.html',})
 export class AttendancesControlFilter {
   seasons = input.required<Season[]>();
   selectedSeason = input.required<Season | null>();
@@ -26,12 +27,34 @@ export class AttendancesControlFilter {
   startDateChange = output<string>();
   endDateChange = output<string>();
 
-  protected showEndDate = signal<boolean>(false);
+  showEndDate = model<boolean>(false);
+
+  protected expanded = signal(true);
+
+  protected summary = computed(() => {
+    const parts: string[] = [];
+    const season = this.selectedSeason();
+    if (season && !season.currentSeason) parts.push(season.name);
+    if (this.selectedTeam()) parts.push(this.selectedTeam()!.name);
+    if (this.showEndDate()) {
+      if (this.startDate() && this.endDate()) {
+        parts.push(`${dateFormatter(this.startDate())} → ${dateFormatter(this.endDate())}`);
+      } else if (this.startDate()) {
+        parts.push(dateFormatter(this.startDate()));
+      }
+    } else {
+      if (this.date()) parts.push(dateFormatter(this.date()));
+    }
+    return parts.length > 0 ? parts.join(' · ') : 'Sin filtros';
+  });
 
   onSeasonChange(event: string) {
     const season = this.seasons().find(s => s.name === event);
     this.seasonChange.emit(season || null);
-    this.showEndDate.set(false);
+
+    if (!season) {
+      this.showEndDate.set(false);
+    }
   }
 
   onTeamsChange(event: string) {
@@ -42,6 +65,8 @@ export class AttendancesControlFilter {
       this.teamsChange.emit(null);
 
       if (this.showEndDate()) {
+        this.startDateChange.emit('');
+        this.endDateChange.emit('');
         this.dateChange.emit(new Date().toISOString().split('T')[0]);
         this.showEndDate.set(false);
       }
@@ -68,19 +93,19 @@ export class AttendancesControlFilter {
     }
   }
 
-  onShowEndDateChange() {
+  onShowEndDateChange(checked: boolean) {
     if (this.selectedTeam() === null) return;
 
-    this.showEndDate.set(!this.showEndDate());
-    
-    if (this.showEndDate()) {
+    this.showEndDate.set(checked);
+
+    if (checked) {
       this.startDateChange.emit(this.date());
       this.endDateChange.emit(this.date());
       this.dateChange.emit('');
     } else {
-      this.dateChange.emit(this.endDate());
       this.startDateChange.emit('');
       this.endDateChange.emit('');
+      this.dateChange.emit(this.endDate());
     }
   }
 }

@@ -1,17 +1,16 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UiDisclosure } from '@/app/shared/components/ui/disclosure';
+import { UiField } from '@/app/shared/components/ui/field';
+import { UiIcon } from '@/app/shared/components/ui/icon';
 import { Season } from '@/app/shared/models/season/season.model';
-import { ToggleContent } from "@/app/shared/components/toggle-content/toggle-content";
-import { SearchFiltersTitle } from "@/app/shared/components/search-filters-title/search-filters-title";
 import { Team } from '@/app/shared/models/team/team.model';
 import { Player } from '@/app/shared/models/player/player.model';
 
 @Component({
   selector: 'app-player-control-filter',
-  imports: [FormsModule, ToggleContent, SearchFiltersTitle],
-  templateUrl: './player-control-filter.html',
-  styleUrl: './player-control-filter.css'
-})
+  imports: [FormsModule, UiDisclosure, UiField, UiIcon],
+  templateUrl: './player-control-filter.html',})
 export class PlayerControlFilter {
   teams = input.required<Team[]>();
   selectedTeam = input.required<Team | null>();
@@ -24,42 +23,28 @@ export class PlayerControlFilter {
   playerChange = output<Player | null>();
   seasonChange = output<Season | null>();
 
-  protected showSelectedPlayer = signal<boolean>(false);
-  protected forceUpdateToggleContentState = signal<boolean>(false);
-  protected toggleContentHeight = signal<string | null>(null);
+  protected expanded = signal(true);
 
-  protected onSeasonChange(event: string) {
+  protected summary = computed(() => {
+    const parts: string[] = [];
+    const season = this.selectedSeason();
+    if (season && !season.currentSeason) parts.push(season.name);
+    if (this.selectedTeam()) parts.push(this.selectedTeam()!.name);
+    if (this.selectedPlayer()) parts.push(`${this.selectedPlayer()!.name} ${this.selectedPlayer()!.lastName}`.trim());
+    return parts.length > 0 ? parts.join(' · ') : 'Sin filtros';
+  });
+
+  onSeasonChange(event: string) {
     const season = this.seasons().find(s => s.name === event);
     this.seasonChange.emit(season || null);
-    this.showSelectedPlayer.set(false);
   }
 
-  protected onTeamsChange(event: string) {
-    const oldTeam = this.selectedTeam();
+  onTeamsChange(event: string) {
     const team = this.teams().find(t => t.id === Number(event));
-    if (team) {
-      this.teamsChange.emit(team);
-      this.showSelectedPlayer.set(true);
-      
-      if (!oldTeam) {
-        this.forceUpdateToggleContentState.set(true);
-        this.toggleContentHeight.set(null);
-      }
-    } else {
-      this.teamsChange.emit(null);
-
-      if (oldTeam) {
-        this.forceUpdateToggleContentState.set(true);
-        this.toggleContentHeight.set('144px');
-      }
-
-      setTimeout(() => {
-        this.showSelectedPlayer.set(false);
-      }, 300);
-    }
+    this.teamsChange.emit(team || null);
   }
 
-  protected onPlayersChange(event: string) {
+  onPlayersChange(event: string) {
     const player = this.players().find(p => p.id === Number(event));
     if (player) {
       this.playerChange.emit(player);

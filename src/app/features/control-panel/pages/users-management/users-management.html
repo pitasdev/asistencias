@@ -1,140 +1,100 @@
-<div class="flex flex-col gap-4">
-  <h1 class="font-bold text-2xl text-center">Gestión de Usuarios</h1>
+<app-ui-page-header title="Gestión de Usuarios" subtitle="Administra los usuarios, roles y sus equipos" [backLink]="'/panel-de-control'" />
 
-  <app-find-filter 
-    [searchPlaceholder]="'Buscar usuario'"
-    [buttonText]="'Añadir Usuario'"
-    (searchTextChange)="filterUsers($event)"
-    (buttonClick)="showAddUserModal()"
-  />
+<app-find-filter
+  [searchPlaceholder]="'Buscar usuario…'"
+  [buttonText]="'Añadir Usuario'"
+  (searchTextChange)="filterUsers($event)"
+  (buttonClick)="showAddUserModal()"
+/>
 
-  <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
+@if (userTeams().length > 0) {
+  <section class="card divide-y divide-line">
     @for (userTeams of userTeams(); track userTeams.user.id) {
-      <div class="w-full flex gap-4 items-center">
-        <div class="w-[calc(100%-(24px*2)-(16px*2))] flex flex-col gap-1 p-2 border rounded-sm border-grey border-l-4 border-l-primary border-r-4 border-r-primary">
-          <span class="font-semibold w-full truncate">{{userTeams.user.name}}</span>
+      <div class="flex items-center gap-2 p-2 transition-colors first:rounded-t-2xl hover:bg-canvas/60 last:rounded-b-2xl sm:gap-3 sm:p-3 sm:px-4">
+        <app-ui-avatar [name]="userTeams.user.name" size="md" />
 
-          <span>{{userTeams.user.username}} | {{userTeams.user.role.name}}</span>
-
-          @let teams = teamsStringByUserId().get(userTeams.user.id!);
-          @if (teams) {
-            <span class="text-[.875rem] text-[#777] w-full truncate">{{teams}}</span>
-          }
-        </div>
-        
-        @if (canEditUserById().get(userTeams.user.id!)) {
-          <div class="grid grid-cols-2 gap-4">
-            <svg class="min-w-fit cursor-pointer" (click)="showEditUserModal(userTeams.user)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
-            </svg>
-    
-            @if (userTeams.user.id !== userManager.activeUser()?.id) {
-              <svg class="min-w-fit cursor-pointer" (click)="showConfirmDeleteModal(userTeams.user)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/>
-              </svg>
-            } @else {
-              <div></div>
-            }
-  
-            <svg class="min-w-fit cursor-pointer" (click)="showTeamsModal(userTeams.user)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M1 17.2q0-.85.438-1.562T2.6 14.55q1.55-.775 3.15-1.162T9 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T17 17.2v.8q0 .825-.587 1.413T15 20H3q-.825 0-1.412-.587T1 18zM21 20h-2.55q.275-.45.413-.962T19 18v-1q0-1.1-.612-2.113T16.65 13.15q1.275.15 2.4.513t2.1.887q.9.5 1.375 1.112T23 17v1q0 .825-.587 1.413T21 20M9 12q-1.65 0-2.825-1.175T5 8t1.175-2.825T9 4t2.825 1.175T13 8t-1.175 2.825T9 12m10-4q0 1.65-1.175 2.825T15 12q-.275 0-.7-.062t-.7-.138q.675-.8 1.038-1.775T15 8t-.362-2.025T13.6 4.2q.35-.125.7-.163T15 4q1.65 0 2.825 1.175T19 8M3 18h12v-.8q0-.275-.137-.5t-.363-.35q-1.35-.675-2.725-1.012T9 15t-2.775.338T3.5 16.35q-.225.125-.363.35T3 17.2zm6-8q.825 0 1.413-.587T11 8t-.587-1.412T9 6t-1.412.588T7 8t.588 1.413T9 10m0-2"></path>
-            </svg>
-  
-            <svg class="min-w-fit cursor-pointer" (click)="showResetPasswordModal(userTeams.user)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12.63 2c5.53 0 10.01 4.5 10.01 10s-4.48 10-10.01 10c-3.51 0-6.58-1.82-8.37-4.57l1.58-1.25C7.25 18.47 9.76 20 12.64 20a8 8 0 0 0 8-8a8 8 0 0 0-8-8C8.56 4 5.2 7.06 4.71 11h2.76l-3.74 3.73L0 11h2.69c.5-5.05 4.76-9 9.94-9m2.96 8.24c.5.01.91.41.91.92v4.61c0 .5-.41.92-.92.92h-5.53c-.51 0-.92-.42-.92-.92v-4.61c0-.51.41-.91.91-.92V9.23c0-1.53 1.25-2.77 2.77-2.77c1.53 0 2.78 1.24 2.78 2.77zm-2.78-2.38c-.75 0-1.37.61-1.37 1.37v1.01h2.75V9.23c0-.76-.62-1.37-1.38-1.37"></path>
-            </svg>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <p class="min-w-0 truncate text-sm font-semibold tracking-tight text-slate-800 xs:text-[15px]">{{userTeams.user.name}}</p>
+            <app-ui-badge tone="primary">{{userTeams.user.role.name}}</app-ui-badge>
           </div>
+
+          <p class="truncate text-xs text-slate-400">
+            @{{userTeams.user.username}}
+            @let teams = teamsStringByUserId().get(userTeams.user.id!);
+            @if (teams) {
+              <span> · {{teams}}</span>
+            }
+          </p>
+        </div>
+
+        @if (canEditUserById().get(userTeams.user.id!)) {
+          <app-ui-menu
+            [items]="userMenuItems(userTeams.user)"
+            label="Acciones del usuario"
+            (select)="onUserMenu($event, userTeams.user)"
+          />
         }
       </div>
     }
   </section>
-</div>
+} @else {
+  <section class="card">
+    <app-ui-empty-state
+      icon="shield-check"
+      title="Sin usuarios"
+      message="Añade el primer usuario con el botón «Añadir Usuario»."
+    />
+  </section>
+}
 
 @if (openAddModal()) {
   <app-modal
     [closeModal]="closeModal()"
     (modalClosed)="modalClosed()"
   >
-    <div class="flex flex-col gap-8 justify-center items-center">
-      <h3 class="font-semibold text-xl">{{modalTitle()}}</h3>
+    <div class="flex flex-col gap-5">
+      <div>
+        <h3 class="text-lg font-bold tracking-tight text-slate-900">{{modalTitle()}}</h3>
+      </div>
 
       <form (submit)="modalType() === 'add' ? addUser() : modalType() === 'edit' ? editUser() : restorePassword(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
-        <div class="flex flex-col gap-1">
-          <div class="flex gap-4 items-center">
-            <label for="name" class="text-start w-24">Nombre</label>
-            <input 
-              id="name" 
-              type="text" 
-              class="h-10 p-2 border border-grey rounded-sm" 
-              [formField]="userForm.name"
-            >
-          </div>
-          @if (userForm.name().touched() && userForm.name().invalid()) {
-            <span class="text-xs text-primary-red ml-28">{{ userForm.name().errors()[0].message }}</span>
-          }
-        </div>
-    
-        <div class="flex flex-col gap-1">
-          <div class="flex gap-4 items-center">
-            <label for="username" class="text-start w-24">Username</label>
-            <input 
-              id="username" 
-              type="text" 
-              class="h-10 p-2 border border-grey rounded-sm" 
-              [formField]="userForm.username"
-            >
-          </div>
-          @if (userForm.username().touched() && userForm.username().invalid()) {
-            <span class="text-xs text-primary-red ml-28">{{ userForm.username().errors()[0].message }}</span>
-          }
-        </div>
-    
-        @if (modalType() === 'add' || modalType() === 'resetPassword') {
-          <div class="flex flex-col gap-1">
-            <div class="flex gap-4 items-center">
-              <label for="password" class="text-start w-24">Contraseña</label>
-              <input id="password" type="password" class="h-10 p-2 border border-grey rounded-sm" [formField]="userForm.password">
-            </div>
-            @if (userForm.password().touched() && userForm.password().invalid()) {
-              <span class="text-xs text-primary-red ml-28">{{ userForm.password().errors()[0].message }}</span>
-            }
-          </div>
-    
-          <div class="flex flex-col gap-1">
-            <div class="flex gap-4 items-center">
-              <label for="confirm-password" class="text-start w-24">Confirmar contraseña</label>
-              <input id="confirm-password" type="password" class="h-10 p-2 border border-grey rounded-sm" [formField]="userForm.confirmPassword">
-            </div>
-            @if (userForm.confirmPassword().touched() && userForm.confirmPassword().invalid()) {
-              <span class="text-xs text-primary-red ml-28">{{ userForm.confirmPassword().errors()[0].message }}</span>
-            }
-          </div>
+        @if (modalType() !== 'resetPassword') {
+          <app-ui-field label="Nombre" fieldId="name" [error]="fieldError(userForm.name())">
+            <input id="name" type="text" class="input" placeholder="Nombre completo" [formField]="userForm.name">
+          </app-ui-field>
+
+          <app-ui-field label="Username" fieldId="username" [error]="fieldError(userForm.username())">
+            <input id="username" type="text" class="input" placeholder="usuario_sin_espacios" [formField]="userForm.username">
+          </app-ui-field>
         }
 
-        <div class="flex flex-col gap-1">
-          <div class="flex gap-4 items-center">
-            <label for="role" class="text-start min-w-24">Rol</label>
-            <select 
-              id="role" 
-              class="w-full h-10 p-2 border border-grey rounded-sm" 
-              [formField]="userForm.roleId"
-            >
+        @if (modalType() === 'add' || modalType() === 'resetPassword') {
+          <app-ui-field label="Contraseña" fieldId="password" [error]="fieldError(userForm.password())">
+            <input id="password" type="password" autocomplete="new-password" class="input" placeholder="Mínimo 8 caracteres" [formField]="userForm.password">
+          </app-ui-field>
+
+          <app-ui-field label="Confirmar contraseña" fieldId="confirm-password" [error]="fieldError(userForm.confirmPassword())">
+            <input id="confirm-password" type="password" autocomplete="new-password" class="input" placeholder="Repite la contraseña" [formField]="userForm.confirmPassword">
+          </app-ui-field>
+        }
+
+        @if (modalType() !== 'resetPassword') {
+          <app-ui-field label="Rol" fieldId="role" [error]="fieldError(userForm.roleId())">
+            <select id="role" class="input" [formField]="userForm.roleId">
               @for (role of roleManager.roles(); track role.id) {
                 @if (role.id !== 1) {
                   <option [value]="role.id">{{role.name}}</option>
                 }
               }
             </select>
-          </div>
-          @if (userForm.roleId().touched() && userForm.roleId().invalid()) {
-            <span class="text-xs text-primary-red ml-28">{{ userForm.roleId().errors()[0].message }}</span>
-          }
-        </div>
+          </app-ui-field>
+        }
 
-        <div class="flex gap-4 mt-4">
+        <div class="mt-2 grid grid-cols-2 gap-3">
           <app-button
             [text]="'Cancelar'"
-            [width]="'sm'"
+            [width]="'full'"
             [color]="'cancel'"
             (click)="closeModal.set(true)"
           />
@@ -142,21 +102,21 @@
           @if (modalType() === 'add') {
             <app-button
               [text]="'Crear'"
-              [width]="'sm'"
+              [width]="'full'"
               [type]="'submit'"
               [disabled]="!userForm().valid()"
             />
           } @else if (modalType() === 'edit') {
             <app-button
               [text]="'Modificar'"
-              [width]="'sm'"
+              [width]="'full'"
               [type]="'submit'"
               [disabled]="!userForm().valid()"
             />
           } @else if (modalType() === 'resetPassword') {
             <app-button
               [text]="'Cambiar'"
-              [width]="'sm'"
+              [width]="'full'"
               [type]="'submit'"
               [disabled]="!userForm().valid()"
             />
@@ -172,29 +132,43 @@
     [closeModal]="closeTeamsModal()"
     (modalClosed)="teamsModalClosed()"
   >
-    <div class="flex flex-col gap-8 justify-center items-center">
-      <h3 class="font-semibold text-xl">{{selectedUserTeams()?.user?.name}}</h3>
+    <div class="flex flex-col gap-5">
+      <div>
+        <h3 class="text-lg font-bold tracking-tight text-slate-900">{{selectedUserTeams()?.user?.name}}</h3>
+        <p class="mt-0.5 text-sm text-slate-400">Selecciona los equipos asignados.</p>
+      </div>
 
-      <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+      <div class="-mx-1 grid max-h-[46vh] grid-cols-1 gap-2 overflow-y-auto px-1 xs:grid-cols-2">
         @for (team of teamManager.allTeams(); track team.id) {
-          <div class="w-40 flex gap-2 items-center">
-            <input id="{{team.id}}" type="checkbox" [checked]="isSelectedTeam(team.id!)" (click)="teamSelected(team)" class="min-w-6 min-h-6">
-            <label for="{{team.id}}" class="max-w-full truncate">{{team.name}}</label>
-          </div>
+          <label
+            class="flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors"
+            [class.border-line]="!isSelectedTeam(team.id!)"
+            [class.border-primary-400]="isSelectedTeam(team.id!)"
+            [class.bg-primary-50]="isSelectedTeam(team.id!)"
+          >
+            <input
+              type="checkbox"
+              class="size-[18px] shrink-0 accent-primary-600"
+              [checked]="isSelectedTeam(team.id!)"
+              (change)="teamSelected(team)"
+            >
+
+            <span class="min-w-0 flex-1 truncate text-sm font-semibold text-slate-700">{{team.name}}</span>
+          </label>
         }
       </div>
 
-      <div class="flex gap-4">
+      <div class="grid grid-cols-2 gap-3">
         <app-button
           [text]="'Cancelar'"
-          [width]="'sm'"
+          [width]="'full'"
           [color]="'cancel'"
           (click)="cancelTeamsModal()"
         />
-        
+
         <app-button
           [text]="'Guardar'"
-          [width]="'sm'"
+          [width]="'full'"
           (click)="saveTeams()"
         />
       </div>
@@ -203,7 +177,7 @@
 }
 
 @if (openDeleteModal()) {
-  <app-confirm-modal 
+  <app-confirm-modal
     [text]="deleteModalText()"
     [title]="'Eliminar Usuario'"
     [buttonColor]="'red'"

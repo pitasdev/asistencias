@@ -10,37 +10,21 @@ import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/att
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 import { SummaryOfDay } from "../../components/summary-of-day/summary-of-day";
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { Team } from '@/app/shared/models/team/team.model';
 import { Season } from '@/app/shared/models/season/season.model';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
 
 @Component({
   selector: 'app-attendances-control',
-  imports: [AttendancesControlFilter, AttendanceControlResult, SummaryOfDay],
+  imports: [AttendancesControlFilter, AttendanceControlResult, SummaryOfDay, UiEmptyState, UiPageHeader],
   templateUrl: './attendances-control.html',
-  styleUrl: './attendances-control.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class AttendancesControl implements OnInit {
-  protected selectedSeason = signal<Season | null>(null);
-  protected selectedTeam = signal<Team | null>(null);
-  protected selectedDate = signal<string>('');
-  protected selectedStartDate = signal<string>('');
-  protected selectedEndDate = signal<string>('');
-  protected teams = computed(() => this.selectedSeason()?.currentSeason
-    ? this.teamManager.userTeams()
-    : this.teamManager.allHistoryTeams()
-  );
-
-  private filters = computed<AttendanceQueryFilters>(() => {
-    const filters: AttendanceQueryFilters = {
-      season: this.selectedSeason()?.name,
-      selectedDate: this.selectedDate() ? this.selectedDate() : undefined,
-      startDate: this.selectedStartDate() ? this.selectedStartDate() : undefined,
-      endDate: this.selectedEndDate() ? this.selectedEndDate() : undefined
-    };
-    return filters;
-  });
-
   protected readonly attendanceManager = inject(AttendanceManager);
   protected readonly teamManager = inject(TeamManager);
   protected readonly playerManager = inject(PlayerManager);
@@ -48,6 +32,32 @@ export default class AttendancesControl implements OnInit {
   protected readonly reasonManager = inject(ReasonManager);
   protected readonly clubManager = inject(ClubManager);
   private readonly userManager = inject(UserManager);
+
+  protected selectedSeason = signal<Season | null>(null);
+  protected selectedTeam = signal<Team | null>(null);
+  protected selectedDate = signal<string>('');
+  protected selectedStartDate = signal<string>('');
+  protected selectedEndDate = signal<string>('');
+
+  protected teams = computed(() => this.selectedSeason()?.currentSeason
+    ? this.teamManager.userTeams()
+    : this.teamManager.allHistoryTeams()
+  );
+
+  private filters = computed<AttendanceQueryFilters>(() => {
+    const season = this.selectedSeason()?.name;
+    if (this.selectedStartDate() && this.selectedEndDate()) {
+      return {
+        season,
+        startDate: this.selectedStartDate(),
+        endDate: this.selectedEndDate()
+      };
+    }
+    return {
+      season,
+      selectedDate: this.selectedDate() ? this.selectedDate() : undefined
+    };
+  });
 
   async ngOnInit(): Promise<void> {
     this.selectedSeason.set(this.clubManager.actualSeason());

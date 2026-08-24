@@ -7,15 +7,19 @@ import { Season } from '@/app/shared/models/season/season.model';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
 import { PlayerManager } from '@/app/domain/player/services/player-manager';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
+import { UiEmptyState } from '@/app/shared/components/ui/empty-state';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 import { Team } from '@/app/shared/models/team/team.model';
 import { Player } from '@/app/shared/models/player/player.model';
 import { UserManager } from '@/app/domain/user/services/user-manager';
 
 @Component({
   selector: 'app-player-control',
-  imports: [PlayerControlFilter, AttendancePlayerControlResult],
+  imports: [PlayerControlFilter, AttendancePlayerControlResult, UiEmptyState, UiPageHeader],
   templateUrl: './player-control.html',
-  styleUrl: './player-control.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class PlayerControl implements OnInit {
   protected readonly teamManager = inject(TeamManager);

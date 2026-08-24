@@ -1,186 +1,190 @@
-<div class="flex flex-col gap-4">
-  <h1 class="font-bold text-2xl text-center">Panel de Usuario</h1>
+<app-ui-page-header title="Mi perfil" subtitle="Gestiona tu cuenta y tu contraseña" />
 
-  <app-toggle-content
-    [showContent]="false"
-    [style]="'sideColors'"
-  >
-    <div title class="flex gap-4 items-center">
-      <svg svg="" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </g>
-      </svg>
+<section class="card p-5 md:p-6">
+  <div class="flex items-center gap-4">
+    <app-ui-avatar [name]="userManager.activeUser()?.name ?? ''" size="xl" />
 
-      <div>
-        <h2 class="font-semibold text-lg">Información del Usuario</h2>
-        <p class="text-[.875rem] text-[#777]">Detalles de tu cuenta</p>
-      </div>
-    </div>
+    <div class="min-w-0 flex-1">
+      <h2 class="truncate text-xl font-extrabold tracking-tight text-slate-900">
+        {{userManager.activeUser()?.name}}
+      </h2>
 
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col">
-        <span class="font-semibold text-[.875rem]">Usuario</span>
-        <div class="w-full flex gap-4 justify-between items-center">
-          @if (editName()) {
-            <input 
-              id="name" 
-              type="text" 
-              class="w-full h-10 p-2 border border-grey rounded-lg" 
-              [ngModel]="name()" 
-              (ngModelChange)="name.set($event)" 
-              (keydown.enter)="saveNewName()"
-            >
-          } @else {
-            <span class="text-[.875rem] text-[#777]">{{userManager.activeUser()?.name}}</span>
-          }
-  
-          <svg class="min-w-5 min-h-5 cursor-pointer" (click)="modifyName()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 16l-1 4l4-1L19.586 7.414a2 2 0 0 0 0-2.828l-.172-.172a2 2 0 0 0-2.828 0zM15 6l3 3m-5 11h8"></path>
-          </svg>
+      <p class="truncate text-sm font-medium text-slate-400">
+        @{{userManager.activeUser()?.username}}
+      </p>
+
+      <div class="mt-2 flex flex-col gap-1.5">
+        <div>
+          <app-ui-badge tone="primary"><span class="capitalize">{{userManager.activeUser()?.role?.name}}</span></app-ui-badge>
         </div>
-  
-        @if (editName()) {
-          <app-button 
-            class="mt-2"
-            [text]="'Guardar'"
-            [width]="'full'"
-            [disabled]="name().trim() === ''"
-            (click)="saveNewName()"
-          />
+
+        @if (teams().length > 0) {
+          <div class="flex flex-wrap items-center gap-1.5">
+            @for (team of teams(); track team.id) {
+              <app-ui-badge>{{team.name}}</app-ui-badge>
+            }
+          </div>
         }
       </div>
-  
-      <div class="flex flex-col">
-        <span class="font-semibold text-[.875rem]">Equipos</span>
-        <span class="text-[.875rem] text-[#777]">{{teamsString()}}</span>
-      </div>
-  
-      <div class="flex flex-col">
-        <span class=" font-semibold text-[.875rem]">Rol</span>
-        <span class="text-[.875rem] text-[#777]">{{userManager.activeUser()?.role?.name}}</span>
-      </div>
     </div>
-  </app-toggle-content>
+  </div>
+</section>
 
-  <app-toggle-content
-    [showContent]="requiredPasswordChange()"
-    [style]="'sideColors'"
-  >
-    <div title class="flex gap-4 items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M17 10.25h-.25V8a4.75 4.75 0 0 0-9.5 0v2.25H7A2.75 2.75 0 0 0 4.25 13v5A2.75 2.75 0 0 0 7 20.75h10A2.75 2.75 0 0 0 19.75 18v-5A2.75 2.75 0 0 0 17 10.25M8.75 8a3.25 3.25 0 0 1 6.5 0v2.25h-6.5Zm9.5 10A1.25 1.25 0 0 1 17 19.25H7A1.25 1.25 0 0 1 5.75 18v-5A1.25 1.25 0 0 1 7 11.75h10A1.25 1.25 0 0 1 18.25 13Z"></path>
-      </svg>
+<section class="card p-5 md:p-6">
+  <div class="flex items-center gap-3 border-b border-line pb-4">
+    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-50 text-primary-600">
+      <app-ui-icon name="user" [size]="19" />
+    </span>
 
-      <div>
-        <h2 class="font-semibold text-lg">Cambiar Contraseña</h2>
-        <p class="text-[.875rem] text-[#777]">Actualiza tu contraseña de acceso</p>
-      </div>
+    <div>
+      <h3 class="font-bold tracking-tight text-slate-800">Información del usuario</h3>
+      <p class="text-xs text-slate-400">Detalles de tu cuenta</p>
+    </div>
+  </div>
+
+  <dl class="mt-4 flex flex-col divide-y divide-line">
+    <div class="flex items-center justify-between gap-4 py-3">
+      <dt class="text-sm font-semibold text-slate-500">Usuario</dt>
+
+      <dd class="flex min-w-0 items-center gap-2">
+        <span class="min-w-0 truncate text-sm text-slate-700">{{userManager.activeUser()?.name}}</span>
+
+        <button type="button" class="icon-btn size-8" aria-label="Editar nombre" (click)="showEditNameModal()">
+          <app-ui-icon name="pencil" [size]="15" />
+        </button>
+      </dd>
     </div>
 
-    <form (submit)="changePassword(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1">
-        <div class="flex gap-4 justify-between items-center">
-          <label for="actual-password" class="font-semibold text-[.875rem]">Contraseña Actual</label>
+    <div class="flex items-center justify-between gap-4 py-3">
+      <dt class="text-sm font-semibold text-slate-500">Equipos</dt>
+      <dd class="min-w-0 truncate text-sm text-slate-700" [title]="teamsString()">{{teamsString()}}</dd>
+    </div>
 
-          @if (!validActualPassword()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
-              Contraseña incorrecta
-            </span>
-          } @else if (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
-              {{ passwordForm.actualPassword().errors()[0].message }}
-            </span>
-          }
-        </div>
+    <div class="flex items-center justify-between gap-4 py-3">
+      <dt class="text-sm font-semibold text-slate-500">Rol</dt>
+      <dd class="text-sm capitalize text-slate-700">{{userManager.activeUser()?.role?.name}}</dd>
+    </div>
+  </dl>
+</section>
 
-        <input 
-          type="password" 
-          id="actual-password" 
-          class="w-full h-10 p-2 border border-grey rounded-lg transition-all" 
-          [class.border-primary-red]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
-          [class.outline-1]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
-          [class.outline-primary-red]="!validActualPassword() || (passwordForm.actualPassword().touched() && passwordForm.actualPassword().invalid())"
-          [formField]="passwordForm.actualPassword"
-          (blur)="checkActualPassword()"
-        >
-      </div>
-      
-      <div class="flex flex-col gap-1">
-        <div class="flex gap-4 justify-between items-center">
-          <label for="new-password" class="font-semibold text-[.875rem]">Nueva Contraseña</label>
+<section class="card p-5 md:p-6">
+  <div class="flex items-center gap-3 border-b border-line pb-4">
+    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-50 text-primary-600">
+      <app-ui-icon name="key-round" [size]="19" />
+    </span>
 
-          @if (passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
-              {{ passwordForm.newPassword().errors()[0].message }}
-            </span>
-          }
-        </div>
+    <div>
+      <h3 class="font-bold tracking-tight text-slate-800">Cambiar contraseña</h3>
+      <p class="text-xs text-slate-400">Actualiza tu contraseña de acceso</p>
+    </div>
+  </div>
 
-        <input 
-          type="password" 
-          id="new-password" 
-          class="w-full h-10 p-2 border border-grey rounded-lg"
-          [class.border-primary-red]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
-          [class.outline-1]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
-          [class.outline-primary-red]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
+  <form (submit)="changePassword(); $event.preventDefault()" novalidate class="mt-4 flex flex-col gap-4">
+    <app-ui-field label="Contraseña actual" fieldId="actual-password" [error]="actualPasswordError()">
+      <input
+        type="password"
+        id="actual-password"
+        autocomplete="current-password"
+        class="input"
+        [class.input-invalid]="!validActualPassword() || actualPasswordInvalid()"
+        [formField]="passwordForm.actualPassword"
+        (blur)="checkActualPassword()"
+      >
+    </app-ui-field>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <app-ui-field label="Nueva contraseña" fieldId="new-password" [error]="fieldError(passwordForm.newPassword())">
+        <input
+          type="password"
+          id="new-password"
+          autocomplete="new-password"
+          class="input"
+          [class.input-invalid]="passwordForm.newPassword().touched() && passwordForm.newPassword().invalid()"
           [formField]="passwordForm.newPassword"
         >
-      </div>
-      
-      <div class="flex flex-col gap-1">
-        <div class="flex gap-4 justify-between items-center">
-          <label for="confirm-password" class="font-semibold text-[.875rem]">Confirmar Contraseña</label>
+      </app-ui-field>
 
-          @if (passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()) {
-            <span class="text-xs text-primary-red" animate.enter="fadeInError" animate.leave="fadeOutError">
-              {{ passwordForm.confirmPassword().errors()[0].message }}
-            </span>
-          }
-        </div>
-
-        <input 
-          type="password" 
-          id="confirm-password" 
-          class="w-full h-10 p-2 border border-grey rounded-lg"
-          [class.border-primary-red]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
-          [class.outline-1]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
-          [class.outline-primary-red]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
+      <app-ui-field label="Confirmar contraseña" fieldId="confirm-password" [error]="fieldError(passwordForm.confirmPassword())">
+        <input
+          type="password"
+          id="confirm-password"
+          autocomplete="new-password"
+          class="input"
+          [class.input-invalid]="passwordForm.confirmPassword().touched() && passwordForm.confirmPassword().invalid()"
           [formField]="passwordForm.confirmPassword"
         >
-      </div>
-
-      <app-button 
-        [text]="'Cambiar Contraseña'"
-        [width]="'full'"
-        [type]="'submit'"
-        [disabled]="!passwordForm().valid()"
-      />
-    </form>
-  </app-toggle-content>
-
-  <app-toggle-content
-    [showContent]="false"
-    [style]="'sideColors'"
-    [color]="'red'"
-  >
-    <div title class="flex gap-4 items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-        <path fill="#000000" fill-rule="evenodd" d="M3 5c0-1.1.9-2 2-2h8v2H5v14h8v2H5c-1.1 0-2-.9-2-2zm14.176 6L14.64 8.464l1.414-1.414l4.95 4.95l-4.95 4.95l-1.414-1.414L17.176 13H10.59v-2z"/>
-      </svg>
-      
-      <div>
-        <h2 class="font-semibold text-lg">Cerrar Sesión</h2>
-        <p class="text-[.875rem] text-[#777]">Salir de tu cuenta de forma segura</p>
-      </div>
+      </app-ui-field>
     </div>
-    
-    <app-button 
+
+    <app-button
+      class="self-start"
+      [text]="'Cambiar Contraseña'"
+      [width]="'full'"
+      [type]="'submit'"
+      [disabled]="!passwordForm().valid()"
+    />
+  </form>
+</section>
+
+<section class="card border-negative-border/60 p-5 md:p-6">
+  <div class="flex items-center gap-3 border-b border-negative-border/40 pb-4">
+    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-negative-soft text-negative">
+      <app-ui-icon name="log-out" [size]="19" />
+    </span>
+
+    <div>
+      <h3 class="font-bold tracking-tight text-slate-800">Cerrar sesión</h3>
+      <p class="text-xs text-slate-400">Salir de tu cuenta de forma segura</p>
+    </div>
+  </div>
+
+  <app-button
+    class="w-full mt-4"
     [text]="'Cerrar Sesión'"
     [width]="'full'"
-    [color]="'red'"
+    [color]="'tonal'"
     (click)="logout()"
-    />
-  </app-toggle-content>
-</div>
+  />
+</section>
+
+@if (openEditNameModal()) {
+  <app-modal
+    [closeModal]="closeEditNameModal()"
+    (modalClosed)="nameModalClosed()"
+  >
+    <div class="flex flex-col gap-5">
+      <div>
+        <h3 class="text-lg font-bold tracking-tight text-slate-900">Editar nombre</h3>
+        <p class="mt-0.5 text-sm text-slate-400">Actualiza tu nombre visible.</p>
+      </div>
+
+      <form (submit)="saveName(); $event.preventDefault()" novalidate class="flex flex-col gap-4">
+        <app-ui-field label="Nombre" fieldId="edit-name" [error]="fieldError(nameForm.name())">
+          <input
+            id="edit-name"
+            type="text"
+            class="input"
+            placeholder="Tu nombre"
+            [formField]="nameForm.name"
+          >
+        </app-ui-field>
+
+        <div class="mt-2 grid grid-cols-2 gap-3">
+          <app-button
+            [text]="'Cancelar'"
+            [width]="'full'"
+            [color]="'cancel'"
+            (click)="closeEditNameModal.set(true)"
+          />
+
+          <app-button
+            [text]="'Guardar'"
+            [width]="'full'"
+            [type]="'submit'"
+            [disabled]="!nameForm().valid()"
+          />
+        </div>
+      </form>
+    </div>
+  </app-modal>
+}

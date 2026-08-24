@@ -1,25 +1,31 @@
-<div class="flex flex-col gap-4">
-  <h1 class="font-bold text-2xl text-center">Control del Jugador</h1>
+<app-ui-page-header title="Control del Jugador" subtitle="Historial de asistencias por jugador" [backLink]="'/panel-de-control'" />
 
-  <app-player-control-filter 
-    [teams]="teams()"
-    [selectedTeam]="selectedTeam()"
-    [players]="playerManager.players()"
-    [selectedPlayer]="selectedPlayer()"
-    [seasons]="clubManager.seasons()"
-    [selectedSeason]="selectedSeason()"
-    (teamsChange)="onTeamsChange($event)"
-    (playerChange)="onPlayerChange($event)"
-    (seasonChange)="onSeasonChange($event)"
-  />
+<app-player-control-filter
+  [teams]="teams()"
+  [selectedTeam]="selectedTeam()"
+  [players]="playerManager.players()"
+  [selectedPlayer]="selectedPlayer()"
+  [seasons]="clubManager.seasons()"
+  [selectedSeason]="selectedSeason()"
+  (teamsChange)="onTeamsChange($event)"
+  (playerChange)="onPlayerChange($event)"
+  (seasonChange)="onSeasonChange($event)"
+/>
 
-  @if (attendanceManager.attendances().length > 0 && selectedTeam() !== null && selectedPlayer() !== null) {
-    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
-      @for (attendance of attendanceManager.attendances(); track attendance.id) {
-        <app-attendance-player-control-result
-          [attendance]="attendance"
-        />
-      }
-    </section>
-  }
-</div>
+@if (attendanceManager.attendances().length > 0 && selectedTeam() !== null && selectedPlayer() !== null) {
+  <section class="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    @for (attendance of attendanceManager.attendances(); track attendance.id) {
+      <app-attendance-player-control-result
+        [attendance]="attendance"
+      />
+    }
+  </section>
+} @else {
+  <section class="card">
+    <app-ui-empty-state
+      icon="user"
+      title="Sin registros"
+      message="Selecciona un equipo y un jugador para ver su historial de asistencias."
+    />
+  </section>
+}

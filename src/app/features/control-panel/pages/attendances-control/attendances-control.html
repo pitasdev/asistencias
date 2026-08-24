@@ -1,34 +1,40 @@
-<div class="flex flex-col gap-4">
-  <h1 class="font-bold text-2xl text-center">Control de Asistencias</h1>
+<app-ui-page-header title="Control de Asistencias" subtitle="Consulta las asistencias registradas por día o rango de fechas" [backLink]="'/panel-de-control'" />
 
-  <app-attendances-control-filter 
-    [seasons]="clubManager.seasons()"
-    [selectedSeason]="selectedSeason()"
-    [teams]="teams()"
-    [selectedTeam]="selectedTeam()"
-    [date]="selectedDate()"
-    [startDate]="selectedStartDate()"
-    [endDate]="selectedEndDate()"
-    (teamsChange)="teamsChange($event)"
-    (seasonChange)="seasonChange($event)"
-    (dateChange)="dateChange($event)"
-    (startDateChange)="startDateChange($event)"
-    (endDateChange)="endDateChange($event)"
+<app-attendances-control-filter
+  [seasons]="clubManager.seasons()"
+  [selectedSeason]="selectedSeason()"
+  [teams]="teams()"
+  [selectedTeam]="selectedTeam()"
+  [date]="selectedDate()"
+  [startDate]="selectedStartDate()"
+  [endDate]="selectedEndDate()"
+  (teamsChange)="teamsChange($event)"
+  (seasonChange)="seasonChange($event)"
+  (dateChange)="dateChange($event)"
+  (startDateChange)="startDateChange($event)"
+  (endDateChange)="endDateChange($event)"
+/>
+
+@if (attendanceManager.attendances().length > 0 && selectedTeam() == null) {
+  <app-summary-of-day
+    (clickTeam)="teamsChange($event)"
   />
+}
 
-  @if (attendanceManager.attendances().length > 0 && selectedTeam() == null) {
-    <app-summary-of-day 
-      (clickTeam)="teamsChange($event)"
+@if (attendanceManager.attendances().length > 0) {
+  <section class="grid grid-cols-1 gap-2 lg:grid-cols-2">
+    @for (attendance of attendanceManager.attendances(); track attendance.id) {
+      <app-attendance-control-result
+        [attendance]="attendance"
+      />
+    }
+  </section>
+} @else {
+  <section class="card">
+    <app-ui-empty-state
+      icon="calendar-days"
+      title="Sin asistencias"
+      message="No hay registros para los filtros seleccionados."
     />
-  }
-
-  @if (attendanceManager.attendances().length > 0) {
-    <section class="w-full flex flex-col gap-2 p-4 border rounded-lg border-grey shadow-md">
-      @for (attendance of attendanceManager.attendances(); track attendance.id) {
-        <app-attendance-control-result 
-          [attendance]="attendance"
-        />
-      }
-    </section>
-  }
-</div>
+  </section>
+}

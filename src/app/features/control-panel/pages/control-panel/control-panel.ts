@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
-import { ControlPanelOption } from '../../components/control-panel-option/control-panel-option';
 import { RouterLink } from '@angular/router';
+import { UiIcon } from '@/app/shared/components/ui/icon';
+import { UiPageHeader } from '@/app/shared/components/ui/page-header';
 
 @Component({
   selector: 'app-control-panel',
-  imports: [ControlPanelOption, RouterLink],
+  imports: [RouterLink, UiIcon, UiPageHeader],
   templateUrl: './control-panel.html',
-  styleUrl: './control-panel.css'
+  host: {
+    class: 'flex flex-col gap-4'
+  }
 })
 export default class ControlPanel {
-  
+
 }

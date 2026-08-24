@@ -1,24 +1,39 @@
-<article 
-  class="flex flex-col p-2 border rounded-sm border-grey border-l-4 border-l-primary border-r-4 border-r-primary transition-all" 
-  [class.border-l-primary-red]="!attendance().hasAttended"
-  [class.border-r-primary-red]="!attendance().hasAttended"
+<article
+  class="card p-2 overflow-hidden transition-colors"
+  [class.border-negative-border]="!attendance().hasAttended"
+  [class.bg-negative-soft]="!attendance().hasAttended"
 >
-  <div class="min-h-8 flex gap-6 justify-between items-center">
-    @let name = attendance().player.name;
-    @let lastName = attendance().player.lastName;
-    <span class="font-semibold w-full truncate">{{name}} {{lastName}}</span>
-    <span class="min-w-fit">{{attendance().date | date: 'dd/MM/yyyy'}}</span>
-  </div>
+  <div class="flex items-center gap-3">
+    <app-ui-avatar [name]="attendance().player.name" [lastName]="attendance().player.lastName" size="md" />
 
-  <div class="min-h-8 flex gap-6 justify-between items-center">
-    <span>{{attendance().attendanceType?.name}}</span>
-    <span>{{attendance().team.name}}</span>
-  </div>
+    <div class="min-w-0 flex-1 flex flex-col gap-1">
+      <div class="flex items-center justify-between gap-3">
+        <p class="min-w-0 truncate text-sm font-semibold tracking-tight text-slate-800 xs:text-[15px]">
+          {{attendance().player.name}} {{attendance().player.lastName}}
+        </p>
 
-  @if (!attendance().hasAttended) {
-    <div class="min-h-8 flex gap-6 justify-between items-center">
-      <span>{{attendance().reason?.name}}</span>
-      <span class="text-end">{{attendance().reasonDescription}}</span>
+        <time class="shrink-0 rounded-md bg-white border border-line px-2 py-0.5 text-xs font-semibold tabular-nums text-slate-500">
+          {{attendance().date | date: 'dd/MM/yyyy'}}
+        </time>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-1.5">
+        <app-ui-badge tone="neutral">{{attendance().attendanceType?.name}}</app-ui-badge>
+        <app-ui-badge tone="primary">{{attendance().team.name}}</app-ui-badge>
+
+        @if (attendance().hasAttended) {
+          <app-ui-badge tone="positive" icon="check">Presente</app-ui-badge>
+        } @else {
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-negative border border-negative-border shadow-sm">
+            <app-ui-icon name="x" [size]="13" />
+            {{attendance().reason?.name ?? 'Sin motivo'}}
+          </span>
+        }
+      </div>
+
+      @if (!attendance().hasAttended && attendance().reasonDescription) {
+        <p class="mt-1 text-xs leading-snug text-slate-600">{{attendance().reasonDescription}}</p>
+      }
     </div>
-  }
+  </div>
 </article>

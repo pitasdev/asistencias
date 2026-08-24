@@ -1,78 +1,95 @@
-<div class="flex flex-col gap-4 pb-20">
-  <h1 class="font-bold text-2xl text-center">Estadísticas</h1>
+<app-ui-page-header title="Estadísticas" subtitle="Rendimiento de asistencia por equipo y jugador" />
 
-  <app-statistics-filter 
-    [teams]="teams()" 
-    [selectedTeam]="selectedTeam()"
-    [players]="playerManager.players()" 
-    [selectedPlayer]="selectedPlayer()" 
-    [seasons]="clubManager.seasons()"
-    [selectedSeason]="selectedSeason()"
-    [showSeasonSelector]="canManageSeason()"
-    (teamChange)="onTeamChange($event)"
-    (playerChange)="onPlayerChange($event)"
-    (seasonChange)="onSeasonChange($event)" 
-  />
+<app-statistics-filter
+  [teams]="teams()"
+  [selectedTeam]="selectedTeam()"
+  [players]="playerManager.players()"
+  [selectedPlayer]="selectedPlayer()"
+  [seasons]="clubManager.seasons()"
+  [selectedSeason]="selectedSeason()"
+  [showSeasonSelector]="canManageSeason()"
+  (teamChange)="onTeamChange($event)"
+  (playerChange)="onPlayerChange($event)"
+  (seasonChange)="onSeasonChange($event)"
+/>
 
-  @if (selectedTeam()) {
-    <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
-      <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
-        {{selectedTeam()?.name}}
-      </h2>
+@if (!selectedTeam()) {
+  <section class="card">
+    <app-ui-empty-state
+      icon="trending-up"
+      title="Elige un equipo"
+      message="Selecciona un equipo en los filtros para ver sus porcentajes de asistencia."
+    />
+  </section>
+}
 
-      <div class="flex gap-8 justify-center items-center">
-        @for (statistic of statisticsManager.teamAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
-          <div class="min-w-32 flex flex-col items-center gap-3">
-            <div class="progress-circle" [style.--percentage]="statistic.value" [style.--progress-color]="getProgressColor(statistic.value)">
-              <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
-            </div>
-            <span class="text-[14px] font-semibold text-dark-grey text-center uppercase">
-              {{statistic.key.name}}
-            </span>
-          </div>
-        }
+@if (selectedTeam()) {
+  <section class="card flex flex-col gap-6 p-5 md:p-6">
+    <div class="flex items-center gap-3 border-b border-line pb-4">
+      <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-50 text-primary-600">
+        <app-ui-icon name="users" [size]="19" />
+      </span>
+
+      <div class="min-w-0">
+        <p class="section-title">Equipo</p>
+        <h2 class="truncate font-bold tracking-tight text-slate-900 xs:text-lg">{{selectedTeam()?.name}}</h2>
       </div>
     </div>
 
-    @if (selectedPlayer()) {
-      <div class="w-full flex flex-col gap-4 p-4 border rounded-xl border-grey shadow-md bg-white">
-        <h2 class="font-bold text-lg text-center text-secondary border-b border-grey pb-3 mb-2">
+    <div class="flex flex-wrap items-start justify-center gap-x-8 gap-y-6">
+      @for (statistic of statisticsManager.teamAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
+        <div class="flex w-28 flex-col items-center gap-3">
+          <app-ui-progress-ring [value]="statistic.value" />
+          <span class="text-center text-xs font-bold uppercase tracking-wide text-slate-500">
+            {{statistic.key.name}}
+          </span>
+        </div>
+      }
+    </div>
+  </section>
+}
+
+@if (selectedPlayer()) {
+  <section class="card flex flex-col gap-5 p-5 md:p-6">
+    <div class="flex items-center gap-3 border-b border-line pb-4">
+      <app-ui-avatar [name]="selectedPlayer()?.name ?? ''" [lastName]="selectedPlayer()?.lastName ?? ''" size="lg" />
+
+      <div class="min-w-0">
+        <p class="section-title">Jugador</p>
+        <h2 class="truncate font-bold tracking-tight text-slate-900 xs:text-lg">
           {{selectedPlayer()?.name}} {{selectedPlayer()?.lastName}}
         </h2>
+      </div>
+    </div>
 
-        <div class="flex flex-col gap-6">
-          @for (statistic of statisticsManager.playerAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
-          <div class="flex gap-8 justify-center items-center">
-            <div class="min-w-32 flex flex-col items-center gap-3">
-              <div class="progress-circle" [style.--percentage]="statistic.value" [style.--progress-color]="getProgressColor(statistic.value)">
-                <span class="progress-value" [style.color]="getProgressColor(statistic.value)">{{statistic.value}}%</span>
+    <div class="flex flex-col gap-3 xs:gap-4">
+      @for (statistic of statisticsManager.playerAttendanceAverage() | keyvalue: sortByAttendanceTypeId; track statistic.key.id) {
+        <div class="flex items-center gap-3 rounded-2xl bg-canvas p-3 xs:p-4 sm:gap-6">
+          <app-ui-progress-ring [value]="statistic.value" [diameter]="72" />
+
+          <div class="flex min-w-0 flex-1 flex-col gap-2">
+            <p class="truncate text-xs font-bold uppercase tracking-wide text-slate-400">
+              {{statistic.key.name}}
+            </p>
+
+            <div class="grid grid-cols-2 gap-1.5 xs:gap-2">
+              <div class="flex min-w-0 flex-col items-center justify-center rounded-xl border border-line bg-surface p-1.5 text-center md:px-3 md:py-2.5">
+                <p class="font-extrabold tabular-nums tracking-tight text-primary-600 xs:text-xl">
+                  {{calculateHasAttended(statisticsManager.playerAttendanceStats().get(statistic.key) || [])}}
+                </p>
+                <p class="mt-0.5 hyphens-auto whitespace-normal break-words text-[9px] font-semibold uppercase leading-tight tracking-wide text-slate-400 xs:text-[11px]">Asistencias</p>
               </div>
-              <span class="text-[14px] font-semibold text-dark-grey text-center uppercase">
-                {{statistic.key.name}}
-              </span>
-            </div>
 
-            <div class="flex flex-col items-center justify-center bg-light-grey rounded-lg">
-              <span class="min-h-8 flex justify-center items-center text-xl font-bold text-primary">
-                {{calculateHasAttended(statisticsManager.playerAttendanceStats().get(statistic.key) || [])}}
-              </span>
-              <span class="min-h-8 flex justify-center items-center text-xs uppercase text-dark-grey text-center font-semibold">
-                Asistencias
-              </span>
-            </div>
-
-            <div class="flex flex-col items-center justify-center bg-light-grey rounded-lg">
-              <span class="min-h-8 flex justify-center items-center text-xl font-bold text-amber-600">
-                {{statisticsManager.playerAttendanceStats().get(statistic.key)?.length ?? 0}}
-              </span>
-              <span class="min-h-8 flex justify-center items-center text-xs uppercase text-dark-grey text-center font-semibold">
-                Total {{statistic.key.name}}s
-              </span>
+              <div class="flex min-w-0 flex-col items-center justify-center rounded-xl border border-line bg-surface p-1.5 text-center md:px-3 md:py-2.5">
+                <p class="font-extrabold tabular-nums tracking-tight text-caution xs:text-xl">
+                  {{statisticsManager.playerAttendanceStats().get(statistic.key)?.length ?? 0}}
+                </p>
+                <p class="mt-0.5 hyphens-auto whitespace-normal break-words text-[9px] font-semibold uppercase leading-tight tracking-wide text-slate-400 xs:text-[11px]">Total {{statistic.key.name}}s</p>
+              </div>
             </div>
           </div>
-          }
         </div>
-      </div>
-    }
-  }
-</div>
+      }
+    </div>
+  </section>
+}

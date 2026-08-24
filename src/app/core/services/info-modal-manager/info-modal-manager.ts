@@ -1,69 +1,36 @@
-import { Service } from '@angular/core';
-import Swal from 'sweetalert2';
+import { inject, Service } from '@angular/core';
+import { FeedbackManager } from '@/app/core/services/feedback-manager/feedback-manager';
 
+/**
+ * Fachada de avisos usada por los managers de dominio e interceptores.
+ * Mantiene la API histórica; internamente delega en FeedbackManager
+ * (diálogos modales para success/error/warning/info, toasts para notify*).
+ */
 @Service()
 export class InfoModalManager {
+  private readonly feedback = inject(FeedbackManager);
+
   success(mensaje: string): void {
-    Swal.fire({
-      icon: 'success',
-      html: mensaje,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      confirmButtonColor: '#2c90ca'
-    })
+    this.feedback.showDialog('success', mensaje);
   }
 
   error(mensaje: string): void {
-    Swal.fire({
-      icon: 'error',
-      html: mensaje,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      confirmButtonColor: '#2c90ca'
-    })
+    this.feedback.showDialog('error', mensaje);
   }
 
   warning(mensaje: string): void {
-    Swal.fire({
-      icon: 'warning',
-      html: mensaje,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      timer: 4000,
-      timerProgressBar: true,
-      confirmButtonColor: '#2c90ca'
-    })
+    this.feedback.showDialog('warning', mensaje);
   }
 
   info(mensaje: string): void {
-    Swal.fire({
-      icon: 'info',
-      html: mensaje,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      confirmButtonColor: '#2c90ca'
-    })
+    this.feedback.showDialog('info', mensaje);
   }
 
   notifySuccess(mensaje: string): void {
-    Swal.fire({
-      toast: true,
-      position: 'bottom',
-      icon: 'success',
-      html: mensaje,
-      showConfirmButton: false,
-      timer: 3000
-    })
+    this.feedback.showToast('success', mensaje);
   }
 
   notifyError(mensaje: string): void {
-    Swal.fire({
-      toast: true,
-      position: 'bottom',
-      icon: 'error',
-      html: mensaje,
-      showConfirmButton: false,
-      timer: 3000
-    })
+    this.feedback.showToast('error', mensaje);
   }
 }

@@ -1,24 +1,21 @@
-import { Component, DOCUMENT, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
-import { Navbar } from './shared/components/navbar/navbar';
 import { UserManager } from './domain/user/services/user-manager';
-import { Loader } from "./shared/components/loader/loader";
-import { Meta } from '@angular/platform-browser';
+import { Loader } from './shared/components/ui/loader';
+import { AppNav } from './shared/components/navigation/app-nav';
+import { UiFeedbackHost } from './shared/components/ui/feedback-host/feedback-host';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Loader],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
-})
+  imports: [RouterOutlet, Loader, AppNav, UiFeedbackHost],
+  templateUrl: './app.html',})
 export class App implements OnInit {
-  protected isLoading = signal(false);
-  private navigationEnd = false;
-
   protected readonly userManager = inject(UserManager);
   private readonly router = inject(Router);
-  private readonly document = inject(DOCUMENT);
-  private readonly meta = inject(Meta);
+
+  protected isLoading = signal(false);
+
+  private navigationEnd = false;
 
   ngOnInit(): void {
     this.router.events.subscribe(event => {
@@ -34,11 +31,5 @@ export class App implements OnInit {
         this.isLoading.set(false);
       }
     });
-
-    const clientWidth: number = this.document.body.clientWidth;
-    if (clientWidth < 480) {
-      const scale: number = clientWidth / 480;
-      this.meta.updateTag({ name: 'viewport', content: `width=device-width, initial-scale=${scale}` });
-    }
   }
 }

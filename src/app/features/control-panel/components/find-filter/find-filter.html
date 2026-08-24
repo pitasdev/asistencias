@@ -1,15 +1,21 @@
-<section class="w-full flex gap-4 items-center p-4 border rounded-lg border-grey shadow-md overflow-hidden">
-  <input 
-    type="search" 
-    id="find-player" 
-    class="w-full h-12 p-2 border border-grey rounded-lg placeholder:opacity-50" 
-    [placeholder]="searchPlaceholder()"
-    [(ngModel)]="searchText"
-    (input)="searchTextChange.emit(searchText())"
-  >
+<section class="card flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+  <div class="flex h-11 items-center gap-2.5 rounded-xl border border-line bg-canvas px-3.5 transition-all duration-150 focus-within:border-primary-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-primary-600/12 sm:flex-1">
+    <app-ui-icon name="search" [size]="17" class="text-slate-300" />
 
-  <app-button 
+    <input
+      type="search"
+      class="w-full bg-transparent text-[15px] text-slate-800 outline-none placeholder:text-slate-400 focus-visible:outline-none"
+      [placeholder]="searchPlaceholder()"
+      [(ngModel)]="searchText"
+      (input)="searchTextChange.emit(searchText())"
+    >
+  </div>
+
+  <app-button
     [text]="buttonText()"
+    [width]="'full'"
+    class="sm:w-auto"
+    [icon]="'plus'"
     (click)="buttonClick.emit()"
   />
 </section>

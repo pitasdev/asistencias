@@ -1,0 +1,34 @@
+@if (visible()) {
+  <div
+    #modalBackground
+    class="fixed inset-0 z-50 flex justify-center items-end lg:items-center bg-slate-950/45 backdrop-blur-[2px] overflow-hidden p-4 pb-safe lg:p-4"
+    animate.enter="animate-overlay-in"
+    animate.leave="animate-overlay-out"
+  >
+    <div
+      class="relative w-full max-w-xl mx-auto flex flex-col bg-surface shadow-pop
+            rounded-3xl p-4 mb-4 max-h-[88dvh]
+            lg:max-w-lg lg:rounded-2xl lg:p-7 lg:mb-0"
+      animate.enter="animate-sheet-in"
+      animate.leave="animate-sheet-out"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mx-auto mb-4 h-1.5 w-10 rounded-full bg-line-strong lg:hidden" aria-hidden="true"></div>
+
+      @if (dismissable()) {
+        <button
+          type="button"
+          class="absolute right-4 top-4 z-10 inline-flex size-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          aria-label="Cerrar"
+          (click)="requestClose()"
+        >
+          <app-ui-icon name="x" [size]="18" />
+        </button>
+      }
+
+    <div class="min-h-0 -mx-1 overflow-y-auto overflow-x-hidden px-1">
+      <ng-content />
+    </div>
+    </div>
+  </div>
+}
