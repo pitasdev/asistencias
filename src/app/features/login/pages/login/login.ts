@@ -42,8 +42,7 @@ export default class Login implements OnInit {
   });
 
   ngOnInit(): void {
-    const token = localStorage.getItem('token') ?? sessionStorage.getItem('token');
-    if (this.userManager.activeUser() || token) {
+    if (this.userManager.activeUser()) {
       this.router.navigate(['/']);
     }
   }

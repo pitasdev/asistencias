@@ -1,5 +1,4 @@
 import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/attendance-type-manager';
-import { AuthManager } from '@/app/domain/auth/services/auth-manager';
 import { ClubManager } from '@/app/domain/club/services/club-manager';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { TeamManager } from '@/app/domain/team/services/team-manager';
@@ -13,11 +12,10 @@ export const appDataResolver: ResolveFn<boolean> = async (route, state) => {
   const userManager = inject(UserManager);
   const attendanceTypeManager = inject(AttendanceTypeManager);
   const reasonManager = inject(ReasonManager);
-  const authManager = inject(AuthManager);
   const userTeamsManager = inject(UserTeamsManager);
   const clubManager = inject(ClubManager);
   
-  if (!authManager.token()) return false;
+  if (!userManager.activeUser()) return false;
 
   await teamManager.getTeamsByUserId(userManager.activeUser()?.id!);
   await teamManager.getTeamsByClubId(userManager.activeUser()?.club.id!);

@@ -74,7 +74,7 @@ export class AppNav implements OnInit {
     return item.exact ? this.url() === item.path : this.url().startsWith(item.path);
   }
 
-  protected logout(): void {
-    this.authManager.logout();
+  protected async logout(): Promise<void> {
+    await this.authManager.logout();
   }
 }

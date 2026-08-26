@@ -17,6 +17,10 @@ export class UserManager {
   private readonly userApiClient = inject(UserApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
 
+  setActiveUserFromUser(user: User | null): void {
+    this._activeUser.set(user);
+  }
+
   async setActiveUser(userId: number | null): Promise<void> {
     if (userId === null) {
       this._activeUser.set(null);

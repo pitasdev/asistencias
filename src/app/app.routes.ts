@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { appDataResolver } from './shared/resolvers/app-data/app-data-resolver';
-import { checkTokenGuard } from './shared/guards/check-token/check-token-guard';
+import { authGuard } from './shared/guards/auth/auth-guard';
 import { checkIsAdminGuard } from './shared/guards/check-is-admin/check-is-admin-guard';
 import { checkDefaultPasswordGuard } from './shared/guards/check-default-password/check-default-password-guard';
 
 export const routes: Routes = [
   {
     path: '', 
-    canActivateChild: [checkTokenGuard],
+    canActivateChild: [authGuard],
     resolve: { appData: appDataResolver },
     children: [
       {

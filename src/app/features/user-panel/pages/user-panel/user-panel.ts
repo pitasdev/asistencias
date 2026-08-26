@@ -163,7 +163,7 @@ export default class UserPanel implements OnInit {
     }
   }
 
-  protected logout(): void {
-    this.authManager.logout();
+  protected async logout(): Promise<void> {
+    await this.authManager.logout();
   }
 }

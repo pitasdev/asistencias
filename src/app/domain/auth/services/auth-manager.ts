@@ -1,96 +1,54 @@
-import { inject, Service, signal } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
 import { UserManager } from '../../user/services/user-manager';
 import { Router } from '@angular/router';
 import { AuthApiClient } from '@/app/core/api-clients/auth/auth-api-client';
 import { RoleManager } from '../../role/services/role-manager';
 
-interface TokenPayload {
-  userId: number;
-  roleId: number;
-  clubId: number;
-  iat?: number;
-  exp?: number;
-}
-
 @Service()
 export class AuthManager {
-  token = signal<string | null>(null);
-  error = signal<string | null>(null);
-
   private readonly authApiClient = inject(AuthApiClient);
   private readonly userManager = inject(UserManager);
   private readonly roleManager = inject(RoleManager);
   private readonly router = inject(Router);
 
-  async checkToken(): Promise<boolean> {
-    const checkToken = await firstValueFrom(
-      this.authApiClient.checkToken().pipe(
-        catchError(() => of({ isValidToken: false }))
-      )
-    );
+  async restoreSession(): Promise<boolean> {
+    try {
+      const user = await firstValueFrom(
+        this.authApiClient.getMe().pipe(catchError(() => of(null)))
+      );
 
-    return checkToken.isValidToken;
+      if (!user) return false;
+
+      this.userManager.setActiveUserFromUser(user);
+      await this.roleManager.getRoles();
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async login(username: string, password: string, rememberMe: boolean): Promise<boolean> {
-    const token = await firstValueFrom(
-      this.authApiClient.login(username, password)
-        .pipe(
-          catchError(() => of({ token: '' }))
-        )
+    const user = await firstValueFrom(
+      this.authApiClient.login(username, password, rememberMe).pipe(catchError(() => of(null)))
     );
-    
-    if (!token.token) return false;
-    
-    const userId = this.getUserIdByToken(token.token);
-    if (userId === null) return false;
 
-    this.token.set(token.token);
-    await this.userManager.setActiveUser(userId);
+    if (!user) return false;
+
+    this.userManager.setActiveUserFromUser(user);
     await this.roleManager.getRoles();
-    
-    if (rememberMe) {
-      localStorage.setItem('token', token.token);
-    } else {
-      sessionStorage.setItem('token', token.token);
-    }
 
     return true;
   }
 
-  logout(): void {
-    this.token.set(null);
-    this.userManager.setActiveUser(null);
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
-    this.router.navigate(['/login']);
-  }
-
-  getUserIdByToken(token: string): number | null {
+  async logout(): Promise<void> {
     try {
-      const tokenData = this.getTokenData(token);
-      return tokenData.userId;
-    } catch (error) {
-      console.error('Token inválido:', error);
-      return null;
+      await firstValueFrom(
+        this.authApiClient.logout().pipe(catchError(() => of(null)))
+      );
+    } finally {
+      this.userManager.setActiveUserFromUser(null);
+      this.router.navigate(['/login']);
     }
-  }
-
-  getRoleIdByToken(token: string): number | null {
-    try {
-      const tokenData = this.getTokenData(token);
-      return tokenData.roleId;
-    } catch (error) {
-      console.error('Token inválido:', error);
-      return null;
-    }
-  }
-
-  private getTokenData(token: string): TokenPayload {
-    const payload = token.split('.')[1];
-    const payloadDecoded = atob(payload);
-    const payloadParsed: TokenPayload = JSON.parse(payloadDecoded);
-    return payloadParsed;
   }
 }
