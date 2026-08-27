@@ -11,8 +11,8 @@ import { Observable } from 'rxjs';
 export class ReasonApiClient {
   private readonly http = inject(HttpClient);
 
-  getReasonsByClubId(clubId: number, season?: string): Observable<Reason[]> {
-    const queryParams = season ? `?season=${season}` : '';
+  getReasonsByClubId(clubId: number, seasonId?: number): Observable<Reason[]> {
+    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
     return this.http.get<Reason[]>(`${environment.baseUrlApi}/reason/club/${clubId}${queryParams}`);
   }
 

@@ -38,7 +38,7 @@ export default class PlayerControl implements OnInit {
 
   private filters = computed<AttendanceQueryFilters>(() => {
     return {
-      season: this.selectedSeason()?.name
+      seasonId: this.selectedSeason()?.id ?? undefined
     };
   });
 
@@ -71,7 +71,7 @@ export default class PlayerControl implements OnInit {
     this.attendanceManager.setDefaultAttendances([]);
 
     if (season && season.currentSeason) {
-      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.id!);
     }
   }
 }

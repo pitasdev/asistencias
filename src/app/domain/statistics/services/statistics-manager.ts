@@ -13,16 +13,16 @@ export class StatisticsManager {
   playerAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceStats = signal<Map<AttendanceType, Attendance[]>>(new Map());
 
-  async getTeamStats(teamId: number, seasonName: string): Promise<void> {
-    await this.attendanceManager.getAttendancesByTeamIds([teamId], { season: seasonName });
+  async getTeamStats(teamId: number, seasonId: number): Promise<void> {
+    await this.attendanceManager.getAttendancesByTeamIds([teamId], { seasonId });
     const attendances = this.attendanceManager.attendances();
     
     const { averagesByType } = this.calculateStats(attendances);
     this.teamAttendanceAverage.set(averagesByType);
   }
 
-  async getPlayerStats(playerId: number, seasonName: string): Promise<void> {
-    await this.attendanceManager.getAttendancesByPlayerId(playerId, { season: seasonName });
+  async getPlayerStats(playerId: number, seasonId: number): Promise<void> {
+    await this.attendanceManager.getAttendancesByPlayerId(playerId, { seasonId });
     const attendances = this.attendanceManager.attendances();
     
     const { averagesByType, attendancesByType } = this.calculateStats(attendances);

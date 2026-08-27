@@ -41,8 +41,8 @@ export class ClubManager {
     this._seasons.set(seasons);
   }
 
-  isCurrentSeason(seasonName: string): boolean {
-    const season = this._seasons().find(s => s.name === seasonName);
+  isCurrentSeason(seasonId: number): boolean {
+    const season = this._seasons().find(s => s.id === seasonId);
     if (season?.currentSeason) return true;
     return false;
   }

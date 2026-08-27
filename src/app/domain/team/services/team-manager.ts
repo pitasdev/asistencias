@@ -33,9 +33,9 @@ export class TeamManager {
     this._userTeams.set(teams);
   }
 
-  async getTeamsByClubId(clubId: number, season?: string): Promise<void> {
+  async getTeamsByClubId(clubId: number, seasonId?: number): Promise<void> {
     const teams = await firstValueFrom(
-      this.teamApiClient.getTeamsByClubId(clubId, season)
+      this.teamApiClient.getTeamsByClubId(clubId, seasonId)
         .pipe(
           catchError(() => of([]))
       )
@@ -43,7 +43,7 @@ export class TeamManager {
 
     teams.sort((a, b) => a.order - b.order);
 
-    if (season && !this.clubManager.isCurrentSeason(season)){
+    if (seasonId != null && !this.clubManager.isCurrentSeason(seasonId)){
       this._allHistoryTeams.set(teams);
     } else {
       this._allTeams.set(teams);

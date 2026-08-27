@@ -10,8 +10,8 @@ import { Observable } from 'rxjs';
 export class PlayerTeamsApiClient {
   private readonly http = inject(HttpClient);
 
-  getPlayerTeamsByClubId(clubId: number, season?: string): Observable<PlayerTeams[]> {
-    const queryParams = season ? `?season=${season}` : '';
+  getPlayerTeamsByClubId(clubId: number, seasonId?: number): Observable<PlayerTeams[]> {
+    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
     return this.http.get<PlayerTeams[]>(`${environment.baseUrlApi}/player-teams/club/${clubId}${queryParams}`);
   }
 

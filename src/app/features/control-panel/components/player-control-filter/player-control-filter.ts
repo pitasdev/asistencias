@@ -35,7 +35,7 @@ export class PlayerControlFilter {
   });
 
   onSeasonChange(event: string) {
-    const season = this.seasons().find(s => s.name === event);
+    const season = this.seasons().find(s => String(s.id) === event);
     this.seasonChange.emit(season || null);
   }
 

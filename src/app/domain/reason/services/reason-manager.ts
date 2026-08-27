@@ -15,9 +15,9 @@ export class ReasonManager {
   private readonly reasonApiClient = inject(ReasonApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
 
-  async getReasonsByClubId(clubId: number, season?: string) {
+  async getReasonsByClubId(clubId: number, seasonId?: number) {
     const reasons = await firstValueFrom(
-      this.reasonApiClient.getReasonsByClubId(clubId, season)
+      this.reasonApiClient.getReasonsByClubId(clubId, seasonId)
         .pipe(
           catchError(() => of([]))
         )

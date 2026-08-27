@@ -11,9 +11,9 @@ export class AttendanceTypeManager {
 
   private readonly attendanceTypeApiClient = inject(AttendanceTypeApiClient);
 
-  async getAttendanceTypesByClubId(clubId: number, season?: string) {
+  async getAttendanceTypesByClubId(clubId: number, seasonId?: number) {
     const attendanceTypes = await firstValueFrom(
-      this.attendanceTypeApiClient.getAttendanceTypesByClubId(clubId, season)
+      this.attendanceTypeApiClient.getAttendanceTypesByClubId(clubId, seasonId)
         .pipe(
           catchError(() => of([]))
         )

@@ -25,7 +25,7 @@ export class AttendanceManager {
   private readonly infoModalManager = inject(InfoModalManager);
 
   async getAttendancesByTeamIds(teamIds: number[], filters: AttendanceQueryFilters): Promise<void> {
-    if (!filters.selectedDate && (!filters.startDate || !filters.endDate) && !filters.season) return;
+    if (!filters.selectedDate && (!filters.startDate || !filters.endDate) && !filters.seasonId) return;
 
     const attendances: Attendance[] = [];
     
@@ -54,10 +54,10 @@ export class AttendanceManager {
       }
     });
     
-    await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.season);
+    await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.seasonId);
     for (const playerId of adicionalPlayersId) {
       if (!this.playerManager.players().some(p => p.id === playerId)) {
-        const player = await this.playerManager.getPlayerById(playerId, filters.season);
+        const player = await this.playerManager.getPlayerById(playerId, filters.seasonId);
         if (player) {
           this.playerManager.addAdicionalPlayerToPlayers(player);
         }
@@ -105,12 +105,12 @@ export class AttendanceManager {
         playersTeamIds.push(teamId);
       }
     });
-    await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.season);
+    await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.seasonId);
 
     const adicionalPlayers = attendances.filter(a => a.isAdditional);
     for (const adicionalPlayer of adicionalPlayers) {
       if (!this.playerManager.players().some(p => p.id === adicionalPlayer.player.id)) {
-        const player = await this.playerManager.getPlayerById(adicionalPlayer.player.id, filters.season);
+        const player = await this.playerManager.getPlayerById(adicionalPlayer.player.id, filters.seasonId);
         if (player !== null) this.playerManager.addAdicionalPlayerToPlayers(player);
       }
     }

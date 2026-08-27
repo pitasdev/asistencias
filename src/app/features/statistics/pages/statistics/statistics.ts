@@ -66,7 +66,7 @@ export default class Statistics implements OnInit {
     this.selectedPlayer.set(null);
 
     if (team.id) {
-      await this.statisticsManager.getTeamStats(team.id, this.selectedSeason()?.name!);
+      await this.statisticsManager.getTeamStats(team.id, this.selectedSeason()?.id!);
     }
 
     await this.playerManager.getPlayersByTeamIds([team.id!]);
@@ -81,7 +81,7 @@ export default class Statistics implements OnInit {
     this.selectedPlayer.set(player);
 
     if (player.id) {
-      await this.statisticsManager.getPlayerStats(player.id, this.selectedSeason()?.name!);
+      await this.statisticsManager.getPlayerStats(player.id, this.selectedSeason()?.id!);
     }
   }
 
@@ -92,7 +92,7 @@ export default class Statistics implements OnInit {
     this.statisticsManager.clearStats();
 
     if (season && !season.currentSeason) {
-      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+      this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.id!);
     }
   }
 

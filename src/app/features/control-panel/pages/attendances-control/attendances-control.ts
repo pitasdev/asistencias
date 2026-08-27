@@ -45,16 +45,16 @@ export default class AttendancesControl implements OnInit {
   );
 
   private filters = computed<AttendanceQueryFilters>(() => {
-    const season = this.selectedSeason()?.name;
+    const seasonId = this.selectedSeason()?.id ?? undefined;
     if (this.selectedStartDate() && this.selectedEndDate()) {
       return {
-        season,
+        seasonId,
         startDate: this.selectedStartDate(),
         endDate: this.selectedEndDate()
       };
     }
     return {
-      season,
+      seasonId,
       selectedDate: this.selectedDate() ? this.selectedDate() : undefined
     };
   });
@@ -77,7 +77,7 @@ export default class AttendancesControl implements OnInit {
 
     if (season) {
       if (!season.currentSeason) {
-        this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.name);
+        this.teamManager.getTeamsByClubId(this.userManager.activeUser()?.club.id!, season.id!);
         this.attendanceManager.getAttendancesByClubId(this.userManager.activeUser()?.club.id!, this.filters());
       }
     } else {

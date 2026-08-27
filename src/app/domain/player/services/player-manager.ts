@@ -19,9 +19,9 @@ export class PlayerManager {
   private readonly playerApiClient = inject(PlayerApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
 
-  async getPlayerById(playerId: number, season?: string): Promise<Player | null> {
+  async getPlayerById(playerId: number, seasonId?: number): Promise<Player | null> {
     const player = await firstValueFrom(
-      this.playerApiClient.getPlayerById(playerId, season)
+      this.playerApiClient.getPlayerById(playerId, seasonId)
         .pipe(
           catchError(() => of(null))
         )
@@ -30,12 +30,12 @@ export class PlayerManager {
     return player;
   }
 
-  async getPlayersByTeamIds(teamIds: number[], season?: string): Promise<void> {
+  async getPlayersByTeamIds(teamIds: number[], seasonId?: number): Promise<void> {
     const players: Player[] = [];
 
     for (const teamId of teamIds) {
       const playersByTeamId = await firstValueFrom(
-        this.playerApiClient.getPlayersByTeamId(teamId, season)
+        this.playerApiClient.getPlayersByTeamId(teamId, seasonId)
           .pipe(
             catchError(() => of([]))
           )
@@ -47,9 +47,9 @@ export class PlayerManager {
     this._players.set(players);
   }
 
-  async getPlayersByClubId(clubId: number, season?: string): Promise<void> {
+  async getPlayersByClubId(clubId: number, seasonId?: number): Promise<void> {
     const players = await firstValueFrom(
-      this.playerApiClient.getPlayersByClubId(clubId, season)
+      this.playerApiClient.getPlayersByClubId(clubId, seasonId)
         .pipe(
           catchError(() => of([]))
         )
@@ -58,9 +58,9 @@ export class PlayerManager {
     this._allPlayers.set(players);
   }
 
-  async getAdicionalPlayersByTeamId(teamId: number, season?: string): Promise<void> {
+  async getAdicionalPlayersByTeamId(teamId: number, seasonId?: number): Promise<void> {
     const players = await firstValueFrom(
-      this.playerApiClient.getPlayersByTeamId(teamId, season)
+      this.playerApiClient.getPlayersByTeamId(teamId, seasonId)
         .pipe(
           catchError(() => of([]))
         )

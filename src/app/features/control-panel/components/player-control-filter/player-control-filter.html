@@ -13,10 +13,10 @@
   <div class="flex flex-col gap-5 pt-1">
     @if (seasons().length > 1) {
       <app-ui-field label="Temporada" fieldId="pc-season">
-        <select id="pc-season" class="input" [ngModel]="selectedSeason()?.name ?? ''" (ngModelChange)="onSeasonChange($event)">
+        <select id="pc-season" class="input" [ngModel]="selectedSeason()?.id ?? ''" (ngModelChange)="onSeasonChange($event)">
           <option value="">Seleccionar temporada</option>
-          @for (season of seasons(); track season.name) {
-            <option value="{{season.name}}">{{season.name}}</option>
+          @for (season of seasons(); track season.id) {
+            <option value="{{season.id}}">{{season.name}}</option>
           }
         </select>
       </app-ui-field>

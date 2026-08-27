@@ -11,18 +11,18 @@ import { Observable } from 'rxjs';
 export class PlayerApiClient {
   private readonly http = inject(HttpClient);
 
-  getPlayerById(playerId: number, season?: string): Observable<Player> {
-    const queryParams = season ? `?season=${season}` : '';
+  getPlayerById(playerId: number, seasonId?: number): Observable<Player> {
+    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
     return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}${queryParams}`);
   }
 
-  getPlayersByTeamId(teamId: number, season?: string): Observable<Player[]> {
-    const queryParams = season ? `?season=${season}` : '';
+  getPlayersByTeamId(teamId: number, seasonId?: number): Observable<Player[]> {
+    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
     return this.http.get<Player[]>(`${environment.baseUrlApi}/player/team/${teamId}${queryParams}`);
   }
 
-  getPlayersByClubId(clubId: number, season?: string): Observable<Player[]> {
-    const queryParams = season ? `?season=${season}` : '';
+  getPlayersByClubId(clubId: number, seasonId?: number): Observable<Player[]> {
+    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
     return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}${queryParams}`);
   }
 

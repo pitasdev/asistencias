@@ -47,8 +47,8 @@ export class AttendanceApiClient {
       queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
     }
 
-    if (filters.season) {
-      queryParams += `${queryParams ? '&' : '?'}season=${filters.season}`;
+    if (filters.seasonId != null) {
+      queryParams += `${queryParams ? '&' : '?'}seasonId=${filters.seasonId}`;
     }
 
     return queryParams;
