@@ -20,7 +20,7 @@ export class UserApiClient {
   }
 
   checkAvailableUsername(username: string): Observable<{ isAvailable: boolean, error?: string }> {
-    return this.http.get<{ isAvailable: boolean }>(`${environment.baseUrlApi}/user/check/${username}`);
+    return this.http.get<{ isAvailable: boolean }>(`${environment.baseUrlApi}/user/check/${encodeURIComponent(username)}`);
   }
 
   createUser(user: UserRequest): Observable<CustomHttpResponse> {

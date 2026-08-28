@@ -3,7 +3,7 @@ import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { AttendanceRequest } from '@/app/shared/models/attendance/attendance-request.model';
 import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-response.model';
 import { environment } from '@/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -40,17 +40,18 @@ export class AttendanceApiClient {
   }
 
   private buildQueryParams(filters: AttendanceQueryFilters): string {
-    let queryParams = '';
+    let params = new HttpParams();
     if (filters.selectedDate) {
-      queryParams += `?selectedDate=${filters.selectedDate}`;
+      params = params.set('selectedDate', filters.selectedDate);
     } else if (filters.startDate && filters.endDate) {
-      queryParams += `?startDate=${filters.startDate}&endDate=${filters.endDate}`;
+      params = params.set('startDate', filters.startDate).set('endDate', filters.endDate);
     }
 
     if (filters.seasonId != null) {
-      queryParams += `${queryParams ? '&' : '?'}seasonId=${filters.seasonId}`;
+      params = params.set('seasonId', String(filters.seasonId));
     }
 
-    return queryParams;
+    const query = params.toString();
+    return query ? `?${query}` : '';
   }
 }
