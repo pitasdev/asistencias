@@ -155,10 +155,12 @@
 
 @if (openDeleteModal()) {
   <app-confirm-modal
-    [text]="deleteModalText()"
     [title]="'Eliminar Jugador'"
     [buttonColor]="'red'"
     (selectedOption)="confirmOptionSelected($event)"
     (closedModal)="openDeleteModal.set(false)"
-  />
+  >
+    Está seguro de eliminar al jugador
+    <strong>{{ selectedPlayer()?.name }} {{ selectedPlayer()?.lastName }}</strong>?
+  </app-confirm-modal>
 }

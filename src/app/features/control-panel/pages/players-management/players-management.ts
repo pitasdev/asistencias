@@ -59,7 +59,6 @@ export default class PlayersManagement implements OnInit {
   protected selectedPlayerTeams = signal<PlayerTeams | null>(null);
 
   protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
 
   protected playerModel = signal<PlayerForm>({ name: '', lastName: '' });
 
@@ -202,9 +201,6 @@ export default class PlayersManagement implements OnInit {
 
   protected showDeleteConfirmModal(playerId: number): void {
     this.selectedPlayer.set(this.playerTeamsManager.findPlayerTeamsByPlayerId(playerId)?.player!);
-    this.deleteModalText.set(
-      `Está seguro de eliminar al jugador <strong>${this.selectedPlayer()?.name} ${this.selectedPlayer()?.lastName}</strong>?`
-    )
     this.openDeleteModal.set(true);
   }
 

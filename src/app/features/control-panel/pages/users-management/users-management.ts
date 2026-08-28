@@ -58,7 +58,6 @@ export default class UsersManagement implements OnInit {
   protected selectedUserTeams = signal<UserTeams | null>(null);
 
   protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
 
   protected teamsStringByUserId = computed(() => {
     const map = new Map<number, string>();
@@ -272,7 +271,6 @@ export default class UsersManagement implements OnInit {
 
   protected showConfirmDeleteModal(user: User): void {
     this.selectedUser.set(user);
-    this.deleteModalText.set(`¿Está seguro de que desea eliminar al usuario <strong>${user.name}</strong>?`);
     this.openDeleteModal.set(true);
   }
 

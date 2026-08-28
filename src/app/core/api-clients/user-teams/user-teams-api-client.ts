@@ -20,5 +20,5 @@ export class UserTeamsApiClient {
 
   updateUserTeams(userTeams: UserTeamsRequest): Observable<CustomHttpResponse> {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/user-teams`, userTeams);
-    }
+  }
 }

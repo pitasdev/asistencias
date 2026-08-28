@@ -9,7 +9,7 @@
         <app-ui-icon [name]="tone(dialog.tone).icon" [size]="26" />
       </span>
 
-      <p [innerHTML]="safeMessage(dialog.message)" class="text-[15px] leading-relaxed text-slate-600"></p>
+      <p class="text-[15px] leading-relaxed text-slate-600">{{ dialog.message }}</p>
 
       <button
         type="button"
@@ -37,7 +37,7 @@
           <app-ui-icon [name]="tone(toast.tone).icon" [size]="16" />
         </span>
 
-        <p class="min-w-0 flex-1 text-sm font-medium leading-snug text-slate-700" [innerHTML]="safeMessage(toast.message)"></p>
+        <p class="min-w-0 flex-1 text-sm font-medium leading-snug text-slate-700">{{ toast.message }}</p>
       </div>
 
       <span class="absolute inset-x-0 bottom-0 h-0.75 origin-left animate-toast-bar" [class]="tone(toast.tone).bar"></span>

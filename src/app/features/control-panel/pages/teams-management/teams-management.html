@@ -92,10 +92,12 @@
 
 @if (openDeleteModal()) {
   <app-confirm-modal
-    [text]="deleteModalText()"
     [title]="'Eliminar Equipo'"
     [buttonColor]="'red'"
     (selectedOption)="confirmOptionSelected($event)"
     (closedModal)="openDeleteModal.set(false)"
-  />
+  >
+    ¿Está seguro de que desea eliminar el equipo
+    <strong>{{ selectedTeam()?.name }}</strong>?
+  </app-confirm-modal>
 }

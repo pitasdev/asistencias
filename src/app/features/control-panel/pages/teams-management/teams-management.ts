@@ -44,7 +44,6 @@ export default class TeamsManagement implements OnInit {
   protected selectedTeam = signal<Team | null>(null);
 
   protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
 
   protected teamModel = signal({ name: '' });
 
@@ -117,7 +116,6 @@ export default class TeamsManagement implements OnInit {
 
   protected showConfirmDeleteModal(team: Team): void {
     this.selectedTeam.set(team);
-    this.deleteModalText.set(`¿Está seguro de que desea eliminar el equipo <strong>${team.name}</strong>?`);
     this.openDeleteModal.set(true);
   }
 
@@ -133,7 +131,6 @@ export default class TeamsManagement implements OnInit {
 
   protected async deleteTeam(isActiveId: IsActiveId): Promise<void> {
     await this.teamManager.deleteTeam(isActiveId, this.userManager.activeUser()?.club.id!);
-    this.deleteModalText.set('');
     this.teams.set(this.teamManager.allTeams());
   }
 

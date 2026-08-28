@@ -178,10 +178,12 @@
 
 @if (openDeleteModal()) {
   <app-confirm-modal
-    [text]="deleteModalText()"
     [title]="'Eliminar Usuario'"
     [buttonColor]="'red'"
     (selectedOption)="confirmOptionSelected($event)"
     (closedModal)="openDeleteModal.set(false)"
-  />
+  >
+    ¿Está seguro de que desea eliminar al usuario
+    <strong>{{ selectedUser()?.name }}</strong>?
+  </app-confirm-modal>
 }

@@ -50,7 +50,6 @@ export default class ReasonsManagement implements OnInit {
   protected selectedReason = signal<Reason | null>(null);
 
   protected openDeleteModal = signal<boolean>(false);
-  protected deleteModalText = signal<string>('');
 
   protected reasonModel = signal<ReasonForm>({ name: '', requiresDescription: false });
 
@@ -127,7 +126,6 @@ export default class ReasonsManagement implements OnInit {
 
   protected showConfirmDeleteModal(reason: Reason): void {
     this.selectedReason.set(reason);
-    this.deleteModalText.set(`¿Está seguro de que desea eliminar el motivo <strong>${reason.name}</strong>?`);
     this.openDeleteModal.set(true);
   }
 
@@ -143,7 +141,6 @@ export default class ReasonsManagement implements OnInit {
 
   protected async deleteReason(isActiveId: IsActiveId): Promise<void> {
     await this.reasonManager.deleteReason(isActiveId, this.userManager.activeUser()?.club.id!);
-    this.deleteModalText.set('');
     this.reasons.set(this.reasonManager.reasons());
   }
 

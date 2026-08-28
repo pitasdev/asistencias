@@ -104,10 +104,12 @@
 
 @if (openDeleteModal()) {
   <app-confirm-modal
-    [text]="deleteModalText()"
     [title]="'Eliminar Motivo'"
     [buttonColor]="'red'"
     (selectedOption)="confirmOptionSelected($event)"
     (closedModal)="openDeleteModal.set(false)"
-  />
+  >
+    ¿Está seguro de que desea eliminar el motivo
+    <strong>{{ selectedReason()?.name }}</strong>?
+  </app-confirm-modal>
 }

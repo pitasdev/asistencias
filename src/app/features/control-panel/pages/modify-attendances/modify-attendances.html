@@ -70,9 +70,19 @@
 
 @if (isOpenConfirmModal()) {
   <app-confirm-modal
-    [text]="confirmModalText()"
     [title]="confirmModalTitle()"
     [buttonColor]="confirmModalButtonColor()"
     (selectedOption)="closeConfirmModal($event)"
-  />
+  >
+    @if (confirmModalType() === 'modify') {
+      Está seguro de modificar las asistencias del
+      <strong>{{ selectedModifyTeam()?.name }}</strong> del día
+      <strong>{{ dateFormatter(actualDateModify()) }}</strong> al día
+      <strong>{{ dateFormatter(newDateModify()) }}</strong>?
+    } @else {
+      Está seguro de eliminar las asistencias del
+      <strong>{{ selectedDeleteTeam()?.name }}</strong> del día
+      <strong>{{ dateFormatter(deleteDate()) }}</strong>?
+    }
+  </app-confirm-modal>
 }

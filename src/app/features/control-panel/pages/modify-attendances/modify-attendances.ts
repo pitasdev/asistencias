@@ -32,10 +32,11 @@ export default class ModifyAttendances {
   protected selectedDeleteTeam = signal<Team | null>(null);
   protected deleteDate = signal<string>('');
   protected isOpenConfirmModal = signal<boolean>(false);
-  protected confirmModalText = signal<string>('');
   protected confirmModalTitle = signal<string>('');
   protected confirmModalType = signal<ModalType | null>(null);
   protected confirmModalButtonColor = signal<ButtonColor>('primary');
+
+  protected readonly dateFormatter = dateFormatter;
 
   protected selectedModifyTeamChange(teamId: string): void {
     const team = this.teamManager.findTeamById(Number(teamId));
@@ -119,11 +120,6 @@ export default class ModifyAttendances {
           return;
         }
 
-        this.confirmModalText.set(
-          `Está seguro de modificar las asistencias del <strong>${this.selectedModifyTeam()?.name}</strong> 
-          del día <strong>${dateFormatter(this.actualDateModify())}</strong> 
-          al día <strong> ${dateFormatter(this.newDateModify())}</strong>?`
-        );
         this.confirmModalTitle.set('Modificar Asistencias');
         this.confirmModalType.set('modify');
         this.confirmModalButtonColor.set('primary');
@@ -138,10 +134,6 @@ export default class ModifyAttendances {
           return;
         }
 
-        this.confirmModalText.set(
-          `Está seguro de eliminar las asistencias del <strong>${this.selectedDeleteTeam()?.name}</strong> 
-          del día <strong>${dateFormatter(this.deleteDate())}</strong>?`
-        );
         this.confirmModalTitle.set('Eliminar Asistencias');
         this.confirmModalType.set('delete');
         this.confirmModalButtonColor.set('red');

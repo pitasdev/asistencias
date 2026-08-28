@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FeedbackManager, FeedbackTone } from '@/app/core/services/feedback-manager/feedback-manager';
 import { UiIcon, IconName } from '../icon';
 
@@ -21,11 +20,6 @@ const TONE_STYLES: Record<FeedbackTone, { icon: IconName; chip: string; bar: str
 })
 export class UiFeedbackHost {
   protected readonly feedback: FeedbackManager = inject(FeedbackManager);
-  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly tone = (value: FeedbackTone) => TONE_STYLES[value];
-
-  protected safeMessage(message: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(message);
-  }
 }
