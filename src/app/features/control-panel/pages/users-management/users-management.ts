@@ -308,8 +308,7 @@ export default class UsersManagement implements OnInit {
 
     const resetPassword: ResetPassword = {
       id: this.selectedUser()?.id!,
-      newPassword: password,
-      hasDefaultPassword: true
+      newPassword: password
     };
 
     await this.userManager.resetPassword(resetPassword);

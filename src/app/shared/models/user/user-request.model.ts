@@ -3,7 +3,7 @@ export interface UserRequest {
   name: string,
   username: string,
   password?: string,
-  hasDefaultPassword: boolean,
+  hasDefaultPassword?: boolean,
   roleId: number,
   clubId: number
 }

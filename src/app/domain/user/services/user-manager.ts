@@ -111,7 +111,7 @@ export class UserManager {
 
   async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<boolean> {
     const updatePassword = await firstValueFrom(
-      this.userApiClient.updatePassword(id, oldPassword, newPassword, false)
+      this.userApiClient.updatePassword(id, oldPassword, newPassword)
         .pipe(
           catchError((error) => of(error))
         )

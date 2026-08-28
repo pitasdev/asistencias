@@ -39,8 +39,8 @@ export class UserApiClient {
     return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/user/reset-password`, resetPassword);
   }
 
-  updatePassword(id: number, oldPassword: string, newPassword: string, hasDefaultPassword: boolean): Observable<CustomHttpResponse> {
-    return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/user/password`, { id, oldPassword, newPassword, hasDefaultPassword });
+  updatePassword(id: number, oldPassword: string, newPassword: string): Observable<CustomHttpResponse> {
+    return this.http.put<CustomHttpResponse>(`${environment.baseUrlApi}/user/password`, { id, oldPassword, newPassword });
   }
 
   updateName(id: number, name: string): Observable<CustomHttpResponse> {
