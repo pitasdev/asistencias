@@ -12,8 +12,9 @@ export class ClubManager {
   club = this._club.asReadonly();
   seasons = this._seasons.asReadonly();
   actualSeason = computed(() => {
-    if (this._seasons().length === 0) return null;
-    return this._seasons()[0];
+    const seasons = this._seasons();
+    if (seasons.length === 0) return null;
+    return seasons.find((s) => s.currentSeason) ?? null;
   });
 
   private readonly clubApiClient = inject(ClubApiClient);
