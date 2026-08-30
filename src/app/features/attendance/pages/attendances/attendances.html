@@ -25,15 +25,15 @@
         [attendance]="attendance"
         [reasons]="reasonManager.reasons()"
         (attendanceChange)="onAttendanceChange($event)"
-        (deleteAdicionalPlayer)="deleteAdicionalPlayer($event)"
+        (deleteAdditionalPlayer)="deleteAdditionalPlayer($event)"
       />
     }
 
-    @if (!addAdicionalPlayer()) {
+    @if (!addAdditionalPlayer()) {
       <button
         type="button"
         class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong py-3 text-sm font-semibold text-primary-600 transition-colors hover:bg-primary-50 active:bg-primary-50"
-        (click)="addAdicionalPlayer.set(true)"
+        (click)="addAdditionalPlayer.set(true)"
       >
         <app-ui-icon name="user-plus" [size]="17" />
         Añadir jugador de otro equipo
@@ -42,16 +42,16 @@
       <div class="mt-4 flex items-center gap-2 rounded-xl bg-canvas p-2 pl-3">
         <select
           class="h-10 flex-1 rounded-lg bg-transparent text-sm text-slate-700 outline-none"
-          [ngModel]="adicionalTeam()?.id ?? 0"
-          (ngModelChange)="adicionalTeamChange($event)"
+          [ngModel]="additionalTeam()?.id ?? 0"
+          (ngModelChange)="additionalTeamChange($event)"
         >
-          <option value="0">{{adicionalTeam() ? '' : 'Seleccionar equipo…'}}</option>
+          <option value="0">{{additionalTeam() ? '' : 'Seleccionar equipo…'}}</option>
           @for (team of teamManager.allTeams(); track team.id) {
             <option value="{{team.id}}">{{team.name}}</option>
           }
         </select>
 
-        <button type="button" class="icon-btn icon-btn-danger" aria-label="Cancelar" (click)="addAdicionalPlayer.set(false)">
+        <button type="button" class="icon-btn icon-btn-danger" aria-label="Cancelar" (click)="addAdditionalPlayer.set(false)">
           <app-ui-icon name="x" [size]="18" />
         </button>
       </div>
@@ -67,8 +67,8 @@
   </section>
 }
 
-@if (showAdicionalPlayersModal()) {
-  <app-modal [closeModal]="closeModalAdicionalPlayers()" (modalClosed)="onAdicionalPlayersModalClosed()">
+@if (showAdditionalPlayersModal()) {
+  <app-modal [closeModal]="closeModalAdditionalPlayers()" (modalClosed)="onAdditionalPlayersModalClosed()">
     <div class="flex flex-col gap-5">
       <div>
         <h3 class="text-lg font-bold tracking-tight text-slate-900">Seleccionar jugadores</h3>
@@ -76,12 +76,12 @@
       </div>
 
       <div class="-mx-1 flex max-h-[46vh] flex-col gap-2 overflow-y-auto overflow-x-hidden px-1 py-1" style="scrollbar-gutter: stable;">
-        @for (player of playerManager.adicionalPlayers(); track player.id) {
+        @for (player of playerManager.additionalPlayers(); track player.id) {
           <label
             class="flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors"
-            [class.border-line]="!isSelectedAdicional(player.id!) && !attendancePlayerIdsSet().has(player.id!)"
-            [class.border-primary-400]="isSelectedAdicional(player.id!)"
-            [class.bg-primary-50]="isSelectedAdicional(player.id!)"
+            [class.border-line]="!isSelectedAdditional(player.id!) && !attendancePlayerIdsSet().has(player.id!)"
+            [class.border-primary-400]="isSelectedAdditional(player.id!)"
+            [class.bg-primary-50]="isSelectedAdditional(player.id!)"
             [class.opacity-50]="attendancePlayerIdsSet().has(player.id!)"
             [class.cursor-not-allowed]="attendancePlayerIdsSet().has(player.id!)"
           >
@@ -89,8 +89,8 @@
               type="checkbox"
               class="size-[18px] shrink-0 accent-primary-600"
               [disabled]="attendancePlayerIdsSet().has(player.id!)"
-              [checked]="attendancePlayerIdsSet().has(player.id!) || selectedAdicionalPlayerIds().includes(player.id!)"
-              (change)="toggleAdicionalPlayer(player.id!)"
+              [checked]="attendancePlayerIdsSet().has(player.id!) || selectedAdditionalPlayerIds().includes(player.id!)"
+              (change)="toggleAdditionalPlayer(player.id!)"
             >
 
             <span class="min-w-0 flex-1 truncate text-sm font-semibold text-slate-700">
@@ -109,14 +109,14 @@
           [text]="'Cancelar'"
           [width]="'full'"
           [color]="'cancel'"
-          (click)="cancelAdicionalPlayers()"
+          (click)="cancelAdditionalPlayers()"
         />
 
         <app-button
-          [text]="`Confirmar (${selectedAdicionalPlayerIds().length})`"
+          [text]="`Confirmar (${selectedAdditionalPlayerIds().length})`"
           [width]="'full'"
-          [disabled]="selectedAdicionalPlayerIds().length === 0"
-          (click)="confirmAdicionalPlayers()"
+          [disabled]="selectedAdditionalPlayerIds().length === 0"
+          (click)="confirmAdditionalPlayers()"
         />
       </div>
     </div>

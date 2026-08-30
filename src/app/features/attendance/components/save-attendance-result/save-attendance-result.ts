@@ -18,7 +18,7 @@ export class SaveAttendanceResult {
   readonly reasons = input.required<Reason[]>();
 
   readonly attendanceChange = output<Attendance>();
-  readonly deleteAdicionalPlayer = output<Attendance>();
+  readonly deleteAdditionalPlayer = output<Attendance>();
 
   protected readonly reasonManager = inject(ReasonManager);
 

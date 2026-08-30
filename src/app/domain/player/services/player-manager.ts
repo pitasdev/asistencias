@@ -10,11 +10,11 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 export class PlayerManager {
   private _allPlayers = signal<Player[]>([]);
   private _players = signal<Player[]>([]);
-  private _adicionalPlayers = signal<Player[]>([]);
+  private _additionalPlayers = signal<Player[]>([]);
 
   allPlayers = this._allPlayers.asReadonly();
   players = this._players.asReadonly();
-  adicionalPlayers = this._adicionalPlayers.asReadonly();
+  additionalPlayers = this._additionalPlayers.asReadonly();
 
   private readonly playerApiClient = inject(PlayerApiClient);
   private readonly infoModalManager = inject(InfoModalManager);
@@ -58,7 +58,7 @@ export class PlayerManager {
     this._allPlayers.set(players);
   }
 
-  async getAdicionalPlayersByTeamId(teamId: number, seasonId?: number): Promise<void> {
+  async getAdditionalPlayersByTeamId(teamId: number, seasonId?: number): Promise<void> {
     const players = await firstValueFrom(
       this.playerApiClient.getPlayersByTeamId(teamId, seasonId)
         .pipe(
@@ -66,7 +66,7 @@ export class PlayerManager {
         )
     );
 
-    this._adicionalPlayers.set(players);
+    this._additionalPlayers.set(players);
   }
 
   async createPlayer(player: PlayerRequest): Promise<void> {
@@ -119,11 +119,11 @@ export class PlayerManager {
     return this._players().find(p => p.id === playerId) ?? null;
   }
 
-  findAdicionalPlayerById(playerId: number): Player | null {
-    return this._adicionalPlayers().find(p => p.id === playerId) ?? null;
+  findAdditionalPlayerById(playerId: number): Player | null {
+    return this._additionalPlayers().find(p => p.id === playerId) ?? null;
   }
 
-  addAdicionalPlayerToPlayers(player: Player): void {
+  addAdditionalPlayerToPlayers(player: Player): void {
     if (this._players().some(p => p.id === player.id)) return;
     this._players.update(players => [...players, player]);
   }

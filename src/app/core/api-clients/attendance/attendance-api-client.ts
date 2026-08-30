@@ -27,8 +27,8 @@ export class AttendanceApiClient {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, attendances);
   }
 
-  createAdicionalAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
-    return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance/adicional`, attendances);
+  createAdditionalAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
+    return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/attendance/additional`, attendances);
   }
 
   updateAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {

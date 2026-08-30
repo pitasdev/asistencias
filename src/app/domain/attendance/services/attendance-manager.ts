@@ -1,4 +1,4 @@
-﻿import { AttendanceRequest } from '@/app/shared/models/attendance/attendance-request.model';
+import { AttendanceRequest } from '@/app/shared/models/attendance/attendance-request.model';
 import { AttendanceQueryFilters } from '@/app/shared/models/attendance/attendance-query-filters.model';
 import { inject, Service, signal } from '@angular/core';
 import { catchError, firstValueFrom, of } from 'rxjs';
@@ -14,8 +14,8 @@ import { Player } from '@/app/shared/models/player/player.model';
 @Service()
 export class AttendanceManager {
   private _attendances = signal<Attendance[]>([]);
-  private _addAdicionalAttendances: Attendance[] = [];
-  private _deleteAdicionalAttendances: Attendance[] = [];
+  private _addAdditionalAttendances: Attendance[] = [];
+  private _deleteAdditionalAttendances: Attendance[] = [];
 
   attendances = this._attendances.asReadonly();
 
@@ -42,24 +42,24 @@ export class AttendanceManager {
 
     let teamId = 0;
     const playersTeamIds: number[] = [];
-    const adicionalPlayersId: number[] = [];
+    const additionalPlayersId: number[] = [];
     attendances.forEach(a => {
       if (a.team.id !== teamId) {
         teamId = a.team.id;
         playersTeamIds.push(teamId);
       }
 
-      if (a.isAdditional && !adicionalPlayersId.includes(a.player.id)) {
-        adicionalPlayersId.push(a.player.id);
+      if (a.isAdditional && !additionalPlayersId.includes(a.player.id)) {
+        additionalPlayersId.push(a.player.id);
       }
     });
     
     await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.seasonId);
-    for (const playerId of adicionalPlayersId) {
+    for (const playerId of additionalPlayersId) {
       if (!this.playerManager.players().some(p => p.id === playerId)) {
         const player = await this.playerManager.getPlayerById(playerId, filters.seasonId);
         if (player) {
-          this.playerManager.addAdicionalPlayerToPlayers(player);
+          this.playerManager.addAdditionalPlayerToPlayers(player);
         }
       }
     }
@@ -107,11 +107,11 @@ export class AttendanceManager {
     });
     await this.playerManager.getPlayersByTeamIds(playersTeamIds, filters.seasonId);
 
-    const adicionalPlayers = attendances.filter(a => a.isAdditional);
-    for (const adicionalPlayer of adicionalPlayers) {
-      if (!this.playerManager.players().some(p => p.id === adicionalPlayer.player.id)) {
-        const player = await this.playerManager.getPlayerById(adicionalPlayer.player.id, filters.seasonId);
-        if (player !== null) this.playerManager.addAdicionalPlayerToPlayers(player);
+    const additionalPlayers = attendances.filter(a => a.isAdditional);
+    for (const additionalPlayer of additionalPlayers) {
+      if (!this.playerManager.players().some(p => p.id === additionalPlayer.player.id)) {
+        const player = await this.playerManager.getPlayerById(additionalPlayer.player.id, filters.seasonId);
+        if (player !== null) this.playerManager.addAdditionalPlayerToPlayers(player);
       }
     }
 
@@ -155,27 +155,27 @@ export class AttendanceManager {
   async saveAttendances(): Promise<void> {
     if (this._attendances().some(a => a.id !== null)) {
       let attendancesForUpdate = this._attendances();
-      for (const adicionalAttendance of this._addAdicionalAttendances) {
-        attendancesForUpdate = attendancesForUpdate.filter(a => a.player.id !== adicionalAttendance.player.id);
+      for (const additionalAttendance of this._addAdditionalAttendances) {
+        attendancesForUpdate = attendancesForUpdate.filter(a => a.player.id !== additionalAttendance.player.id);
       }
 
-      if (this._addAdicionalAttendances.length > 0) {
+      if (this._addAdditionalAttendances.length > 0) {
         const response = await firstValueFrom(
-          this.attendanceApiClient.createAdicionalAttendances(this.toAttendances(this._addAdicionalAttendances))
+          this.attendanceApiClient.createAdditionalAttendances(this.toAttendances(this._addAdditionalAttendances))
             .pipe(
               catchError((error) => of(error))
             )
         );
         if (response && response.error) {
-          this.infoModalManager.error(response.error ?? 'Error al crear asistencias adicionales');
+          this.infoModalManager.error(response.error ?? 'Error al crear asistencias additionales');
           return;
         } else {
-          this._addAdicionalAttendances = [];
+          this._addAdditionalAttendances = [];
         }
       }
 
-      if (this._deleteAdicionalAttendances.length > 0) {
-        const attendancesIds = this._deleteAdicionalAttendances.map(a => a.id!);
+      if (this._deleteAdditionalAttendances.length > 0) {
+        const attendancesIds = this._deleteAdditionalAttendances.map(a => a.id!);
         const response = await firstValueFrom(
           this.attendanceApiClient.deleteOnBulkAttendances(attendancesIds)
             .pipe(
@@ -186,7 +186,7 @@ export class AttendanceManager {
           this.infoModalManager.error(response.error);
           return;
         } else {
-          this._deleteAdicionalAttendances = [];
+          this._deleteAdditionalAttendances = [];
         }
       }
       
@@ -279,7 +279,7 @@ export class AttendanceManager {
     return attendances;
   }
 
-  addAdicionalPlayerToAttendances(player: Player, date: string, attendanceType: AttendanceType, team: Team): void {
+  addAdditionalPlayerToAttendances(player: Player, date: string, attendanceType: AttendanceType, team: Team): void {
     let attendance: Attendance = {
       id: null,
       hasAttended: true,
@@ -307,25 +307,25 @@ export class AttendanceManager {
     }
 
     if (this._attendances().some(a => a.id !== null)) {
-      if (this._deleteAdicionalAttendances.some(a => a.player.id === attendance.player.id)) {
-        const deletedAttendance = this._deleteAdicionalAttendances.find(a => a.player.id === attendance.player.id)!;
+      if (this._deleteAdditionalAttendances.some(a => a.player.id === attendance.player.id)) {
+        const deletedAttendance = this._deleteAdditionalAttendances.find(a => a.player.id === attendance.player.id)!;
         attendance = deletedAttendance;
-        this._deleteAdicionalAttendances = this._deleteAdicionalAttendances.filter(a => a.player.id !== attendance.player.id);
+        this._deleteAdditionalAttendances = this._deleteAdditionalAttendances.filter(a => a.player.id !== attendance.player.id);
       } else {
-        this._addAdicionalAttendances = [...this._addAdicionalAttendances, attendance];
+        this._addAdditionalAttendances = [...this._addAdditionalAttendances, attendance];
       }
     }
 
     this._attendances.update(attendances => [...attendances, attendance]);
     
-    this.playerManager.addAdicionalPlayerToPlayers(player);
+    this.playerManager.addAdditionalPlayerToPlayers(player);
   }
 
-  deleteAdicionalPlayer(attendance: Attendance) {
+  deleteAdditionalPlayer(attendance: Attendance) {
     if (attendance.id !== null) {
-      this._deleteAdicionalAttendances = [...this._deleteAdicionalAttendances, attendance];
-    } else if (attendance.id === null && this._addAdicionalAttendances.some(a => a.player.id === attendance.player.id)) {
-      this._addAdicionalAttendances = this._addAdicionalAttendances.filter(a => a.player.id !== attendance.player.id);
+      this._deleteAdditionalAttendances = [...this._deleteAdditionalAttendances, attendance];
+    } else if (attendance.id === null && this._addAdditionalAttendances.some(a => a.player.id === attendance.player.id)) {
+      this._addAdditionalAttendances = this._addAdditionalAttendances.filter(a => a.player.id !== attendance.player.id);
     }
 
     const newAttendances = this._attendances().filter(a => a.player.id !== attendance.player.id);

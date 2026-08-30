@@ -39,12 +39,12 @@ export default class Attendances implements OnInit {
   protected selectedAttendanceType = signal<AttendanceType>({ id: null, name: '', order: 0, isActive: true, club: { id: 0, name: '' } });
 
   protected disabledButton = signal<boolean>(false);
-  protected addAdicionalPlayer = signal<boolean>(false);
-  protected adicionalTeam = signal<Team | null>(null);
+  protected addAdditionalPlayer = signal<boolean>(false);
+  protected additionalTeam = signal<Team | null>(null);
 
-  protected showAdicionalPlayersModal = signal<boolean>(false);
-  protected closeModalAdicionalPlayers = signal<boolean>(false);
-  protected selectedAdicionalPlayerIds = signal<number[]>([]);
+  protected showAdditionalPlayersModal = signal<boolean>(false);
+  protected closeModalAdditionalPlayers = signal<boolean>(false);
+  protected selectedAdditionalPlayerIds = signal<number[]>([]);
 
   protected attendancePlayerIdsSet = computed(() => new Set(this.attendanceManager.attendances().map(a => a.player.id)));
 
@@ -155,52 +155,52 @@ export default class Attendances implements OnInit {
     };
 
     await this.attendanceManager.saveAttendances();
-    this.addAdicionalPlayer.set(false);
-    this.adicionalTeam.set(null);
+    this.addAdditionalPlayer.set(false);
+    this.additionalTeam.set(null);
     this.disabledButton.set(false);
   }
 
-  protected adicionalTeamChange(event: string): void {
+  protected additionalTeamChange(event: string): void {
     const team = this.teamManager.findTeamById(Number(event));
-    this.adicionalTeam.set(team);
+    this.additionalTeam.set(team);
     if (team === null) {
-      this.closeAdicionalModal();
-      this.showAdicionalPlayersModal.set(false);
+      this.closeAdditionalModal();
+      this.showAdditionalPlayersModal.set(false);
       return;
     };
 
-    this.playerManager.getAdicionalPlayersByTeamId(team.id!);
-    this.selectedAdicionalPlayerIds.set([]);
-    this.showAdicionalPlayersModal.set(true);
-    this.closeModalAdicionalPlayers.set(false);
+    this.playerManager.getAdditionalPlayersByTeamId(team.id!);
+    this.selectedAdditionalPlayerIds.set([]);
+    this.showAdditionalPlayersModal.set(true);
+    this.closeModalAdditionalPlayers.set(false);
   }
 
-  protected toggleAdicionalPlayer(playerId: number): void {
-    const currentIds = this.selectedAdicionalPlayerIds();
+  protected toggleAdditionalPlayer(playerId: number): void {
+    const currentIds = this.selectedAdditionalPlayerIds();
     if (currentIds.includes(playerId)) {
-      this.selectedAdicionalPlayerIds.set(currentIds.filter(id => id !== playerId));
+      this.selectedAdditionalPlayerIds.set(currentIds.filter(id => id !== playerId));
     } else {
-      this.selectedAdicionalPlayerIds.set([...currentIds, playerId]);
+      this.selectedAdditionalPlayerIds.set([...currentIds, playerId]);
     }
   }
 
-  protected isSelectedAdicional(playerId: number): boolean {
-    return this.selectedAdicionalPlayerIds().includes(playerId);
+  protected isSelectedAdditional(playerId: number): boolean {
+    return this.selectedAdditionalPlayerIds().includes(playerId);
   }
 
-  protected confirmAdicionalPlayers(): void {
-    if (this.selectedAdicionalPlayerIds().length === 0) {
-      this.closeAdicionalModal();
+  protected confirmAdditionalPlayers(): void {
+    if (this.selectedAdditionalPlayerIds().length === 0) {
+      this.closeAdditionalModal();
       return;
     }
 
-    for (const playerId of this.selectedAdicionalPlayerIds()) {
+    for (const playerId of this.selectedAdditionalPlayerIds()) {
       if (this.attendancePlayerIdsSet().has(playerId)) {
         continue;
       }
       
-      const player = this.playerManager.findAdicionalPlayerById(playerId)!;
-      this.attendanceManager.addAdicionalPlayerToAttendances(
+      const player = this.playerManager.findAdditionalPlayerById(playerId)!;
+      this.attendanceManager.addAdditionalPlayerToAttendances(
         player, 
         this.selectedDate(), 
         this.selectedAttendanceType(),
@@ -208,29 +208,29 @@ export default class Attendances implements OnInit {
       );
     }
     
-    this.closeAdicionalModal();
+    this.closeAdditionalModal();
   }
 
-  protected cancelAdicionalPlayers(): void {
-    this.closeAdicionalModal();
+  protected cancelAdditionalPlayers(): void {
+    this.closeAdditionalModal();
   }
 
-  protected onAdicionalPlayersModalClosed(): void {
-    this.showAdicionalPlayersModal.set(false);
-    this.addAdicionalPlayer.set(false);
-    this.adicionalTeam.set(null);
-    this.selectedAdicionalPlayerIds.set([]);
+  protected onAdditionalPlayersModalClosed(): void {
+    this.showAdditionalPlayersModal.set(false);
+    this.addAdditionalPlayer.set(false);
+    this.additionalTeam.set(null);
+    this.selectedAdditionalPlayerIds.set([]);
   }
 
-  protected deleteAdicionalPlayer(attendance: Attendance): void {
-    this.attendanceManager.deleteAdicionalPlayer(attendance);
+  protected deleteAdditionalPlayer(attendance: Attendance): void {
+    this.attendanceManager.deleteAdditionalPlayer(attendance);
   }
 
-  private closeAdicionalModal(): void {
-    this.closeModalAdicionalPlayers.set(true);
-    this.addAdicionalPlayer.set(false);
-    this.adicionalTeam.set(null);
-    this.selectedAdicionalPlayerIds.set([]);
+  private closeAdditionalModal(): void {
+    this.closeModalAdditionalPlayers.set(true);
+    this.addAdditionalPlayer.set(false);
+    this.additionalTeam.set(null);
+    this.selectedAdditionalPlayerIds.set([]);
   }
 
   private checkSelectedDay(): void {
