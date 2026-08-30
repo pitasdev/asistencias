@@ -20,6 +20,9 @@
       <div class="flex flex-wrap items-center gap-1.5">
         <app-ui-badge tone="neutral">{{attendance().attendanceType?.name}}</app-ui-badge>
         <app-ui-badge tone="primary">{{attendance().team.name}}</app-ui-badge>
+        @if (attendance().isAdditional) {
+          <app-ui-badge tone="info" class="shrink-0">Extra</app-ui-badge>
+        }
 
         @if (attendance().hasAttended) {
           <app-ui-badge tone="positive" icon="check">Presente</app-ui-badge>
