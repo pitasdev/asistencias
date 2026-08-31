@@ -4,7 +4,8 @@ import { FindFilter } from "../../components/find-filter/find-filter";
 import { ReasonRequest } from '@/app/shared/models/reason/reason-request.model';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { UserManager } from '@/app/domain/user/services/user-manager';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, maxLength, required } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { Button } from "@/app/shared/components/ui/button";
 import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
@@ -55,6 +56,7 @@ export default class ReasonsManagement implements OnInit {
 
   protected reasonForm = form(this.reasonModel, (schemaPath) => {
     required(schemaPath.name, { message: 'Nombre del motivo requerido' });
+    maxLength(schemaPath.name, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
   });
 
   async ngOnInit(): Promise<void> {

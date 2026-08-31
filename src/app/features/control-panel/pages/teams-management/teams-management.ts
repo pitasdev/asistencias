@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, maxLength, required } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { Button } from "@/app/shared/components/ui/button";
 import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { TeamRequest } from '@/app/shared/models/team/team-request.model';
@@ -49,6 +50,7 @@ export default class TeamsManagement implements OnInit {
 
   protected teamForm = form(this.teamModel, (schemaPath) => {
     required(schemaPath.name, { message: 'Nombre del equipo requerido' });
+    maxLength(schemaPath.name, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
   });
 
   async ngOnInit(): Promise<void> {

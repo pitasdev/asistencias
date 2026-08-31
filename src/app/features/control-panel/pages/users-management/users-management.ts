@@ -2,7 +2,8 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/ui/button";
 import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { FormsModule } from '@angular/forms';
-import { form, FormField, required, minLength, validate, disabled } from '@angular/forms/signals';
+import { form, FormField, maxLength, minLength, required, validate, disabled } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { UserRequest } from '@/app/shared/models/user/user-request.model';
 import { ResetPassword } from '@/app/shared/models/password/reset-password.model';
 import { UserTeams } from '@/app/shared/models/user/user-teams.model';
@@ -98,27 +99,21 @@ export default class UsersManagement implements OnInit {
 
   protected userForm = form(this.userModel, (schemaPath) => {
     disabled(schemaPath.name, { when: () => this.modalType() === 'resetPassword' });
-    required(schemaPath.name, {
-      message: 'Nombre requerido'
-});
+    required(schemaPath.name, { message: 'Nombre requerido' });
+    maxLength(schemaPath.name, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
 
     disabled(schemaPath.username, { when: () => this.modalType() !== 'add' });
-    required(schemaPath.username, {
-      message: 'Username requerido'
-});
+    required(schemaPath.username, { message: 'Username requerido' });
+    maxLength(schemaPath.username, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
 
     disabled(schemaPath.password, { when: () => this.modalType() === 'edit' });
-    required(schemaPath.password, {
-      message: 'Contraseña requerida'
-});
-    minLength(schemaPath.password, 8, {
-      message: 'La contraseña debe tener al menos 8 caracteres'
-});
+    required(schemaPath.password, { message: 'Contraseña requerida' });
+    maxLength(schemaPath.password, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
+    minLength(schemaPath.password, 8, { message: 'La contraseña debe tener al menos 8 caracteres' });
 
     disabled(schemaPath.confirmPassword, { when: () => this.modalType() === 'edit' });
-    required(schemaPath.confirmPassword, {
-      message: 'Confirmación requerida'
-});
+    required(schemaPath.confirmPassword, { message: 'Confirmación requerida' });
+    maxLength(schemaPath.confirmPassword, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
     validate(schemaPath.confirmPassword, ({ value, valueOf }) => {
       if (value() !== valueOf(schemaPath.password)) {
         return { kind: 'passwordMismatch', message: 'Las contraseñas no coinciden' };
@@ -127,9 +122,7 @@ export default class UsersManagement implements OnInit {
     });
 
     disabled(schemaPath.roleId, { when: () => this.modalType() === 'resetPassword' });
-    required(schemaPath.roleId, {
-      message: 'Rol requerido'
-});
+    required(schemaPath.roleId, { message: 'Rol requerido' });
   });
 
   private originalUserTeams: UserTeams | null = null;

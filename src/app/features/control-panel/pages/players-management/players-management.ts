@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Button } from "@/app/shared/components/ui/button";
 import { Modal } from "@/app/shared/components/ui/modal/modal";
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, maxLength, required } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
 import { PlayerTeams } from '@/app/shared/models/player/player-teams.model';
 import { ConfirmModal } from "@/app/shared/components/ui/confirm-modal/confirm-modal";
@@ -64,7 +65,9 @@ export default class PlayersManagement implements OnInit {
 
   protected playerForm = form(this.playerModel, (schemaPath) => {
     required(schemaPath.name, { message: 'Nombre requerido' });
+    maxLength(schemaPath.name, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
     required(schemaPath.lastName, { message: 'Apellidos requeridos' });
+    maxLength(schemaPath.lastName, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
   });
 
   private originalPlayerTeams: PlayerTeams | null = null;

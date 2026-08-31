@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, maxLength, required } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { Button } from "@/app/shared/components/ui/button";
 import { Router } from '@angular/router';
 import { AuthManager } from '@/app/domain/auth/services/auth-manager';
@@ -38,7 +39,9 @@ export default class Login implements OnInit {
 
   protected loginForm = form(this.loginModel, (schemaPath) => {
     required(schemaPath.username, { message: 'Usuario requerido' });
+    maxLength(schemaPath.username, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
     required(schemaPath.password, { message: 'Contraseña requerida' });
+    maxLength(schemaPath.password, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
   });
 
   ngOnInit(): void {

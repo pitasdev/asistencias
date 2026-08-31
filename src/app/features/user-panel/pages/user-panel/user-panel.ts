@@ -1,5 +1,6 @@
 import { Component, computed, DOCUMENT, inject, input, OnInit, signal } from '@angular/core';
-import { form, FormField, required, minLength, validate } from '@angular/forms/signals';
+import { form, FormField, maxLength, minLength, required, validate } from '@angular/forms/signals';
+import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { Button } from "@/app/shared/components/ui/button";
 import { Modal } from "@/app/shared/components/ui/modal/modal";
 import { InfoModalManager } from '@/app/core/services/info-modal-manager/info-modal-manager';
@@ -56,6 +57,7 @@ export default class UserPanel implements OnInit {
   protected nameModel = signal<NameForm>({ name: '' });
   protected nameForm = form(this.nameModel, (schemaPath) => {
     required(schemaPath.name, { message: 'Nombre requerido' });
+    maxLength(schemaPath.name, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
   });
 
   protected passwordModel = signal<PasswordForm>({
@@ -66,11 +68,14 @@ export default class UserPanel implements OnInit {
 
   protected passwordForm = form(this.passwordModel, (schemaPath) => {
     required(schemaPath.actualPassword, { message: 'Contraseña actual requerida' });
+    maxLength(schemaPath.actualPassword, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
 
     required(schemaPath.newPassword, { message: 'Nueva contraseña requerida' });
+    maxLength(schemaPath.newPassword, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
     minLength(schemaPath.newPassword, 8, { message: 'Debe contener mínimo 8 caracteres' });
 
     required(schemaPath.confirmPassword, { message: 'Confirmación requerida' });
+    maxLength(schemaPath.confirmPassword, MAX_LENGTH_DEFAULT, { message: MSG_MAX_LENGTH_50 });
     validate(schemaPath.confirmPassword, ({ value, valueOf }) => {
       if (value() !== valueOf(schemaPath.newPassword)) {
         return { kind: 'passwordMismatch', message: 'Las contraseñas no coinciden' };

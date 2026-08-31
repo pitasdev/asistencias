@@ -8,6 +8,7 @@ import { UiField } from '@/app/shared/components/ui/field';
 import { ReasonManager } from '@/app/domain/reason/services/reason-manager';
 import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { Reason } from '@/app/shared/models/reason/reason.model';
+import { MAX_LENGTH_REASON_DESCRIPTION } from '@/app/shared/constants/validation';
 
 @Component({
   selector: 'app-save-attendance-result',
@@ -46,9 +47,10 @@ export class SaveAttendanceResult {
   }
 
   protected reasonDescriptionChange(event: string): void {
+    const truncated = event.slice(0, MAX_LENGTH_REASON_DESCRIPTION);
     this.attendanceChange.emit({
       ...this.attendance(),
-      reasonDescription: event
+      reasonDescription: truncated
     });
   }
 }
