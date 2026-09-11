@@ -13,7 +13,7 @@ export class App implements OnInit {
   protected readonly userManager = inject(UserManager);
   private readonly router = inject(Router);
 
-  protected isLoading = signal(false);
+  protected isLoading = signal(true);
 
   private navigationEnd = false;
 
