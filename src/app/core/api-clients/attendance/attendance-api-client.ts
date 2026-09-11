@@ -12,15 +12,18 @@ export class AttendanceApiClient {
   private readonly http = inject(HttpClient);
 
   getAttendancesByTeamId(teamId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/team/${teamId}${this.buildQueryParams(filters)}`);
+    const params = this.buildQueryParams(filters);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/team/${teamId}`, { params });
   }
 
   getAttendancesByClubId(clubId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/club/${clubId}${this.buildQueryParams(filters)}`);
+    const params = this.buildQueryParams(filters);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/club/${clubId}`, { params });
   }
 
   getAttendancesByPlayerId(playerId: number, filters: AttendanceQueryFilters): Observable<Attendance[]> {
-    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}${this.buildQueryParams(filters)}`);
+    const params = this.buildQueryParams(filters);
+    return this.http.get<Attendance[]>(`${environment.baseUrlApi}/attendance/player/${playerId}`, { params });
   }
 
   createAttendances(attendances: AttendanceRequest[]): Observable<CustomHttpResponse> {
@@ -39,7 +42,7 @@ export class AttendanceApiClient {
     return this.http.delete<CustomHttpResponse>(`${environment.baseUrlApi}/attendance`, { body: attendanceIds });
   }
 
-  private buildQueryParams(filters: AttendanceQueryFilters): string {
+  private buildQueryParams(filters: AttendanceQueryFilters): HttpParams {
     let params = new HttpParams();
     if (filters.selectedDate) {
       params = params.set('selectedDate', filters.selectedDate);
@@ -50,8 +53,7 @@ export class AttendanceApiClient {
     if (filters.seasonId != null) {
       params = params.set('seasonId', String(filters.seasonId));
     }
-
-    const query = params.toString();
-    return query ? `?${query}` : '';
+    
+    return params;
   }
 }

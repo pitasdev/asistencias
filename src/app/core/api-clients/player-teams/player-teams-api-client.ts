@@ -2,7 +2,7 @@ import { CustomHttpResponse } from '@/app/shared/models/common/custom-http-respo
 import { PlayerTeamsRequest } from '@/app/shared/models/player/player-teams-request.model';
 import { PlayerTeams } from '@/app/shared/models/player/player-teams.model';
 import { environment } from '@/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -11,8 +11,11 @@ export class PlayerTeamsApiClient {
   private readonly http = inject(HttpClient);
 
   getPlayerTeamsByClubId(clubId: number, seasonId?: number): Observable<PlayerTeams[]> {
-    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
-    return this.http.get<PlayerTeams[]>(`${environment.baseUrlApi}/player-teams/club/${clubId}${queryParams}`);
+    let params = new HttpParams();
+    if (seasonId != null) {
+      params = params.set('seasonId', String(seasonId));
+    }
+    return this.http.get<PlayerTeams[]>(`${environment.baseUrlApi}/player-teams/club/${clubId}`, { params });
   }
 
   updatePlayerTeams(playerTeams: PlayerTeamsRequest): Observable<CustomHttpResponse> {

@@ -3,7 +3,7 @@ import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
 import { TeamRequest } from '@/app/shared/models/team/team-request.model';
 import { Team } from '@/app/shared/models/team/team.model';
 import { environment } from '@/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -16,8 +16,11 @@ export class TeamApiClient {
   }
   
   getTeamsByClubId(clubId: number, seasonId?: number): Observable<Team[]> {
-    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
-    return this.http.get<Team[]>(`${environment.baseUrlApi}/team/club/${clubId}${queryParams}`);
+    let params = new HttpParams();
+    if (seasonId != null) {
+      params = params.set('seasonId', String(seasonId));
+    }
+    return this.http.get<Team[]>(`${environment.baseUrlApi}/team/club/${clubId}`, { params });
   }
 
   createTeam(team: TeamRequest): Observable<CustomHttpResponse> {

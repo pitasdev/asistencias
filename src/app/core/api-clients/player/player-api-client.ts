@@ -3,7 +3,7 @@ import { IsActiveId } from '@/app/shared/models/common/is-active-id.model';
 import { PlayerRequest } from '@/app/shared/models/player/player-request.model';
 import { Player } from '@/app/shared/models/player/player.model';
 import { environment } from '@/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -12,18 +12,27 @@ export class PlayerApiClient {
   private readonly http = inject(HttpClient);
 
   getPlayerById(playerId: number, seasonId?: number): Observable<Player> {
-    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
-    return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}${queryParams}`);
+    let params = new HttpParams();
+    if (seasonId != null) {
+      params = params.set('seasonId', String(seasonId));
+    }
+    return this.http.get<Player>(`${environment.baseUrlApi}/player/${playerId}`, { params });
   }
 
   getPlayersByTeamId(teamId: number, seasonId?: number): Observable<Player[]> {
-    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
-    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/team/${teamId}${queryParams}`);
+    let params = new HttpParams();
+    if (seasonId != null) {
+      params = params.set('seasonId', String(seasonId));
+    }
+    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/team/${teamId}`, { params });
   }
 
   getPlayersByClubId(clubId: number, seasonId?: number): Observable<Player[]> {
-    const queryParams = seasonId != null ? `?seasonId=${seasonId}` : '';
-    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}${queryParams}`);
+    let params = new HttpParams();
+    if (seasonId != null) {
+      params = params.set('seasonId', String(seasonId));
+    }
+    return this.http.get<Player[]>(`${environment.baseUrlApi}/player/club/${clubId}`, { params });
   }
 
   createPlayer(player: PlayerRequest): Observable<CustomHttpResponse> {
