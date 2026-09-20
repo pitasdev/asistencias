@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding, withViewTransitions } from '@
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { credentialsInterceptor } from './shared/interceptors/credentials/credentials-interceptor';
+import { authInterceptor } from './shared/interceptors/auth/auth-interceptor';
 import { errorHandlingInterceptor } from './shared/interceptors/error-handling/error-handling-interceptor';
 import { AuthManager } from './domain/auth/services/auth-manager';
 
@@ -12,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions(), withComponentInputBinding()),
-    provideHttpClient(withInterceptors([credentialsInterceptor, errorHandlingInterceptor])),
+    provideHttpClient(withInterceptors([credentialsInterceptor, authInterceptor, errorHandlingInterceptor])),
     provideAppInitializer(() => {
       const authManager = inject(AuthManager);
       return authManager.restoreSession();

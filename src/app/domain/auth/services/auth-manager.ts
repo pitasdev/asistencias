@@ -18,10 +18,40 @@ export class AuthManager {
         this.authApiClient.getMe().pipe(catchError(() => of(null)))
       );
 
+      if (user) {
+        this.userManager.setActiveUserFromUser(user);
+        await this.roleManager.getRoles();
+        return true;
+      }
+
+      const refreshed = await this.refreshSession();
+      if (!refreshed) return false;
+
+      const retriedUser = await firstValueFrom(
+        this.authApiClient.getMe().pipe(catchError(() => of(null)))
+      );
+
+      if (!retriedUser) return false;
+
+      this.userManager.setActiveUserFromUser(retriedUser);
+      await this.roleManager.getRoles();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async refreshSession(): Promise<boolean> {
+    try {
+      const user = await firstValueFrom(
+        this.authApiClient.refresh().pipe(catchError(() => of(null)))
+      );
+
       if (!user) return false;
 
       this.userManager.setActiveUserFromUser(user);
       await this.roleManager.getRoles();
+      
       return true;
     } catch {
       return false;

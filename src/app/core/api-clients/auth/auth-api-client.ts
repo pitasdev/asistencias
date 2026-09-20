@@ -20,4 +20,8 @@ export class AuthApiClient {
   logout(): Observable<CustomHttpResponse> {
     return this.http.post<CustomHttpResponse>(`${environment.baseUrlApi}/auth/logout`, {});
   }
+
+  refresh(): Observable<User> {
+    return this.http.post<User>(`${environment.baseUrlApi}/auth/refresh`, {});
+  }
 }
