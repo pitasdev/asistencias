@@ -33,11 +33,9 @@
       </app-ui-field>
 
       <div
-        class="flex items-center justify-between rounded-xl border px-4 py-3 transition-colors"
+        class="flex items-center justify-between rounded-xl border border-line px-4 py-3 transition-colors"
         [class.bg-canvas]="selectedTeam() !== null"
-        [class.border-transparent]="selectedTeam() !== null"
         [class.bg-slate-50]="selectedTeam() === null"
-        [class.border-line]="selectedTeam() === null"
         [class.border-dashed]="selectedTeam() === null"
       >
         <div class="min-w-0">

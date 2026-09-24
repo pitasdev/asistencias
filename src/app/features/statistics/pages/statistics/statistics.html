@@ -46,6 +46,90 @@
         </div>
       }
     </div>
+
+    <div class="rounded-2xl border border-line bg-canvas/40 p-4">
+      <div class="flex items-center gap-3">
+        <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-primary-50 text-primary-600">
+          <app-ui-icon name="user-plus" [size]="18" />
+        </span>
+
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-bold tracking-tight text-slate-800">Jugadores adicionales</p>
+          <p class="mt-1 text-xs text-slate-400">Asistencias como extra</p>
+        </div>
+
+        <app-switch
+          [value]="showAdditionalStats()"
+          (valueChange)="onShowAdditionalStatsChange($event)"
+          [attr.aria-label]="showAdditionalStats() ? 'Ocultar jugadores adicionales' : 'Ver jugadores adicionales'"
+        />
+      </div>
+
+      @if (showAdditionalStats()) {
+        <div class="mt-4 flex flex-col gap-4 border-t border-line pt-4">
+          <app-ui-field label="Tipo de asistencia" fieldId="stats-additional-attendance-type">
+            <select
+              id="stats-additional-attendance-type"
+              class="input"
+              [ngModel]="selectedAdditionalAttendanceTypeId()"
+              (ngModelChange)="onAdditionalAttendanceTypeChange($event)"
+            >
+              <option [ngValue]="null">Todos</option>
+              @for (type of attendanceTypeManager.attendanceTypes(); track type.id) {
+                @if (type.id !== null) {
+                  <option [ngValue]="type.id">{{type.name}}</option>
+                }
+              }
+            </select>
+          </app-ui-field>
+
+          @if (statisticsManager.teamAdditionalPlayerStats().length > 0) {
+            <div class="grid grid-cols-1 gap-2 xl:grid-cols-2">
+              @for (statistic of statisticsManager.teamAdditionalPlayerStats(); track statistic.player.id) {
+                <button
+                  type="button"
+                  class="flex w-full cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface p-2 text-left transition-colors hover:border-primary-300 hover:bg-primary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:gap-3 sm:p-3 sm:px-4"
+                  [attr.aria-label]="'Ver días de asistencia de ' + statistic.player.name + ' ' + statistic.player.lastName"
+                  (click)="openAdditionalPlayerDates(statistic.player)"
+                >
+                  <app-ui-avatar
+                    [name]="statistic.player.name"
+                    [lastName]="statistic.player.lastName"
+                    size="md"
+                  />
+
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-semibold tracking-tight text-slate-800 xs:text-[15px]">
+                      {{statistic.player.name}} {{statistic.player.lastName}}
+                    </p>
+                    @let teamNames = getPlayerTeamNames(statistic.player.id);
+                    <p class="mt-0.5 truncate text-xs text-slate-400">
+                      @if (teamNames) {
+                        {{teamNames}}
+                      } @else {
+                        Sin equipo
+                      }
+                    </p>
+                  </div>
+
+                  <app-ui-badge tone="primary" class="shrink-0">
+                    {{statistic.sessionsCount}} {{statistic.sessionsCount === 1 ? 'vez' : 'veces'}}
+                  </app-ui-badge>
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-slate-500">
+              @if (selectedAdditionalAttendanceType(); as attendanceType) {
+                No hay jugadores adicionales para el tipo «{{attendanceType.name}}».
+              } @else {
+                No hay asistencias de jugadores adicionales en esta temporada.
+              }
+            </p>
+          }
+        </div>
+      }
+    </div>
   </section>
 }
 
@@ -92,4 +176,53 @@
       }
     </div>
   </section>
+}
+
+@if (showAdditionalPlayerDatesModal()) {
+  @if (selectedAdditionalPlayer(); as player) {
+    <app-modal (modalClosed)="onAdditionalPlayerDatesModalClosed()">
+      <div class="flex flex-col gap-5">
+        <div class="flex items-center gap-3 border-b border-line pb-4">
+          <app-ui-avatar [name]="player.name" [lastName]="player.lastName" size="lg" />
+
+          <div class="min-w-0">
+            <p class="section-title">Jugador adicional</p>
+            <h3 class="truncate font-bold tracking-tight text-slate-900 xs:text-lg">
+              {{player.name}} {{player.lastName}}
+            </h3>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-sm font-semibold tracking-tight text-slate-800">Días de asistencia</p>
+          <p class="mt-1 text-sm text-slate-400">
+            Ha asistido {{selectedAdditionalPlayerAttendances().length}} {{selectedAdditionalPlayerAttendances().length === 1 ? 'vez' : 'veces'}} como adicional.
+          </p>
+        </div>
+
+        @if (selectedAdditionalPlayerAttendances().length > 0) {
+          <div class="flex flex-col gap-2">
+            @for (attendance of selectedAdditionalPlayerAttendances(); track trackAdditionalAttendance(attendance)) {
+              <div class="flex items-center gap-3 rounded-xl bg-canvas p-3">
+                <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-primary-50 text-primary-600">
+                  <app-ui-icon name="calendar" [size]="18" />
+                </span>
+
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold tracking-tight text-slate-800">
+                    {{formatAttendanceDate(attendance.date)}}
+                  </p>
+                  <p class="text-xs text-slate-400">{{attendance.attendanceType.name}}</p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="rounded-xl bg-canvas px-4 py-3 text-sm text-slate-500">
+            No hay días de asistencia para mostrar.
+          </p>
+        }
+      </div>
+    </app-modal>
+  }
 }

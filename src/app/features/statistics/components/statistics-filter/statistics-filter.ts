@@ -1,6 +1,5 @@
-import { signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { Season } from '@/app/shared/models/season/season.model';
-import { Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UiDisclosure } from '@/app/shared/components/ui/disclosure';
 import { UiField } from '@/app/shared/components/ui/field';

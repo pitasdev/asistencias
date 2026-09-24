@@ -4,21 +4,50 @@ import { AttendanceTypeManager } from '@/app/domain/attendance-type/services/att
 import { Attendance } from '@/app/shared/models/attendance/attendance.model';
 import { AttendanceType } from '@/app/shared/models/attendance-type/attendance-type.model';
 
+export interface TeamAdditionalPlayerStatistic {
+  player: Attendance['player'];
+  sessionsCount: number;
+}
+
 @Service()
 export class StatisticsManager {
   private readonly attendanceManager = inject(AttendanceManager);
   private readonly attendanceTypeManager = inject(AttendanceTypeManager);
+  private readonly teamAttendances = signal<Attendance[]>([]);
 
   teamAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
+  teamAdditionalPlayerStats = signal<TeamAdditionalPlayerStatistic[]>([]);
   playerAttendanceAverage = signal<Map<AttendanceType, number>>(new Map());
   playerAttendanceStats = signal<Map<AttendanceType, Attendance[]>>(new Map());
 
-  async getTeamStats(teamId: number, seasonId: number): Promise<void> {
+  async getTeamStats(teamId: number, seasonId: number, additionalAttendanceTypeId: number | null = null): Promise<void> {
+    this.teamAttendances.set([]);
+    this.teamAdditionalPlayerStats.set([]);
+
     await this.attendanceManager.getAttendancesByTeamIds([teamId], { seasonId });
     const attendances = this.attendanceManager.attendances();
-    
+    this.teamAttendances.set(attendances);
+
     const { averagesByType } = this.calculateStats(attendances);
     this.teamAttendanceAverage.set(averagesByType);
+    this.teamAdditionalPlayerStats.set(this.calculateAdditionalPlayerStats(attendances, additionalAttendanceTypeId));
+  }
+
+  setAdditionalPlayerStatsByType(attendanceTypeId: number | null): void {
+    this.teamAdditionalPlayerStats.set(
+      this.calculateAdditionalPlayerStats(this.teamAttendances(), attendanceTypeId)
+    );
+  }
+
+  getAdditionalPlayerAttendances(playerId: number, attendanceTypeId: number | null = null): Attendance[] {
+    return this.teamAttendances()
+      .filter(attendance =>
+        attendance.player.id === playerId &&
+        attendance.isAdditional &&
+        attendance.hasAttended &&
+        (attendanceTypeId === null || attendance.attendanceType.id === attendanceTypeId)
+      )
+      .sort((a, b) => b.date.localeCompare(a.date));
   }
 
   async getPlayerStats(playerId: number, seasonId: number): Promise<void> {
@@ -33,8 +62,40 @@ export class StatisticsManager {
 
   clearStats(): void {
     this.teamAttendanceAverage.set(new Map());
+    this.teamAttendances.set([]);
+    this.teamAdditionalPlayerStats.set([]);
     this.playerAttendanceAverage.set(new Map());
     this.playerAttendanceStats.set(new Map());
+  }
+
+  private calculateAdditionalPlayerStats(
+    attendances: Attendance[],
+    attendanceTypeId: number | null = null
+  ): TeamAdditionalPlayerStatistic[] {
+    const statisticsByPlayerId = new Map<number, TeamAdditionalPlayerStatistic>();
+
+    for (const attendance of attendances) {
+      if (!attendance.isAdditional || !attendance.hasAttended) continue;
+      if (attendanceTypeId !== null && attendance.attendanceType.id !== attendanceTypeId) continue;
+
+      const currentStatistic = statisticsByPlayerId.get(attendance.player.id);
+      if (currentStatistic) {
+        currentStatistic.sessionsCount++;
+      } else {
+        statisticsByPlayerId.set(attendance.player.id, {
+          player: attendance.player,
+          sessionsCount: 1
+        });
+      }
+    }
+
+    return [...statisticsByPlayerId.values()].sort((a, b) => {
+      if (a.sessionsCount !== b.sessionsCount) return b.sessionsCount - a.sessionsCount;
+
+      const playerAName = `${a.player.name} ${a.player.lastName}`;
+      const playerBName = `${b.player.name} ${b.player.lastName}`;
+      return playerAName.localeCompare(playerBName, 'es');
+    });
   }
 
   private calculateStats(attendances: Attendance[]): { 
