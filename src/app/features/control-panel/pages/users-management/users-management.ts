@@ -211,9 +211,15 @@ export default class UsersManagement implements OnInit {
     this.userModel.update(m => ({ ...m, roleId: event }));
   }
 
-  protected checkFormatValidUsername(event: string): void {
-    const validUsername = event.toLowerCase().replaceAll(' ', '');
-    this.userModel.update(m => ({ ...m, username: validUsername }));
+  protected checkFormatValidUsername(element: HTMLInputElement): void {
+    const normalized = element.value.toLowerCase().replace(/\s+/g, '');
+
+    if (element.value !== normalized) {
+      element.value = normalized;
+    }
+    if (normalized !== this.userModel().username) {
+      this.userModel.update(m => ({ ...m, username: normalized }));
+    }
   }
 
   protected async addUser(): Promise<void> {
@@ -221,14 +227,15 @@ export default class UsersManagement implements OnInit {
     if (this.userForm().invalid()) return;
 
     const { name, username, password, roleId } = this.userModel();
+    const normalizedUsername = username.toLowerCase().replace(/\s+/g, '');
 
-    const check = await this.userManager.checkAvailableUsername(username);
+    const check = await this.userManager.checkAvailableUsername(normalizedUsername);
     if (!check.isAvailable) return;
 
     const user: UserRequest = {
       id: null,
       name,
-      username,
+      username: normalizedUsername,
       password,
       hasDefaultPassword: true,
       roleId: Number(roleId),

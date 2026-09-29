@@ -73,8 +73,8 @@
             <input id="name" type="text" class="input" placeholder="Nombre completo" [formField]="userForm.name">
           </app-ui-field>
 
-          <app-ui-field label="Username" fieldId="username" [error]="fieldError(userForm.username())">
-            <input id="username" type="text" class="input" placeholder="usuario_sin_espacios" [formField]="userForm.username">
+          <app-ui-field label="Username" fieldId="username" [error]="fieldError(userForm.username())" [hint]="'Sin espacios y sin mayúsculas'">
+            <input #usernameInput id="username" type="text" class="input" placeholder="Nombre de usuario" [formField]="userForm.username" (input)="checkFormatValidUsername(usernameInput)" (blur)="checkFormatValidUsername(usernameInput)">
           </app-ui-field>
         }
 
