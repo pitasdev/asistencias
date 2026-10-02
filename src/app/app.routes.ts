@@ -3,6 +3,7 @@ import { appDataResolver } from './shared/resolvers/app-data/app-data-resolver';
 import { authGuard } from './shared/guards/auth/auth-guard';
 import { checkIsAdminGuard } from './shared/guards/check-is-admin/check-is-admin-guard';
 import { checkDefaultPasswordGuard } from './shared/guards/check-default-password/check-default-password-guard';
+import { checkGuestGuard } from './shared/guards/check-guest/check-guest-guard';
 
 export const routes: Routes = [
   {
@@ -78,6 +79,7 @@ export const routes: Routes = [
   {
     path: 'login',
     title: 'Login',
+    canActivate: [checkGuestGuard],
     loadComponent: () => import('./features/login/pages/login/login')
   },
   {

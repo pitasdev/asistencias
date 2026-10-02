@@ -1,24 +1,22 @@
-<div class="min-h-dvh touch-manipulation">
-  @if (userManager.activeUser() !== null) {
-    <div class="xl:pl-72">
-      <main class="mx-auto w-full max-w-3xl px-4 pt-6 pb-32 xl:max-w-5xl xl:px-8 xl:pt-10">
-        @if (isLoading()) {
-          <app-loader />
-        } @else {
-          <router-outlet />
-        }
-      </main>
-    </div>
+<div class="relative min-h-dvh touch-manipulation">
+  <div [class.xl:pl-72]="isAuthenticated()">
+    <main
+      [class]="isAuthenticated()
+        ? 'mx-auto w-full max-w-3xl px-4 pt-6 pb-32 xl:max-w-5xl xl:px-8 xl:pt-10'
+        : 'min-h-dvh'"
+    >
+      <router-outlet />
 
-    <app-app-nav />
-  } @else {
-    <main class="min-h-dvh">
       @if (isLoading()) {
-        <app-loader />
-      } @else {
-        <router-outlet />
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-[1px]">
+          <app-loader />
+        </div>
       }
     </main>
+  </div>
+
+  @if (isAuthenticated()) {
+    <app-app-nav />
   }
 
   <app-ui-feedback-host />

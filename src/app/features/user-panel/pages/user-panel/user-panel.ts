@@ -1,4 +1,5 @@
-import { Component, computed, DOCUMENT, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, DOCUMENT, effect, inject, input, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { form, FormField, maxLength, minLength, required, validate } from '@angular/forms/signals';
 import { MAX_LENGTH_DEFAULT, MSG_MAX_LENGTH_50 } from '@/app/shared/constants/validation';
 import { Button } from "@/app/shared/components/ui/button";
@@ -32,7 +33,7 @@ interface NameForm {
     class: 'flex flex-col gap-4'
   }
 })
-export default class UserPanel implements OnInit {
+export default class UserPanel {
   protected requiredPasswordChange = input(false, {
     transform: (value: boolean | string | undefined) => value === true || value === 'true'
   });
@@ -43,6 +44,8 @@ export default class UserPanel implements OnInit {
   private readonly authManager = inject(AuthManager);
   private readonly infoModalManager = inject(InfoModalManager);
   private readonly document = inject(DOCUMENT);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   protected validActualPassword = signal<boolean>(true);
   protected openEditNameModal = signal<boolean>(false);
@@ -84,7 +87,23 @@ export default class UserPanel implements OnInit {
     });
   });
 
-  ngOnInit(): void {}
+  private lastRequiredPasswordChange = false;
+
+  private readonly passwordChangeNotice = effect(() => {
+    const required = this.requiredPasswordChange();
+    const wasRequired = this.lastRequiredPasswordChange;
+    this.lastRequiredPasswordChange = required;
+
+    if (!required || wasRequired) return;
+
+    this.infoModalManager.info('Debe de cambiar la contraseña para poder continuar');
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { requiredPasswordChange: null },
+      replaceUrl: true
+    });
+  });
 
   protected fieldError(field: { touched(): boolean; invalid(): boolean; errors(): Array<{ message?: string }> }): string {
     if (field.touched() && field.invalid()) {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { UserManager } from './domain/user/services/user-manager';
 import { Loader } from './shared/components/ui/loader';
@@ -10,8 +10,10 @@ import { UiFeedbackHost } from './shared/components/ui/feedback-host/feedback-ho
   imports: [RouterOutlet, Loader, AppNav, UiFeedbackHost],
   templateUrl: './app.html',})
 export class App implements OnInit {
-  protected readonly userManager = inject(UserManager);
+  private readonly userManager = inject(UserManager);
   private readonly router = inject(Router);
+
+  protected readonly isAuthenticated = computed(() => this.userManager.activeUser() !== null);
 
   protected isLoading = signal(true);
 
