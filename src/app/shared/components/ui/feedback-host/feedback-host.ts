@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FeedbackManager, FeedbackTone } from '@/app/core/services/feedback-manager/feedback-manager';
+import { FeedbackManager, FeedbackMessage, FeedbackTone } from '@/app/core/services/feedback-manager/feedback-manager';
 import { UiIcon, IconName } from '../icon';
 
 const TONE_STYLES: Record<FeedbackTone, { icon: IconName; chip: string; bar: string }> = {
@@ -22,4 +22,8 @@ export class UiFeedbackHost {
   protected readonly feedback: FeedbackManager = inject(FeedbackManager);
 
   protected readonly tone = (value: FeedbackTone) => TONE_STYLES[value];
+
+  protected isPlainText(message: FeedbackMessage): message is string {
+    return typeof message === 'string';
+  }
 }

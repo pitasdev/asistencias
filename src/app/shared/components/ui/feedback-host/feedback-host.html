@@ -9,7 +9,19 @@
         <app-ui-icon [name]="tone(dialog.tone).icon" [size]="26" />
       </span>
 
-      <p class="text-[15px] leading-relaxed text-slate-600">{{ dialog.message }}</p>
+      <p class="text-[15px] leading-relaxed text-slate-600">
+        @if (isPlainText(dialog.message)) {
+          {{ dialog.message }}
+        } @else {
+          @for (segment of dialog.message; track $index) {
+            @if (segment.bold) {
+              <strong class="font-semibold text-slate-700">{{ segment.text }}</strong>
+            } @else {
+              {{ segment.text }}
+            }
+          }
+        }
+      </p>
 
       <button
         type="button"

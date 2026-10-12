@@ -125,9 +125,10 @@ export default class Attendances implements OnInit {
     for (const attendance of hasAttendedFalseAttendances) {
       if (attendance.reason === null) {
         const player = this.playerManager.findPlayerById(attendance.player.id);
-        this.infoModalManager.warning(
-          `Debe seleccionar una razón por la que no ha asistido <strong>${player?.name} ${player?.lastName}</strong>`
-        );
+        this.infoModalManager.warning([
+          { text: 'Debe seleccionar una razón por la que no ha asistido ' },
+          { text: `${player?.name} ${player?.lastName}`, bold: true }
+        ]);
         return false;
       }
     }
@@ -136,9 +137,10 @@ export default class Attendances implements OnInit {
     for (const attendance of requiresDescriptionAttendances) {
       if (attendance.reasonDescription === null || attendance.reasonDescription === '') {
         const player = this.playerManager.findPlayerById(attendance.player.id);
-        this.infoModalManager.warning(
-          `Debe indicar la razón por la que no ha asistido <strong>${player?.name} ${player?.lastName}</strong>`
-        );
+        this.infoModalManager.warning([
+          { text: 'Debe indicar la razón por la que no ha asistido ' },
+          { text: `${player?.name} ${player?.lastName}`, bold: true }
+        ]);
         return false;
       }
     }

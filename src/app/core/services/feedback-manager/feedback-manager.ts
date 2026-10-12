@@ -2,9 +2,21 @@ import { Service, signal } from '@angular/core';
 
 export type FeedbackTone = 'success' | 'error' | 'warning' | 'info';
 
+/** Fragmento de mensaje con énfasis opcional. */
+export interface FeedbackSegment {
+  text: string;
+  bold?: boolean;
+}
+
+/**
+ * Un mensaje es texto plano o una secuencia de segmentos. Se renderiza siempre
+ * por interpolación de Angular (nunca innerHTML), por lo que sigue sin permitirse HTML.
+ */
+export type FeedbackMessage = string | FeedbackSegment[];
+
 export interface FeedbackDialog {
   tone: FeedbackTone;
-  message: string;
+  message: FeedbackMessage;
 }
 
 export interface FeedbackToast {
@@ -31,7 +43,7 @@ export class FeedbackManager {
   private dialogQueue: FeedbackDialog[] = [];
   private toastId = 0;
 
-  showDialog(tone: FeedbackTone, message: string): void {
+  showDialog(tone: FeedbackTone, message: FeedbackMessage): void {
     this.dialogQueue.push({ tone, message });
 
     if (!this._dialog()) {

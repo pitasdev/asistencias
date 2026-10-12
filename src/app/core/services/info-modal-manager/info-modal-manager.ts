@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { FeedbackManager } from '@/app/core/services/feedback-manager/feedback-manager';
+import { FeedbackManager, FeedbackMessage } from '@/app/core/services/feedback-manager/feedback-manager';
 
 /**
  * Fachada de avisos usada por los managers de dominio e interceptores.
@@ -10,19 +10,19 @@ import { FeedbackManager } from '@/app/core/services/feedback-manager/feedback-m
 export class InfoModalManager {
   private readonly feedback = inject(FeedbackManager);
 
-  success(mensaje: string): void {
+  success(mensaje: FeedbackMessage): void {
     this.feedback.showDialog('success', mensaje);
   }
 
-  error(mensaje: string): void {
+  error(mensaje: FeedbackMessage): void {
     this.feedback.showDialog('error', mensaje);
   }
 
-  warning(mensaje: string): void {
+  warning(mensaje: FeedbackMessage): void {
     this.feedback.showDialog('warning', mensaje);
   }
 
-  info(mensaje: string): void {
+  info(mensaje: FeedbackMessage): void {
     this.feedback.showDialog('info', mensaje);
   }
 

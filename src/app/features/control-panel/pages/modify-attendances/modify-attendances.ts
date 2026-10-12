@@ -65,10 +65,12 @@ export default class ModifyAttendances {
       { selectedDate: this.actualDateModify() }
     );
     if (existingAttendancesActualDate.length === 0) {
-      this.infoModalManager.warning(
-        `No existen asistencias del <strong>${this.selectedModifyTeam()?.name}</strong>
-        del día <strong>${dateFormatter(this.actualDateModify())}</strong>`
-        );
+      this.infoModalManager.warning([
+        { text: 'No existen asistencias del ' },
+        { text: this.selectedModifyTeam()?.name ?? '', bold: true },
+        { text: ' del día ' },
+        { text: dateFormatter(this.actualDateModify()), bold: true }
+      ]);
       return;
     }
 
@@ -77,10 +79,12 @@ export default class ModifyAttendances {
       { selectedDate: this.newDateModify() }
     );
     if (existingAttendancesNewDate.length > 0) {
-      this.infoModalManager.warning(
-        `Ya existen asistencias del <strong>${this.selectedModifyTeam()?.name}</strong>
-        del día <strong>${dateFormatter(this.newDateModify())}</strong>`
-      );
+      this.infoModalManager.warning([
+        { text: 'Ya existen asistencias del ' },
+        { text: this.selectedModifyTeam()?.name ?? '', bold: true },
+        { text: ' del día ' },
+        { text: dateFormatter(this.newDateModify()), bold: true }
+      ]);
       return;
     }
 
