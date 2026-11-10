@@ -138,7 +138,11 @@ export default class Statistics implements OnInit {
     this.selectedPlayer.set(player);
 
     if (player.id) {
-      await this.statisticsManager.getPlayerStats(player.id, this.selectedSeason()?.id!);
+      await this.statisticsManager.getPlayerStats(
+        player.id,
+        this.selectedSeason()?.id!,
+        this.selectedTeam()?.id ?? null
+      );
     }
   }
 

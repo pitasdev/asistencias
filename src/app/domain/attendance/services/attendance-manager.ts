@@ -167,7 +167,7 @@ export class AttendanceManager {
             )
         );
         if (response && response.error) {
-          this.infoModalManager.error(response.error ?? 'Error al crear asistencias additionales');
+          this.infoModalManager.error(response.error ?? 'Error al crear asistencias adicionales');
           return;
         } else {
           this._addAdditionalAttendances = [];

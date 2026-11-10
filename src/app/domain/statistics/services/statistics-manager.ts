@@ -50,11 +50,15 @@ export class StatisticsManager {
       .sort((a, b) => b.date.localeCompare(a.date));
   }
 
-  async getPlayerStats(playerId: number, seasonId: number): Promise<void> {
+  async getPlayerStats(playerId: number, seasonId: number, teamId: number | null = null): Promise<void> {
     await this.attendanceManager.getAttendancesByPlayerId(playerId, { seasonId });
     const attendances = this.attendanceManager.attendances();
-    
-    const { averagesByType, attendancesByType } = this.calculateStats(attendances);
+
+    const filteredAttendances = teamId === null
+      ? attendances
+      : attendances.filter(attendance => attendance.team.id === teamId);
+
+    const { averagesByType, attendancesByType } = this.calculateStats(filteredAttendances);
     
     this.playerAttendanceAverage.set(averagesByType);
     this.playerAttendanceStats.set(attendancesByType);
