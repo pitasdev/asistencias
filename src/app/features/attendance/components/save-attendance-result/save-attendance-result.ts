@@ -40,9 +40,12 @@ export class SaveAttendanceResult {
     const reason = this.reasons().find(r => r.id === Number(event));
     if (!reason) return;
 
+    const requiresDescription = this.reasonManager.findReasonById(reason.id!)?.requiresDescription === true;
+
     this.attendanceChange.emit({
       ...this.attendance(),
-      reason: { id: reason.id!, name: reason.name }
+      reason: { id: reason.id!, name: reason.name },
+      reasonDescription: requiresDescription ? this.attendance().reasonDescription : null
     });
   }
 
